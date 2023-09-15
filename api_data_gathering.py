@@ -8,6 +8,7 @@ import requests  ## for getting data from a server GET
 import re  
 import pandas as pd    
 from pandas import DataFrame
+import os
 
 ## To tokenize and vectorize text type data
 from sklearn.feature_extraction.text import CountVectorizer
@@ -29,9 +30,11 @@ kat_api_key = "3755f6b8d041439cb65c0e078a55bca0"
 ## TOPICS
 topics = ['wildfire', 'fire', 'drought', 'burn', 'weather']
 
+
 ## CREAT NEW CSV FOR HEADLINES
-filename = "NewsHeadlines.csv"
-MyFile = open(filename, "w")  # 'w' -> write to new
+filename = "NewsHeadlines"
+
+MyFile = open(f"./DirtyData/{filename}.csv", "w")  # 'w' -> write to new
 
 WriteThis = "LABEL,Date,Source,Title,Headline\n"
 MyFile.write(WriteThis)
@@ -52,7 +55,7 @@ for topic in topics:
     response = requests.get(endpoint, URLPost)
     jsontxt = response.json()
     
-    MyFILE=open(filename, "a") # "a" for append to add stuff
+    MyFILE=open(f"./DirtyData/{filename}.csv", "a") # "a" for append to add stuff
     LABEL=topic
     for items in jsontxt["articles"]:
         # print(items, "\n\n\n")
@@ -115,7 +118,9 @@ for topic in topics:
 ##
 #############################################
 
-BBC_DF=pd.read_csv(filename, error_bad_lines=False)    
+RAW_DF=pd.read_csv(f"./DirtyData/{filename}.csv", error_bad_lines=False)
+
+BBC_DF = RAW_DF.copy()    
 
 ## REMOVE any rows with NaN in them
 BBC_DF = BBC_DF.dropna()
@@ -175,7 +180,9 @@ My_Orig_DF=MyDTM_DF
 dfs = [Labels_DF, MyDTM_DF]
 
 Final_News_DF_Labeled = pd.concat(dfs,axis=1, join='inner')
- 
+
+# Save the vecotrized data to the CleanData Folder
+Final_News_DF_Labeled.to_csv(f"./CleanData/{filename}_vectorized.csv", index=False) 
 
 #############################################
 ##
@@ -216,4 +223,4 @@ for i in range(NumTopics):
     ax = fig.add_subplot(NumTopics,1,i+1)
     plt.imshow(List_of_WC[i], interpolation='bilinear')
     plt.axis("off")
-    plt.savefig("NewClouds.pdf")
+    plt.savefig("./CreatedVisuals/NewsClouds.pdf")
