@@ -1,0 +1,154 @@
+---
+title: "eda_month_fire_data"
+author: "Katrina Arbogast"
+date: "2023-09-15"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+
+```{r, warning=FALSE}
+us_fires_burn_monthly = read_csv('./CleanData/us_fires_burn_monthly.csv', show_col_types = FALSE)
+
+us_fires_burn_monthly
+```
+
+```{r}
+# Group by mean using dplyr
+us_fires_burn_grouped <- us_fires_burn_monthly %>% group_by(Year) %>% 
+  summarise(Acres_Burned=sum(Acres_Burned),
+            Number_of_Fires=sum(Number_of_Fires),
+            Acres_Burned_per_Fire=sum(Acres_Burned_per_Fire),
+            .groups = 'drop') %>%
+  as.data.frame()
+us_fires_burn_grouped 
+```
+
+```{r}
+mon = c("January", "February", "March", "April", 
+        "May", "June", "July", "August", 
+        "September", "October", "November", "December")
+years = unique(us_fires_burn_monthly$Year)
+
+
+acres_burned_g <- ggplot()  + 
+  geom_bar(data = us_fires_burn_monthly, 
+           aes(x=Year, y=Acres_Burned, fill = factor(Month, levels = mon)),
+           stat="identity", 
+           position = "dodge")+
+  labs(title= "Acres Burned in US from 2000 to 2022",
+       x="Year",
+       y="Acres Burned")+
+  scale_fill_manual(breaks = mon, 
+                    values = c("grey", "grey", "grey", "grey",
+                               "grey", "#EC661F", "#BF8C2C", "#730C02",
+                               "#F23E16", "grey", "grey", "grey"))+
+  scale_x_continuous(breaks = unique(us_fires_burn_monthly$Year))+
+  theme_bw()
+
+acres_per_fire_g <- ggplot()  + 
+  geom_bar(data = us_fires_burn_monthly, 
+           aes(x=Year, y=Acres_Burned_per_Fire, fill = factor(Month, levels = mon)),
+           stat="identity", 
+           position = "dodge")+
+  labs(title= "Acres Burned Per Fire in US from 2000 to 2022",
+       x="Year",
+       y="Acres Burned Per Fire")+
+  scale_fill_manual(breaks = mon, 
+                    values = c("grey", "grey", "grey", "grey",
+                               "grey", "#EC661F", "#BF8C2C", "#730C02",
+                               "#F23E16", "grey", "grey", "grey"))+
+  scale_x_continuous(breaks = unique(us_fires_burn_monthly$Year))+
+  theme_bw()
+
+Number_of_Fires_g <- ggplot()  + 
+  geom_bar(data = us_fires_burn_monthly, 
+           aes(x=Year, y=Number_of_Fires, fill = factor(Month, levels = mon)),
+           stat="identity", 
+           position = "dodge")+
+  labs(title= "Number of Fires in US from 2000 to 2022",
+       x="Year",
+       y="Number of Fires")+
+  scale_fill_manual(breaks = mon, 
+                    values = c("grey", "grey", "grey", "grey",
+                               "grey", "#EC661F", "#BF8C2C", "#730C02",
+                               "#F23E16", "grey", "grey", "grey"))+
+  scale_x_continuous(breaks = unique(us_fires_burn_monthly$Year))+
+  theme_bw()
+
+acres_burned_g
+acres_per_fire_g
+Number_of_Fires_g
+
+aspect_ratio <- 4
+h <- 7
+ggsave(acres_burned_g, height = h , width = h * aspect_ratio, 
+       filename = "./CreatedVisuals/Acres_Burned_US_month_fires_bar.png")
+ggsave(acres_per_fire_g, height = h , width = h * aspect_ratio, 
+       filename = "./CreatedVisuals/Acres_Burned_Per_Fire_US_month_fires_bar.png")
+ggsave(Number_of_Fires_g, height = h , width = h * aspect_ratio, 
+       filename = "./CreatedVisuals/Number_of_Fires_month_fires_bar.png")
+
+```
+
+```{r}
+
+line1 <- ggplot(data = us_fires_burn_grouped, 
+           aes(x=Year, y=Acres_Burned_per_Fire))+
+  geom_point(color = "darkgrey")+
+  geom_smooth(color = "#730C02", alpha = 0.2)+
+  labs(title= "Total Acres Burned per Fire in US from 2000 to 2022",
+       x="Year",
+       y="Acres Burned per Fire")+
+  scale_x_continuous(breaks = unique(us_fires_burn_grouped$Year))+
+  theme_bw()
+
+
+line2 <- ggplot(data = us_fires_burn_grouped, 
+           aes(x=Year, y=Number_of_Fires))+
+  geom_point(color = "darkgrey")+
+  geom_smooth(alpha=0.2)+
+  labs(title= "Total Number of Fires in US from 2000 to 2022",
+       x="Year",
+       y="Number of Fires")+
+  scale_x_continuous(breaks = unique(us_fires_burn_grouped$Year))+
+  theme_bw()
+  
+line3 <- ggplot(data = us_fires_burn_grouped, 
+         aes(x=Year, y=Acres_Burned))+
+  geom_point(color = "darkgrey")+
+  geom_smooth(alpha = 0.2)+
+  labs(title= "Total Acres Burned in US from 2000 to 2022",
+       x="Year",
+       y="Acres Burned")+
+  scale_x_continuous(breaks = unique(us_fires_burn_grouped$Year))+
+  theme_bw()
+
+line1
+line2
+line3
+
+aspect_ratio <- 4
+h <- 7
+
+ggsave(line1, height = h , width = h * aspect_ratio, 
+       filename = "./CreatedVisuals/Acres_Burned_Per_Fire_US_month_fires_line.png")
+ggsave(line2, height = h , width = h * aspect_ratio, 
+       filename = "./CreatedVisuals/Number_of_Fires_month_fires_line.png")
+ggsave(line3, height = h , width = h * aspect_ratio, 
+       filename = "./CreatedVisuals/Acres_Burned_US_month_fires_line.png")
+
+
+
+```
+
+
+

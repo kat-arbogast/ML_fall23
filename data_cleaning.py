@@ -17,7 +17,10 @@ def clean_month_fire_data(df_dict, filename):
     
     df = pd.concat(df_dict.values(), axis=0)
 
-    df = df.rename(columns={"Date":"Year"})
+    df = df.rename(columns={"Date":"Year", 
+                            "Number of Fires" : "Number_of_Fires", 
+                            "Acres Burned per Fire" : "Acres_Burned_per_Fire", 
+                            "Acres Burned" : "Acres_Burned"})
     df["Year"] = df["Year"].astype("object")
     df2 = df.copy()
     
