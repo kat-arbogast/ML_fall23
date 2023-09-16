@@ -217,10 +217,11 @@ for mytopic in topics:
 ##########
 ########## Create the wordclouds
 ##########
-fig=plt.figure(figsize=(25, 25))
+
 NumTopics=len(topics)
 for i in range(NumTopics):
-    ax = fig.add_subplot(NumTopics,1,i+1)
+    fig=plt.figure(figsize=(25, 25))
+    # ax = fig.add_subplot(NumTopics,1,i+1)
     plt.imshow(List_of_WC[i], interpolation='bilinear')
     plt.axis("off")
-    plt.savefig("./CreatedVisuals/NewsClouds.pdf")
+    plt.savefig(f"./CreatedVisuals/API_visuals/{topics[i]}_NewsClouds.png", dpi = 300)
