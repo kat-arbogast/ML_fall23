@@ -9,6 +9,7 @@ import re
 import pandas as pd    
 from pandas import DataFrame
 import os
+import json
 
 ## To tokenize and vectorize text type data
 from sklearn.feature_extraction.text import CountVectorizer
@@ -54,6 +55,10 @@ for topic in topics:
     
     response = requests.get(endpoint, URLPost)
     jsontxt = response.json()
+    
+    json_file = open(f"./DirtyData/News_API_JSON/{filename}_JSON_{topic}.txt", "w")  # 'w' -> write to new
+    json_file.write(json.dumps(jsontxt))
+    json_file.close()
     
     MyFILE=open(f"./DirtyData/{filename}.csv", "a") # "a" for append to add stuff
     LABEL=topic
