@@ -23,6 +23,8 @@ def extracting_data(filename, old_folder, new_folder):
         - a list of the paths to the inner folders that contain the text data
     '''
     
+    print(f" -------- Beginning to Extract Data for {filename} -------- ")
+    
     try:
         with ZipFile(f'./{old_folder}/{filename}.zip', 'r') as f:
             #extract in different directory
@@ -37,17 +39,35 @@ def extracting_data(filename, old_folder, new_folder):
     res = get_folder_file_list(dir_path)    
             
     data_path_list = []
-
+    
+    
     for i in res:
         if i.endswith('.zip'):
-            print(f'./{new_folder}/{filename}/{i}')
+            print(f" -------- Extracting Data from inner zip folder {i} -------- ")
             i_split = i.rsplit('.', 1)[0]
             data_path_list.append(f'./{new_folder}/{filename}/{i_split}')
-            with ZipFile(f'./{new_folder}/{filename}/{i}', 'r') as f:
-                #extract in same directory
-                f.extractall(f'./{new_folder}/{filename}/{i_split}')
+            try: 
+                with ZipFile(f'./{new_folder}/{filename}/{i}', 'r') as f:
+                    #extract in same directory
+                    f.extractall(f'./{new_folder}/{filename}/{i_split}')
+            except:
+                print(f"Data from {i} has mostly likely already been extracted.")
     
     return data_path_list
+
+
+def get_total_file_list(data_path_list):
+    '''
+    Loops through the data_path_list that is the directory paths of the inner data folders
+    '''
+    total_file_list = []
+
+    for i in data_path_list:
+        file_list = get_folder_file_list(i)
+        total_file_list.append(file_list)
+    
+    return total_file_list
+    
 
 def get_folder_file_list(dir_path):
     '''
@@ -71,26 +91,71 @@ def get_folder_file_list(dir_path):
     
     return res
 
+def clean_causes(df, clean_folder, clean_file_name):
+    print("\n -------- STARTING TO CLEAN CAUSES DF --------\n")
 
-old_folder_2019 = 'Gregory_Adams_Wildfire_Data'
-new_folder_2019 = 'usa_nfirs_data'
+    # Getting the date from the INCIDENT_KEY
+    print("\n -------- GETTING THE INCIDENT DATE INTO A DATE TIME OBJECT -------- \n")
+    df[['US_State', 'Fire_Department_ID', 'Date', 'incident_num', 'exp_no_2']] = df['INCIDENT_KEY'].str.split('_', expand=True)
+    df = df.drop(columns=['Fire_Department_ID', 'US_State', 'incident_num', 'exp_no_2'])
+    df["Date"] = df["Date"].astype(str)
+
+    df["Date"] = df["Date"].str[0:2] + "-" + df["Date"].str[2:4] + "-" + df["Date"].str[4:]
+    df["Date"] = pd.to_datetime(df["Date"], format='%m-%d-%Y')
+    df = df.drop(columns = ["INC_DATE"])
+
+
+    print("\n -------- CHANGING THE CAUSE CODES TO BE OBJECTS AND NOT INTs --------\n")
+    df["EXP_NO"] = df["EXP_NO"].astype("object")
+    df["PCC"] = df["PCC"].astype("object")
+    df["CAUSE_CODE"] = df["CAUSE_CODE"].astype("object")
+    df["GCC"] = df["GCC"].astype("object")
+
+    print("\n\n\n")
+    print(df.info())
+    print(df.head(n=5))
+    print("\n\n\n")
+
+
+    df.to_csv(f"./nfirs_cleanish/{clean_folder}/{clean_file_name}.csv", index=False)
+    
+    return df
+
+
+old_folder_RAW = 'Raw_USA_NFIRS_Wildfire_Data'
+new_folder = 'usa_nfirs_data'
 filename_2019 = 'usfa_nfirs_2019'
+filename_2020 = 'nfirs_all_incident_pdr_2020'
 
 
-data_path_list_2019 = extracting_data(filename_2019, old_folder_2019, new_folder_2019)
+# data_path_list_2019 = extracting_data(filename_2019, old_folder_RAW, new_folder)
+data_path_list_2020 = extracting_data(filename_2020, old_folder_RAW, new_folder)
 
-total_file_list_2019 = []
+# total_file_list_2019 = get_total_file_list(data_path_list_2019)
+total_file_list_2020 = get_total_file_list(data_path_list_2020)
 
-for i in data_path_list_2019:
-    file_list = get_folder_file_list(i)
-    total_file_list_2019.append(file_list)
 
-# for i in total_file_list_2019:
-#     for j in i:
-#         print(j)
+print("\n\n\n")
+print(" ----------------------- Data Path List ------------------------ ")
 
-print(f'{data_path_list_2019[1]}/{total_file_list_2019[-1][0]}')
+for p in data_path_list_2020:
+    print(p)
+    
+print("\n\n\n")
+print(" ----------------------- Total File Path List ------------------------ ")
 
-causes_2019 = pd.read_csv(f'{data_path_list_2019[1]}/{total_file_list_2019[-1][0]}', sep = '^')
+print(f"Length of the total_file_list_2019 {len(total_file_list_2020)}")
 
-print(causes_2019.head(n=5))
+for t in total_file_list_2020:
+    print(t)
+        
+print("\n\n\n")
+print(" ----------------------- Causes Path ------------------------ \n")
+print(f'{data_path_list_2020[1]}/{total_file_list_2020[1][0]}')
+
+causes_2020 = pd.read_csv(f'{data_path_list_2020[1]}/{total_file_list_2020[1][0]}', sep = '^')
+
+# Hard coded for quicker cleaning...
+# causes_2019 = pd.read_csv('./usa_nfirs_data/usfa_nfirs_2019/StructureFireCauses2019/causes.txt', sep="^")
+
+causes_2020_clean = clean_causes(causes_2020.copy(), clean_folder= "nfirs_2020", clean_file_name= "causes_2020_clean")

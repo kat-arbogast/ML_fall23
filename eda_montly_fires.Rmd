@@ -759,6 +759,7 @@ tail(max_years_acres_burned_per_fire, n = 5)
 
 ```
 
+
 ```{r}
 ## Select the lowest five months of number of fires
 ## Select the highest five months of number of fires
@@ -852,3 +853,47 @@ ggsave(Number_of_Fires_g, height = h , width = h * aspect_ratio,
 
 ```
 
+
+```{r}
+# Group by mean using dplyr
+us_fires_burn_avg_month <- us_fires_burn_monthly %>% group_by(Month) %>% 
+  summarise(Acres_Burned=mean(Acres_Burned),
+            Number_of_Fires=mean(Number_of_Fires),
+            Acres_Burned_per_Fire=mean(Acres_Burned_per_Fire),
+            .groups = 'drop') %>%
+  as.data.frame()
+us_fires_burn_avg_month 
+```
+
+
+```{r}
+## Select the lowest five months of acres burned
+## Select the highest five months of acres burned
+max_avg_years_acres_burned <- us_fires_burn_avg_month %>% 
+  arrange(desc(Acres_Burned))
+
+head(max_avg_years_acres_burned, n = 5)
+tail(max_avg_years_acres_burned, n = 5)
+```
+
+```{r}
+## Select the lowest five months of acres burned per fire
+## Select the highest five months of acres burned per fire
+max_avg_years_acres_burned_per_fire <- us_fires_burn_avg_month %>% 
+  arrange(desc(Acres_Burned_per_Fire))
+
+head(max_avg_years_acres_burned_per_fire, n = 5)
+tail(max_avg_years_acres_burned_per_fire, n = 5)
+
+```
+
+```{r}
+## Select the lowest five months of number of fires
+## Select the highest five months of number of fires
+max_avg_years_number_of_fires <- us_fires_burn_avg_month %>% 
+  arrange(desc(Number_of_Fires))
+
+head(max_avg_years_number_of_fires, n = 6)
+tail(max_avg_years_number_of_fires, n = 6)
+
+```
