@@ -1,0 +1,84 @@
+---
+title: "eda_lightning_fires"
+author: "Katrina Arbogast"
+date: "2023-09-18"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+```{r, warning=FALSE}
+## Read in the CSV
+lightning_fires <- read_csv('./CleanData/lightning_wildfires_clean.csv', show_col_types = FALSE)
+lightning_fires
+```
+
+```{r}
+visual_folder_path <- "./CreatedVisuals/Lightning_Fires/"
+```
+
+
+```{r, message=FALSE}
+
+lightning_year_state <- lightning_fires %>%
+  group_by(FIRE_YEAR, STATE) %>%
+  summarise(acres_burned_sum = sum(FIRE_SIZE))
+
+g <- ggplot(lightning_year_state) +
+  labs(title = "Acres Burned by Lightning per State summed over the years 1992 to 2015",
+       x = "Total Acres Burned from 1992 to 2015",
+       y = "US States") + 
+  geom_bar(aes(x = acres_burned_sum, y = reorder(STATE, acres_burned_sum), 
+               fill = STATE), stat = "identity", show.legend = FALSE) 
+
+g
+
+h <- 7
+aspect_ratio <- 2
+
+ggsave(g, height = h , width = h * aspect_ratio, 
+       filename = paste0(visual_folder_path, "acres_burned_per_state_lightning.png"))
+```
+
+```{r}
+
+lightning_year_state <- lightning_fires %>%
+  group_by(FIRE_YEAR, STATE) %>%
+  summarise(acres_burned_sum = sum(FIRE_SIZE))
+
+g <- ggplot(lightning_year_state) +
+  labs(title = "Acres Burned by Lightning each Year in the US",
+       x = "Year",
+       y = "Total Acres Burned From Lighning WildFire") + 
+  geom_bar(aes(y = acres_burned_sum, x = factor(FIRE_YEAR)), stat = "identity", show.legend = FALSE) 
+
+g
+
+h <- 7
+aspect_ratio <- 1.5
+
+ggsave(g, height = h , width = h * aspect_ratio, 
+       filename = paste0(visual_folder_path, "acres_burned_per_year_lightning.png"))
+```
+
+```{r}
+
+g <- ggplot(data=lightning_fires, aes(x=FIRE_SIZE_CLASS, fill=FIRE_SIZE_CLASS)) +
+    geom_bar()+
+  theme_bw()+
+  theme(legend.position = "none")+
+  labs(title = "1992-2015 Fires Caused by Lighnting: Frequency of Class Sizes")
+
+g
+
+h <- 7
+aspect_ratio <- 1.5
+
+ggsave(g, height = h , width = h * aspect_ratio, 
+       filename = paste0(visual_folder_path, "fire_size_class_bar.png"))
+```
+
+
