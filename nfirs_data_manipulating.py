@@ -158,6 +158,6 @@ filename_2020 = 'nfirs_all_incident_pdr_2020'
 
 
 ##  Hard coded for quicker cleaning and for the sake of reproducibility in the GitHub
-causes_2020 = pd.read_csv('./DirtyData/NFIRS_Wildfire_Data/nfirs_all_incidents_2020/causes.txtt', sep="^")
+causes_2020 = pd.read_csv('./DirtyData/NFIRS_Wildfire_Data/nfirs_all_incidents_2020/causes.txt', sep="^")
 
 causes_2020_clean = clean_causes(causes_2020.copy(), clean_folder= "NFIRS_Wildfire_Data/nfirs_2020", clean_file_name= "causes_2020_clean")
