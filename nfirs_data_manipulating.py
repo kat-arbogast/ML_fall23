@@ -117,45 +117,47 @@ def clean_causes(df, clean_folder, clean_file_name):
     print("\n\n\n")
 
 
-    df.to_csv(f"./nfirs_cleanish/{clean_folder}/{clean_file_name}.csv", index=False)
+    df.to_csv(f"./CleanData/{clean_folder}/{clean_file_name}.csv", index=False)
     
     return df
 
 
-old_folder_RAW = 'Raw_USA_NFIRS_Wildfire_Data'
-new_folder = 'usa_nfirs_data'
+old_folder_RAW = 'DirtyData/NFIRS_Wildfire_Data'
+new_folder = 'CleanData/NFIRS_Wildfire_Data'
 filename_2019 = 'usfa_nfirs_2019'
 filename_2020 = 'nfirs_all_incident_pdr_2020'
 
-
+## Extracting Data is for my local device where the raw data can be handled without size limits
 # data_path_list_2019 = extracting_data(filename_2019, old_folder_RAW, new_folder)
-data_path_list_2020 = extracting_data(filename_2020, old_folder_RAW, new_folder)
+# data_path_list_2020 = extracting_data(filename_2020, old_folder_RAW, new_folder)
 
 # total_file_list_2019 = get_total_file_list(data_path_list_2019)
-total_file_list_2020 = get_total_file_list(data_path_list_2020)
+# total_file_list_2020 = get_total_file_list(data_path_list_2020)
 
 
-print("\n\n\n")
-print(" ----------------------- Data Path List ------------------------ ")
+# print("\n\n\n")
+# print(" ----------------------- Data Path List ------------------------ ")
 
-for p in data_path_list_2020:
-    print(p)
+# for p in data_path_list_2020:
+#     print(p)
     
-print("\n\n\n")
-print(" ----------------------- Total File Path List ------------------------ ")
+# print("\n\n\n")
+# print(" ----------------------- Total File Path List ------------------------ ")
 
-print(f"Length of the total_file_list_2019 {len(total_file_list_2020)}")
+# print(f"Length of the total_file_list_2019 {len(total_file_list_2020)}")
 
-for t in total_file_list_2020:
-    print(t)
+# for t in total_file_list_2020:
+#     print(t)
         
-print("\n\n\n")
-print(" ----------------------- Causes Path ------------------------ \n")
-print(f'{data_path_list_2020[1]}/{total_file_list_2020[1][0]}')
+# print("\n\n\n")
+# print(" ----------------------- Causes Path ------------------------ \n")
+# print(f'{data_path_list_2020[1]}/{total_file_list_2020[1][0]}')
 
-causes_2020 = pd.read_csv(f'{data_path_list_2020[1]}/{total_file_list_2020[1][0]}', sep = '^')
+# causes_2020 = pd.read_csv(f'{data_path_list_2020[1]}/{total_file_list_2020[1][0]}', sep = '^')
 
-# Hard coded for quicker cleaning...
-# causes_2019 = pd.read_csv('./usa_nfirs_data/usfa_nfirs_2019/StructureFireCauses2019/causes.txt', sep="^")
 
-causes_2020_clean = clean_causes(causes_2020.copy(), clean_folder= "nfirs_2020", clean_file_name= "causes_2020_clean")
+
+##  Hard coded for quicker cleaning and for the sake of reproducibility in the GitHub
+causes_2020 = pd.read_csv('./DirtyData/NFIRS_Wildfire_Data/nfirs_all_incidents_2020/causes.txtt', sep="^")
+
+causes_2020_clean = clean_causes(causes_2020.copy(), clean_folder= "NFIRS_Wildfire_Data/nfirs_2020", clean_file_name= "causes_2020_clean")
