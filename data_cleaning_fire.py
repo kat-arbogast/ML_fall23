@@ -12,54 +12,54 @@ def main():
     '''
     This is the main function for cleaning the different datasets centered around the topic of fires and weather
     '''
-    # #------------------------------------------------------------------------------------------------------
-    # ## Fires Burned Monthly Datasets
-    # print("\n\n#################### Fires Burned Monthly Datasets ####################\n")
-    # fires_df_dict = read_in_fires_monthly(fires_monthly_folder_path)
-    # us_fires_burn_monthly = clean_month_fire_data(fires_df_dict)
-    # save_clean_to_csv(us_fires_burn_monthly, path_clean, "us_fires_burn_monthly.csv")
-    # #------------------------------------------------------------------------------------------------------
+    #------------------------------------------------------------------------------------------------------
+    ## Fires Burned Monthly Datasets
+    print("\n\n#################### Fires Burned Monthly Datasets ####################\n")
+    fires_df_dict = read_in_fires_monthly(fires_monthly_folder_path)
+    us_fires_burn_monthly = clean_month_fire_data(fires_df_dict)
+    save_clean_to_csv(us_fires_burn_monthly, path_clean, "us_fires_burn_monthly.csv")
+    #------------------------------------------------------------------------------------------------------
     
     
-    # #------------------------------------------------------------------------------------------------------
-    # ## Lightning Dataset
-    # print("\n\n#################### Lightning Fires Dataset ####################\n")
-    # lightning_df = lightning_fires_cleaning(lightning_fires_path_dirty)
-    # save_clean_to_csv(lightning_df, path_clean, "lightning_wildfires_clean.csv")
-    # #------------------------------------------------------------------------------------------------------
+    #------------------------------------------------------------------------------------------------------
+    ## Lightning Dataset
+    print("\n\n#################### Lightning Fires Dataset ####################\n")
+    lightning_df = lightning_fires_cleaning(lightning_fires_path_dirty)
+    save_clean_to_csv(lightning_df, path_clean, "lightning_wildfires_clean.csv")
+    #------------------------------------------------------------------------------------------------------
     
     
-    # #------------------------------------------------------------------------------------------------------
-    # ## US Wildfires 2 Million
-    # # from Kaggle
-    # '''
-    # Unfortunatly GitHub can not handle the size of the raw file, therefore this repository shows the code that 
-    # was applied to the dataframe, but does not actually call the functions that cleaned the raw data. 
-    # To access the raw data her is the link to the Kaggle page
-    # link: https://www.kaggle.com/datasets/braddarrow/23-million-wildfires
-    # '''
-    # print("\n\n#################### US Wildfires 2 Million Dataset ####################\n")
+    #------------------------------------------------------------------------------------------------------
+    ## US Wildfires 2 Million
+    # from Kaggle
+    '''
+    Unfortunatly GitHub can not handle the size of the raw file, therefore this repository shows the code that 
+    was applied to the dataframe, but does not actually call the functions that cleaned the raw data. 
+    To access the raw data her is the link to the Kaggle page
+    link: https://www.kaggle.com/datasets/braddarrow/23-million-wildfires
+    '''
+    print("\n\n#################### US Wildfires 2 Million Dataset ####################\n")
     
     
-    # # reading in the raw data - FOR LOCAL DEVICE USE - uses a connection to the database 
-    # # us_wildfires_2mil = database_connection('./Wildfire_Data/US_2mil_wildfires_kaggle/FPA_FOD_20221014.sqlite', 'Fires')  
-    # # us_wildfires_2mil_cleaned = cleaning_us_wildfires_2mil(us_wildfires_2mil)
+    # reading in the raw data - FOR LOCAL DEVICE USE - uses a connection to the database 
+    # us_wildfires_2mil = database_connection('./Wildfire_Data/US_2mil_wildfires_kaggle/FPA_FOD_20221014.sqlite', 'Fires')  
+    # us_wildfires_2mil_cleaned = cleaning_us_wildfires_2mil(us_wildfires_2mil)
     
     
-    # # reading in the cleaned data - FOR GITHUB USE - looks at what the cleaned datanow looks like
-    # us_wildfires_2mil_cleaned = pd.read_csv(us_wildfires_2mil_path_clean)
+    # reading in the cleaned data - FOR GITHUB USE - looks at what the cleaned datanow looks like
+    us_wildfires_2mil_cleaned = pd.read_csv(us_wildfires_2mil_path_clean)
     
-    # year_list = list(us_wildfires_2mil_cleaned['FIRE_YEAR'].unique())      
-    # print(f'\nUnique Year in Full dataframe: \n{year_list}\n')
+    year_list = list(us_wildfires_2mil_cleaned['FIRE_YEAR'].unique())      
+    print(f'\nUnique Year in Full dataframe: \n{year_list}\n')
     
-    # print("\n--- US Wildfires 2 Million CLEANED INFO ---\n")
-    # print(f"\n\n{us_wildfires_2mil_cleaned.info()}\n")
+    print("\n--- US Wildfires 2 Million CLEANED INFO ---\n")
+    print(f"\n\n{us_wildfires_2mil_cleaned.info()}\n")
     
-    # print("\n--- US Wildfires 2 Million CLEANED HEAD ---")
-    # print(f"\n\n{us_wildfires_2mil_cleaned.head()}\n")
+    print("\n--- US Wildfires 2 Million CLEANED HEAD ---")
+    print(f"\n\n{us_wildfires_2mil_cleaned.head()}\n")
     
     # save_clean_to_csv(us_wildfires_2mil_cleaned, path_clean, 'us_wildfires_2mil_cleaned.csv')
-    # #------------------------------------------------------------------------------------------------------
+    #------------------------------------------------------------------------------------------------------
     
     
     #------------------------------------------------------------------------------------------------------
