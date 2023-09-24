@@ -5,61 +5,76 @@ path_clean = './CleanData'
 fires_monthly_folder_path = './DirtyData/Wildfire_Data/By_month_fires'
 lightning_fires_path_dirty = './DirtyData/Wildfire_Data/lightining_fires_kaggle/US_Lightning_Forest_Fires.csv'
 us_wildfires_2mil_path_clean = './CleanData/us_wildfires_2mil_cleaned.csv'
+or_fires_weather_path_dirty = './DirtyData/Wildfire_Data/oregon_wildfire_kaggle/Wildfire_Weather_Merged_new.csv'
 
 
 def main():
     '''
     This is the main function for cleaning the different datasets centered around the topic of fires and weather
     '''
-    
-    ## Fires Burned Monthly Datasets
-    print("\n\n#################### Fires Burned Monthly Datasets ####################\n")
-    fires_df_dict = read_in_fires_monthly(fires_monthly_folder_path)
-    us_fires_burn_monthly = clean_month_fire_data(fires_df_dict)
-    save_clean_to_csv(us_fires_burn_monthly, path_clean, "us_fires_burn_monthly.csv")
-    
-    
-    ## Lightning Dataset
-    print("\n\n#################### Lightning Fires Dataset ####################\n")
-    lightning_df = lightning_fires_cleaning(lightning_fires_path_dirty)
-    save_clean_to_csv(lightning_df, path_clean, "lightning_wildfires_clean.csv")
+    # #------------------------------------------------------------------------------------------------------
+    # ## Fires Burned Monthly Datasets
+    # print("\n\n#################### Fires Burned Monthly Datasets ####################\n")
+    # fires_df_dict = read_in_fires_monthly(fires_monthly_folder_path)
+    # us_fires_burn_monthly = clean_month_fire_data(fires_df_dict)
+    # save_clean_to_csv(us_fires_burn_monthly, path_clean, "us_fires_burn_monthly.csv")
+    # #------------------------------------------------------------------------------------------------------
     
     
-    ## US Wildfires 2 Million
+    # #------------------------------------------------------------------------------------------------------
+    # ## Lightning Dataset
+    # print("\n\n#################### Lightning Fires Dataset ####################\n")
+    # lightning_df = lightning_fires_cleaning(lightning_fires_path_dirty)
+    # save_clean_to_csv(lightning_df, path_clean, "lightning_wildfires_clean.csv")
+    # #------------------------------------------------------------------------------------------------------
+    
+    
+    # #------------------------------------------------------------------------------------------------------
+    # ## US Wildfires 2 Million
+    # # from Kaggle
+    # '''
+    # Unfortunatly GitHub can not handle the size of the raw file, therefore this repository shows the code that 
+    # was applied to the dataframe, but does not actually call the functions that cleaned the raw data. 
+    # To access the raw data her is the link to the Kaggle page
+    # link: https://www.kaggle.com/datasets/braddarrow/23-million-wildfires
+    # '''
+    # print("\n\n#################### US Wildfires 2 Million Dataset ####################\n")
+    
+    
+    # # reading in the raw data - FOR LOCAL DEVICE USE - uses a connection to the database 
+    # # us_wildfires_2mil = database_connection('./Wildfire_Data/US_2mil_wildfires_kaggle/FPA_FOD_20221014.sqlite', 'Fires')  
+    # # us_wildfires_2mil_cleaned = cleaning_us_wildfires_2mil(us_wildfires_2mil)
+    
+    
+    # # reading in the cleaned data - FOR GITHUB USE - looks at what the cleaned datanow looks like
+    # us_wildfires_2mil_cleaned = pd.read_csv(us_wildfires_2mil_path_clean)
+    
+    # year_list = list(us_wildfires_2mil_cleaned['FIRE_YEAR'].unique())      
+    # print(f'\nUnique Year in Full dataframe: \n{year_list}\n')
+    
+    # print("\n--- US Wildfires 2 Million CLEANED INFO ---\n")
+    # print(f"\n\n{us_wildfires_2mil_cleaned.info()}\n")
+    
+    # print("\n--- US Wildfires 2 Million CLEANED HEAD ---")
+    # print(f"\n\n{us_wildfires_2mil_cleaned.head()}\n")
+    
+    # save_clean_to_csv(us_wildfires_2mil_cleaned, path_clean, 'us_wildfires_2mil_cleaned.csv')
+    # #------------------------------------------------------------------------------------------------------
+    
+    
+    #------------------------------------------------------------------------------------------------------
+    ## Oregon Wildfires and Weather
     # from Kaggle
-    '''
-    Unfortunatly GitHub can not handle the size of the raw file, therefore this repository shows the code that 
-    was applied to the dataframe, but does not actually call the functions that cleaned the raw data. 
-    To access the raw data her is the link to the Kaggle page
-    link: https://www.kaggle.com/datasets/braddarrow/23-million-wildfires
-    '''
-    print("\n\n#################### US Wildfires 2 Million Dataset ####################\n")
-    
-    # reading in the raw data - FOR LOCAL DEVICE USE - uses a connection to the database 
-    # us_wildfires_2mil = database_connection('./Wildfire_Data/US_2mil_wildfires_kaggle/FPA_FOD_20221014.sqlite', 'Fires')  
-    # us_wildfires_2mil_cleaned = cleaning_us_wildfires_2mil(us_wildfires_2mil)
-    
-    
-    # reading in the cleaned data - FOR GITHUB USE - looks at what the cleaned datanow looks like
-    us_wildfires_2mil_cleaned = pd.read_csv(us_wildfires_2mil_path_clean)
-    
-    year_list = list(us_wildfires_2mil_cleaned['FIRE_YEAR'].unique())      
-    print(f'\nUnique Year in Full dataframe: \n{year_list}\n')
-    
-    print("\n--- US Wildfires 2 Million CLEANED INFO ---\n")
-    print(f"\n\n{us_wildfires_2mil_cleaned.info()}\n")
-    
-    print("\n--- US Wildfires 2 Million CLEANED HEAD ---")
-    print(f"\n\n{us_wildfires_2mil_cleaned.head()}\n")
-    
-    save_clean_to_csv(us_wildfires_2mil_cleaned, path_clean, 'us_wildfires_2mil_cleaned.csv')
+    print("\n\n#################### Oregon Wildfires and Weather Dataset ####################\n")
+    or_weather_wildfires = pd.read_csv(or_fires_weather_path_dirty,dtype={'Cause_Comments' : 'str', 'DistFireNumber' : 'str'})
+    or_weather_wildfires = cleaning_or_fires_weather(or_weather_wildfires)
+    save_clean_to_csv(or_weather_wildfires, path_clean, 'or_weather_wildfires_cleaned.csv')
+    #------------------------------------------------------------------------------------------------------
     
     print("############################################################################")
     print("\n\nWOOOOOOOOOOO\n")
 
     
-    
-
 
 def read_in_fires_monthly(fires_monthly_folder_path):
     '''
@@ -261,7 +276,6 @@ def remove_na(df):
 
     return df2
 
-
 def cleaning_us_wildfires_2mil_dtypes(df):
     
     print("\n--- Converting Data Types ---\n")
@@ -285,14 +299,55 @@ def cleaning_us_wildfires_2mil_dtypes(df):
     df['CONT_DATE'] = pd.to_datetime(df['CONT_DATE'], format='%m/%d/%Y')
     
     return df
+
+
+def cleaning_or_fires_weather(df):
+    '''
+    This function is the main function for cleaning the Oregon Fires and Weather dataset
+    '''
+    df_clean = df.copy()
     
+    # Saving these to vectorize them later...
+    cause_comments = df_clean['Cause_Comments']
+    specific_cause = df_clean['SpecificCause']
+    
+    cols_to_drop = ['Lat_DD',
+                    'Long_DD',
+                    'LatLongDD',
+                    'FireName',
+                    'FullFireNumber',
+                    'ModifiedDate',
+                    'FireEvent',
+                    'Cause_Comments', # removing because it has a lot of NA values
+                    'LandmarkLocation',
+                    'SpecificCause',
+                    'UnitName'
+                    ]
+    
+    df_clean = dropping_cols(df_clean, cols_to_drop)
+    df_clean = remove_na(df_clean)
+    df_clean = cleaning_or_dtypes(df_clean)
+    
+    # I WANT TO ADD A FIRE DURATION COLUMN - also to the us 2mil dataset
+    
+    df_clean.sort_values(by=['Date'], inplace=True)
+    year_list = list(df_clean['Year'].unique())              
+    print(f'\nUnique Year in Full dataframe: \n{year_list}\n')
+    
+    print("\n--- Oregon Wildfires and Weather CLEANED INFO ---\n")
+    print(f"\n\n{df_clean.info()}\n")
+    
+    print("\n--- Oregon Wildfires and Weather CLEANED HEAD ---")
+    print(f"\n\n{df_clean.head()}\n")
+    
+    return df_clean
 
-def sampling_us_wildfire_data(df):
-    '''
-    I first want to see if I clean it down firs that I won't have to sample for github
-    '''
-    pass
-
+def cleaning_or_dtypes(df):
+    cols_to_convert = ['ReportDateTime', 'Control_DateTime', 'Date', 'Ign_DateTime']
+    df[cols_to_convert] = df[cols_to_convert].apply(pd.to_datetime)
+    
+    return df
+    
 # DO NOT REMOVE!!!
 if __name__ == "__main__":
     main()

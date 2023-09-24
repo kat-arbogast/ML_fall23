@@ -1,13 +1,6 @@
 
 # # Wildfire Data
-# us_wildfires_2mil = database_connection('./Wildfire_Data/US_2mil_wildfires_kaggle/FPA_FOD_20221014.sqlite', 'Fires')
 # ca_wildfires = pd.read_csv('./Wildfire_Data/ca_wildfires_kaggle/California_Fire_Incidents.csv')
-# or_weather_wildfires = pd.read_csv('./Wildfire_Data/oregon_wildfire_kaggle/Wildfire_Weather_Merged_new.csv',
-#                                    dtype={
-#                                         'Cause_Comments' : 'str',
-#                                         'DistFireNumber' : 'str'
-#                                     })
-# lightning_fires = pd.read_csv('./Wildfire_Data/lightining_fires_kaggle/US_Lightning_Forest_Fires.csv')
 
 
 # # Climate Change Kaggle Data
