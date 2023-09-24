@@ -21,6 +21,20 @@ def main():
     print("\n\n ---------- Lightning Fires Dataset ---------- \n")
     lightning_df = lightning_fires_cleaning(lightning_fires_path_dirty)
     save_clean_to_csv(lightning_df, path_clean, "lightning_wildfires_clean.csv")
+    
+    ## US Wildfires 2 Million
+    # from Kaggle
+    ## Unfortunatly GitHub can not handle the size of the raw file, therefore this repository is using a sampled version.
+    ## The sampling function is found here, however, it is commented out as it is used on my local device instead of in the repository
+    ## To access the raw data her is the link to the Kaggle page
+    ## link: 
+    print("\n\n ---------- US Wildfires 2 Million Dataset ---------- \n")
+    # reading in the raw data - FOR LOCAL DEVICE USE - uses a connection to the database 
+    
+    # reading in the raw sampled data - FOR GITHUB USE - reading in the sampled csv that was created on the local device
+    print("\n\n ---------- Sampling ---------- \n")
+    
+    
 
 
 def read_in_fires_monthly(fires_monthly_folder_path):
