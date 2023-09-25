@@ -49,16 +49,13 @@ def main():
     # reading in the cleaned data - FOR GITHUB USE - looks at what the cleaned datanow looks like
     us_wildfires_2mil_cleaned = pd.read_csv(us_wildfires_2mil_path_clean)
     
-    year_list = list(us_wildfires_2mil_cleaned['FIRE_YEAR'].unique())      
-    print(f'\nUnique Year in Full dataframe: \n{year_list}\n')
-    
     print("\n--- US Wildfires 2 Million CLEANED INFO ---\n")
     print(f"\n\n{us_wildfires_2mil_cleaned.info()}\n")
     
     print("\n--- US Wildfires 2 Million CLEANED HEAD ---")
     print(f"\n\n{us_wildfires_2mil_cleaned.head()}\n")
-    
-    # save_clean_to_csv(us_wildfires_2mil_cleaned, path_clean, 'us_wildfires_2mil_cleaned.csv')
+        
+    # save_clean_to_csv(us_wildfires_2mil_cleaned, "./Sampled_US_Wildfire_Data" , 'us_wildfires_2mil_cleaned.csv')
     #------------------------------------------------------------------------------------------------------
     
     
@@ -72,7 +69,6 @@ def main():
     #------------------------------------------------------------------------------------------------------
     
     print("############################################################################")
-    print("\n\nWOOOOOOOOOOO\n")
 
     
 
@@ -241,7 +237,14 @@ def cleaning_us_wildfires_2mil(df):
     df_filtered = df_clean[df_clean['FIRE_YEAR'] >= 2000]
     df_filtered = cleaning_us_wildfires_2mil_dtypes(df_filtered)
     df_filtered = remove_na(df_filtered)
-    df_filtered.sort_values(by=['DISCOVERY_DATE'], inplace=True)
+    
+    df_filtered["DISCOVERY_DATETIME"] = pd.to_datetime(df_filtered['DISCOVERY_DATE'].astype(str) + ' ' + df_filtered['DISCOVERY_TIME'].astype(str))
+    df_filtered["CONT_DATETIME"] = pd.to_datetime(df_filtered['CONT_DATE'].astype(str) + ' ' + df_filtered['CONT_TIME'].astype(str))
+    df_filtered = df_filtered.drop(['DISCOVERY_TIME', 'CONT_TIME', 'DISCOVERY_DATE', 'CONT_DATE', 'FIRE_YEAR'], axis=1)
+    
+    df_filtered = fire_duration_hrs(df_filtered, "DISCOVERY_DATETIME", "CONT_DATETIME")
+    
+    df_filtered.sort_values(by=['DISCOVERY_DATETIME'], inplace=True)
     
     return df_filtered
 
@@ -290,13 +293,17 @@ def cleaning_us_wildfires_2mil_dtypes(df):
                 }
 
     # Re-map values in NWCG_CAUSE_AGE_CATEGORY column so we can later remove na values safely
-    df['NWCG_CAUSE_AGE_CATEGORY'] = df['NWCG_CAUSE_AGE_CATEGORY'].apply(lambda x: 1 if x == 'Minor' else 0)
+    df.loc[df['NWCG_CAUSE_AGE_CATEGORY'] == 'Minor', 'NWCG_CAUSE_AGE_CATEGORY'] = 1
+    df.loc[df['NWCG_CAUSE_AGE_CATEGORY'] != 'Minor', 'NWCG_CAUSE_AGE_CATEGORY'] = 0            
     
-    df['NWCG_GENERAL_CAUSE'] = df['NWCG_GENERAL_CAUSE'].str.strip()
+    df = df.replace(r'\s+', ' ', regex=True)
 
     df = df.astype(convert_dict)
     df['DISCOVERY_DATE'] = pd.to_datetime(df['DISCOVERY_DATE'], format='%m/%d/%Y')
     df['CONT_DATE'] = pd.to_datetime(df['CONT_DATE'], format='%m/%d/%Y')
+    
+    df['DISCOVERY_TIME'] = pd.to_datetime(df['DISCOVERY_TIME'], format='%H%M', errors='coerce').dt.time
+    df['CONT_TIME'] = pd.to_datetime(df['CONT_TIME'], format='%H%M', errors='coerce').dt.time
     
     return df
 
@@ -327,8 +334,7 @@ def cleaning_or_fires_weather(df):
     df_clean = dropping_cols(df_clean, cols_to_drop)
     df_clean = remove_na(df_clean)
     df_clean = cleaning_or_dtypes(df_clean)
-    
-    # I WANT TO ADD A FIRE DURATION COLUMN - also to the us 2mil dataset
+    df_clean = fire_duration_hrs(df_clean, "ReportDateTime", "Control_DateTime")
     
     df_clean.sort_values(by=['Date'], inplace=True)
     year_list = list(df_clean['Year'].unique())              
@@ -345,6 +351,11 @@ def cleaning_or_fires_weather(df):
 def cleaning_or_dtypes(df):
     cols_to_convert = ['ReportDateTime', 'Control_DateTime', 'Date', 'Ign_DateTime']
     df[cols_to_convert] = df[cols_to_convert].apply(pd.to_datetime)
+    
+    return df
+
+def fire_duration_hrs(df, start_time_col, end_time_col):
+    df['FireDuration_hrs'] = (df[end_time_col] - df[start_time_col]).dt.total_seconds() / 3600
     
     return df
     
