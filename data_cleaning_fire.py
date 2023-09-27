@@ -6,67 +6,84 @@ fires_monthly_folder_path = './DirtyData/Wildfire_Data/By_month_fires'
 lightning_fires_path_dirty = './DirtyData/Wildfire_Data/lightining_fires_kaggle/US_Lightning_Forest_Fires.csv'
 us_wildfires_2mil_path_clean = './CleanData/us_wildfires_2mil_cleaned.csv'
 or_fires_weather_path_dirty = './DirtyData/Wildfire_Data/oregon_wildfire_kaggle/Wildfire_Weather_Merged_new.csv'
-
+dm_total_area_path_dirty = './DirtyData/Drought_Monitor_Data/dm_export_20000101_20221231_state_total_area_catergorical.csv'
+dm_percent_area_path_dirty = './DirtyData/Drought_Monitor_Data/dm_export_20000101_20221231_state_percent_area_catergorical.csv'
+dm_dsci_path_dirty = './DirtyData/Drought_Monitor_Data/dm_export_20000101_20221231_state_dsci.csv'
 
 def main():
     '''
     This is the main function for cleaning the different datasets centered around the topic of fires and weather
     '''
-    #------------------------------------------------------------------------------------------------------
-    ## Fires Burned Monthly Datasets
-    print("\n\n#################### Fires Burned Monthly Datasets ####################\n")
-    fires_df_dict = read_in_fires_monthly(fires_monthly_folder_path)
-    us_fires_burn_monthly = clean_month_fire_data(fires_df_dict)
-    save_clean_to_csv(us_fires_burn_monthly, path_clean, "us_fires_burn_monthly.csv")
-    #------------------------------------------------------------------------------------------------------
+    # #------------------------------------------------------------------------------------------------------
+    # ## Fires Burned Monthly Datasets
+    # print("\n\n#################### Fires Burned Monthly Datasets ####################\n")
+    # fires_df_dict = read_in_fires_monthly(fires_monthly_folder_path)
+    # us_fires_burn_monthly = clean_month_fire_data(fires_df_dict)
+    # save_clean_to_csv(us_fires_burn_monthly, path_clean, "us_fires_burn_monthly.csv")
+    # #------------------------------------------------------------------------------------------------------
     
     
-    #------------------------------------------------------------------------------------------------------
-    ## Lightning Dataset
-    print("\n\n#################### Lightning Fires Dataset ####################\n")
-    lightning_df = lightning_fires_cleaning(lightning_fires_path_dirty)
-    save_clean_to_csv(lightning_df, path_clean, "lightning_wildfires_clean.csv")
-    #------------------------------------------------------------------------------------------------------
+    # #------------------------------------------------------------------------------------------------------
+    # ## Lightning Dataset
+    # print("\n\n#################### Lightning Fires Dataset ####################\n")
+    # lightning_df = lightning_fires_cleaning(lightning_fires_path_dirty)
+    # save_clean_to_csv(lightning_df, path_clean, "lightning_wildfires_clean.csv")
+    # #------------------------------------------------------------------------------------------------------
     
     
-    #------------------------------------------------------------------------------------------------------
-    ## US Wildfires 2 Million
-    # from Kaggle
-    '''
-    Unfortunatly GitHub can not handle the size of the raw file, therefore this repository shows the code that 
-    was applied to the dataframe, but does not actually call the functions that cleaned the raw data. 
-    To access the raw data her is the link to the Kaggle page
-    link: https://www.kaggle.com/datasets/braddarrow/23-million-wildfires
-    '''
-    print("\n\n#################### US Wildfires 2 Million Dataset ####################\n")
+    # #------------------------------------------------------------------------------------------------------
+    # ## US Wildfires 2 Million
+    # # from Kaggle
+    # '''
+    # Unfortunatly GitHub can not handle the size of the raw file, therefore this repository shows the code that 
+    # was applied to the dataframe, but does not actually call the functions that cleaned the raw data. 
+    # To access the raw data her is the link to the Kaggle page
+    # link: https://www.kaggle.com/datasets/braddarrow/23-million-wildfires
+    # '''
+    # print("\n\n#################### US Wildfires 2 Million Dataset ####################\n")
     
     
-    # reading in the raw data - FOR LOCAL DEVICE USE - uses a connection to the database 
-    # us_wildfires_2mil = database_connection('./Wildfire_Data/US_2mil_wildfires_kaggle/FPA_FOD_20221014.sqlite', 'Fires')  
-    # us_wildfires_2mil_cleaned = cleaning_us_wildfires_2mil(us_wildfires_2mil)
+    # # reading in the raw data - FOR LOCAL DEVICE USE - uses a connection to the database 
+    # # us_wildfires_2mil = database_connection('./Wildfire_Data/US_2mil_wildfires_kaggle/FPA_FOD_20221014.sqlite', 'Fires')  
+    # # us_wildfires_2mil_cleaned = cleaning_us_wildfires_2mil(us_wildfires_2mil)
     
     
-    # reading in the cleaned data - FOR GITHUB USE - looks at what the cleaned datanow looks like
-    us_wildfires_2mil_cleaned = pd.read_csv(us_wildfires_2mil_path_clean)
+    # # reading in the cleaned data - FOR GITHUB USE - looks at what the cleaned datanow looks like
+    # us_wildfires_2mil_cleaned = pd.read_csv(us_wildfires_2mil_path_clean)
     
-    print("\n--- US Wildfires 2 Million CLEANED INFO ---\n")
-    print(f"\n\n{us_wildfires_2mil_cleaned.info()}\n")
+    # print("\n--- US Wildfires 2 Million CLEANED INFO ---\n")
+    # print(f"\n\n{us_wildfires_2mil_cleaned.info()}\n")
     
-    print("\n--- US Wildfires 2 Million CLEANED HEAD ---")
-    print(f"\n\n{us_wildfires_2mil_cleaned.head()}\n")
+    # print("\n--- US Wildfires 2 Million CLEANED HEAD ---")
+    # print(f"\n\n{us_wildfires_2mil_cleaned.head()}\n")
         
-    # save_clean_to_csv(us_wildfires_2mil_cleaned, "./Sampled_US_Wildfire_Data" , 'us_wildfires_2mil_cleaned.csv')
-    #------------------------------------------------------------------------------------------------------
+    # # save_clean_to_csv(us_wildfires_2mil_cleaned, "./Sampled_US_Wildfire_Data" , 'us_wildfires_2mil_cleaned.csv')
+    # #------------------------------------------------------------------------------------------------------
+    
+    
+    # #------------------------------------------------------------------------------------------------------
+    # ## Oregon Wildfires and Weather
+    # # from Kaggle
+    # print("\n\n#################### Oregon Wildfires and Weather Dataset ####################\n")
+    # or_weather_wildfires = pd.read_csv(or_fires_weather_path_dirty,dtype={'Cause_Comments' : 'str', 'DistFireNumber' : 'str'})
+    # or_weather_wildfires = cleaning_or_fires_weather(or_weather_wildfires)
+    # save_clean_to_csv(or_weather_wildfires, path_clean, 'or_weather_wildfires_cleaned.csv')
+    # #------------------------------------------------------------------------------------------------------
     
     
     #------------------------------------------------------------------------------------------------------
-    ## Oregon Wildfires and Weather
-    # from Kaggle
-    print("\n\n#################### Oregon Wildfires and Weather Dataset ####################\n")
-    or_weather_wildfires = pd.read_csv(or_fires_weather_path_dirty,dtype={'Cause_Comments' : 'str', 'DistFireNumber' : 'str'})
-    or_weather_wildfires = cleaning_or_fires_weather(or_weather_wildfires)
-    save_clean_to_csv(or_weather_wildfires, path_clean, 'or_weather_wildfires_cleaned.csv')
+    ## Drought Montior Data
+    # from U.S. Drought Monitor - National Drought Mitigation Center at the University of Nebraska-Lincoln, 
+    # the United States Department of Agriculture, and the National Oceanic and Atmospheric Administration.
+    print("\n\n#################### Drought Montior Data ####################\n")
+    dm_state_total_area = pd.read_csv(dm_total_area_path_dirty)
+    dm_state_percent_area = pd.read_csv(dm_percent_area_path_dirty)
+    dm_state_dsci = pd.read_csv(dm_dsci_path_dirty)
+    cleaning_dm(dm_state_total_area, dm_state_percent_area, dm_state_dsci)
+    # save_clean_to_csv()
     #------------------------------------------------------------------------------------------------------
+    
+    
     
     print("############################################################################")
 
@@ -311,6 +328,15 @@ def cleaning_us_wildfires_2mil_dtypes(df):
 def cleaning_or_fires_weather(df):
     '''
     This function is the main function for cleaning the Oregon Fires and Weather dataset
+        - drops columns that are not needed for analysis or have too many NA
+        - remove rows with na values
+        - fix data types
+        - create a column that is the fires duration
+    Args:
+        - dataframe
+    Returns
+        - dataframe (cleaned)
+        - TO DO: include the interesting text columns as returns for text data
     '''
     df_clean = df.copy()
     
@@ -326,7 +352,7 @@ def cleaning_or_fires_weather(df):
                     'ModifiedDate',
                     'FireEvent',
                     'Cause_Comments', # removing because it has a lot of NA values
-                    'LandmarkLocation',
+                    'LandmarkLocation', # removing because it has a lot of NA values
                     'SpecificCause',
                     'UnitName'
                     ]
@@ -356,6 +382,46 @@ def cleaning_or_dtypes(df):
 
 def fire_duration_hrs(df, start_time_col, end_time_col):
     df['FireDuration_hrs'] = (df[end_time_col] - df[start_time_col]).dt.total_seconds() / 3600
+    
+    return df
+
+def cleaning_dm(df_total_area, df_percent_area, df_dsci):
+    '''
+    This function cleans the Drought Monitoring Data which gives the square miles of area in drought based on state
+        - remove MapDate column as the same information is held in a different column
+        - check and remove NA values
+    Args:
+        - dataframe
+        - dataframe
+        - dataframe
+    '''
+    
+    # df_clean = dropping_cols(df_clean, ["MapDate", "StatisticFormatID"])
+    # df_clean = remove_na(df_clean)
+    # df_clean = cleaning_dm_dtypes(df_clean)
+    
+    print("\n--- DM Total Area INFO ---\n")
+    print(f"\n\n{df_total_area.info()}\n")
+    
+    print("\n--- DM Total Area HEAD ---")
+    print(f"\n\n{df_total_area.head()}\n")
+    
+    print("\n--- DM Percent Area INFO ---\n")
+    print(f"\n\n{df_percent_area.info()}\n")
+    
+    print("\n--- DM Percent Area HEAD ---")
+    print(f"\n\n{df_percent_area.head()}\n")
+    
+    print("\n--- DM DSCI INFO ---\n")
+    print(f"\n\n{df_dsci.info()}\n")
+    
+    print("\n--- DM DSCI HEAD ---")
+    print(f"\n\n{df_dsci.head()}\n")
+    
+
+def cleaning_dm_dtypes(df):
+    df['ValidStart'] = pd.to_datetime(df['ValidStart'], format='%Y-%m-%d')
+    df['ValidEnd'] = pd.to_datetime(df['ValidEnd  '], format='%Y-%m-%d')
     
     return df
     
