@@ -14,61 +14,58 @@ def main():
     '''
     This is the main function for cleaning the different datasets centered around the topic of fires and weather
     '''
-    # #------------------------------------------------------------------------------------------------------
-    # ## Fires Burned Monthly Datasets
-    # print("\n\n#################### Fires Burned Monthly Datasets ####################\n")
-    # fires_df_dict = read_in_fires_monthly(fires_monthly_folder_path)
-    # us_fires_burn_monthly = clean_month_fire_data(fires_df_dict)
-    # save_clean_to_csv(us_fires_burn_monthly, path_clean, "us_fires_burn_monthly.csv")
-    # #------------------------------------------------------------------------------------------------------
+    #------------------------------------------------------------------------------------------------------
+    ## Fires Burned Monthly Datasets
+    print("\n\n#################### Fires Burned Monthly Datasets ####################\n")
+    fires_df_dict = read_in_fires_monthly(fires_monthly_folder_path)
+    us_fires_burn_monthly = clean_month_fire_data(fires_df_dict)
+    save_clean_to_csv(us_fires_burn_monthly, path_clean, "us_fires_burn_monthly.csv")
+    #------------------------------------------------------------------------------------------------------
     
     
-    # #------------------------------------------------------------------------------------------------------
-    # ## Lightning Dataset
-    # print("\n\n#################### Lightning Fires Dataset ####################\n")
-    # lightning_df = lightning_fires_cleaning(lightning_fires_path_dirty)
-    # save_clean_to_csv(lightning_df, path_clean, "lightning_wildfires_clean.csv")
-    # #------------------------------------------------------------------------------------------------------
+    #------------------------------------------------------------------------------------------------------
+    ## Lightning Dataset
+    print("\n\n#################### Lightning Fires Dataset ####################\n")
+    lightning_df = lightning_fires_cleaning(lightning_fires_path_dirty)
+    save_clean_to_csv(lightning_df, path_clean, "lightning_wildfires_clean.csv")
+    #------------------------------------------------------------------------------------------------------
     
     
-    # #------------------------------------------------------------------------------------------------------
-    # ## US Wildfires 2 Million
-    # # from Kaggle
-    # '''
-    # Unfortunatly GitHub can not handle the size of the raw file, therefore this repository shows the code that 
-    # was applied to the dataframe, but does not actually call the functions that cleaned the raw data. 
-    # To access the raw data her is the link to the Kaggle page
-    # link: https://www.kaggle.com/datasets/braddarrow/23-million-wildfires
-    # '''
-    # print("\n\n#################### US Wildfires 2 Million Dataset ####################\n")
+    #------------------------------------------------------------------------------------------------------
+    ## US Wildfires 2 Million
+    # from Kaggle
+    '''
+    Unfortunatly GitHub can not handle the size of the raw file, therefore this repository shows the code that 
+    was applied to the dataframe, but does not actually call the functions that cleaned the raw data. 
+    To access the raw data her is the link to the Kaggle page
+    link: https://www.kaggle.com/datasets/braddarrow/23-million-wildfires
+    '''
+    print("\n\n#################### US Wildfires 2 Million Dataset ####################\n")
+    ## reading in the raw data - FOR LOCAL DEVICE USE - uses a connection to the database 
+    # us_wildfires_2mil = database_connection('./Wildfire_Data/US_2mil_wildfires_kaggle/FPA_FOD_20221014.sqlite', 'Fires')  
+    # us_wildfires_2mil_cleaned = cleaning_us_wildfires_2mil(us_wildfires_2mil)
     
+    ## reading in the cleaned data - FOR GITHUB USE - looks at what the cleaned datanow looks like
+    us_wildfires_2mil_cleaned = pd.read_csv(us_wildfires_2mil_path_clean)
     
-    # # reading in the raw data - FOR LOCAL DEVICE USE - uses a connection to the database 
-    # # us_wildfires_2mil = database_connection('./Wildfire_Data/US_2mil_wildfires_kaggle/FPA_FOD_20221014.sqlite', 'Fires')  
-    # # us_wildfires_2mil_cleaned = cleaning_us_wildfires_2mil(us_wildfires_2mil)
+    print("\n--- US Wildfires 2 Million CLEANED INFO ---\n")
+    print(f"\n\n{us_wildfires_2mil_cleaned.info()}\n")
     
-    
-    # # reading in the cleaned data - FOR GITHUB USE - looks at what the cleaned datanow looks like
-    # us_wildfires_2mil_cleaned = pd.read_csv(us_wildfires_2mil_path_clean)
-    
-    # print("\n--- US Wildfires 2 Million CLEANED INFO ---\n")
-    # print(f"\n\n{us_wildfires_2mil_cleaned.info()}\n")
-    
-    # print("\n--- US Wildfires 2 Million CLEANED HEAD ---")
-    # print(f"\n\n{us_wildfires_2mil_cleaned.head()}\n")
+    print("\n--- US Wildfires 2 Million CLEANED HEAD ---")
+    print(f"\n\n{us_wildfires_2mil_cleaned.head()}\n")
         
-    # # save_clean_to_csv(us_wildfires_2mil_cleaned, "./Sampled_US_Wildfire_Data" , 'us_wildfires_2mil_cleaned.csv')
-    # #------------------------------------------------------------------------------------------------------
+    # save_clean_to_csv(us_wildfires_2mil_cleaned, "./Sampled_US_Wildfire_Data" , 'us_wildfires_2mil_cleaned.csv')
+    #------------------------------------------------------------------------------------------------------
     
     
-    # #------------------------------------------------------------------------------------------------------
-    # ## Oregon Wildfires and Weather
-    # # from Kaggle
-    # print("\n\n#################### Oregon Wildfires and Weather Dataset ####################\n")
-    # or_weather_wildfires = pd.read_csv(or_fires_weather_path_dirty,dtype={'Cause_Comments' : 'str', 'DistFireNumber' : 'str'})
-    # or_weather_wildfires = cleaning_or_fires_weather(or_weather_wildfires)
-    # save_clean_to_csv(or_weather_wildfires, path_clean, 'or_weather_wildfires_cleaned.csv')
-    # #------------------------------------------------------------------------------------------------------
+    #------------------------------------------------------------------------------------------------------
+    ## Oregon Wildfires and Weather
+    # from Kaggle
+    print("\n\n#################### Oregon Wildfires and Weather Dataset ####################\n")
+    or_weather_wildfires = pd.read_csv(or_fires_weather_path_dirty,dtype={'Cause_Comments' : 'str', 'DistFireNumber' : 'str'})
+    or_weather_wildfires = cleaning_or_fires_weather(or_weather_wildfires)
+    save_clean_to_csv(or_weather_wildfires, path_clean, 'or_weather_wildfires_cleaned.csv')
+    #------------------------------------------------------------------------------------------------------
     
     
     #------------------------------------------------------------------------------------------------------
@@ -79,11 +76,10 @@ def main():
     dm_state_total_area = pd.read_csv(dm_total_area_path_dirty)
     dm_state_percent_area = pd.read_csv(dm_percent_area_path_dirty)
     dm_state_dsci = pd.read_csv(dm_dsci_path_dirty)
-    cleaning_dm(dm_state_total_area, dm_state_percent_area, dm_state_dsci)
-    # save_clean_to_csv()
+    dm_state_total_area, dm_state_percent_area = cleaning_dm(dm_state_total_area, dm_state_percent_area, dm_state_dsci)
+    save_clean_to_csv(dm_state_total_area, path_clean, 'dm_state_total_area_cleaned.csv')
+    save_clean_to_csv(dm_state_percent_area, path_clean, 'dm_state_percent_area_clean.csv')
     #------------------------------------------------------------------------------------------------------
-    
-    
     
     print("############################################################################")
 
@@ -394,11 +390,27 @@ def cleaning_dm(df_total_area, df_percent_area, df_dsci):
         - dataframe
         - dataframe
         - dataframe
+    Returns:
+        - dataframe
+        - dataframe
+        - dataframe
     '''
     
-    # df_clean = dropping_cols(df_clean, ["MapDate", "StatisticFormatID"])
-    # df_clean = remove_na(df_clean)
-    # df_clean = cleaning_dm_dtypes(df_clean)
+
+    df_total_area = remove_na(df_total_area)
+    df_total_area = cleaning_dm_dtypes(df_total_area)
+    
+    df_percent_area = remove_na(df_percent_area)
+    df_percent_area = cleaning_dm_dtypes(df_percent_area)
+    
+    df_dsci = remove_na(df_dsci)
+    df_dsci = state_names_to_abbr(df_dsci)
+    
+    df_total_area = df_total_area.merge(df_dsci, on=['StateAbbreviation', 'MapDate'], how='inner')
+    df_percent_area = df_percent_area.merge(df_dsci, on=['StateAbbreviation', 'MapDate'], how='inner')
+    
+    df_total_area = dropping_cols(df_total_area, ["MapDate", "StatisticFormatID", "Name"])
+    df_percent_area = dropping_cols(df_percent_area, ["MapDate", "StatisticFormatID", "Name"])
     
     print("\n--- DM Total Area INFO ---\n")
     print(f"\n\n{df_total_area.info()}\n")
@@ -412,16 +424,77 @@ def cleaning_dm(df_total_area, df_percent_area, df_dsci):
     print("\n--- DM Percent Area HEAD ---")
     print(f"\n\n{df_percent_area.head()}\n")
     
-    print("\n--- DM DSCI INFO ---\n")
-    print(f"\n\n{df_dsci.info()}\n")
     
-    print("\n--- DM DSCI HEAD ---")
-    print(f"\n\n{df_dsci.head()}\n")
+    return df_total_area, df_percent_area
+    
     
 
 def cleaning_dm_dtypes(df):
-    df['ValidStart'] = pd.to_datetime(df['ValidStart'], format='%Y-%m-%d')
-    df['ValidEnd'] = pd.to_datetime(df['ValidEnd  '], format='%Y-%m-%d')
+    try:
+        df['ValidStart'] = pd.to_datetime(df['ValidStart'], format='%Y-%m-%d')
+        df['ValidEnd'] = pd.to_datetime(df['ValidEnd'], format='%Y-%m-%d')
+    except:
+        df['MapDate'] = pd.to_datetime(df['MapDate'], format='%Y%m%d')
+        
+    return df
+
+def state_names_to_abbr(df):
+    
+    state_abbr = {
+        'Alabama': 'AL',
+        'Alaska': 'AK',
+        'Arizona': 'AZ',
+        'Arkansas': 'AR',
+        'California': 'CA',
+        'Colorado': 'CO',
+        'Connecticut': 'CT',
+        'Delaware': 'DE',
+        'Florida': 'FL',
+        'Georgia': 'GA',
+        'Hawaii': 'HI',
+        'Idaho': 'ID',
+        'Illinois': 'IL',
+        'Indiana': 'IN',
+        'Iowa': 'IA',
+        'Kansas': 'KS',
+        'Kentucky': 'KY',
+        'Louisiana': 'LA',
+        'Maine': 'ME',
+        'Maryland': 'MD',
+        'Massachusetts': 'MA',
+        'Michigan': 'MI',
+        'Minnesota': 'MN',
+        'Mississippi': 'MS',
+        'Missouri': 'MO',
+        'Montana': 'MT',
+        'Nebraska': 'NE',
+        'Nevada': 'NV',
+        'New Hampshire': 'NH',
+        'New Jersey': 'NJ',
+        'New Mexico': 'NM',
+        'New York': 'NY',
+        'North Carolina': 'NC',
+        'North Dakota': 'ND',
+        'Ohio': 'OH',
+        'Oklahoma': 'OK',
+        'Oregon': 'OR',
+        'Pennsylvania': 'PA',
+        'Rhode Island': 'RI',
+        'South Carolina': 'SC',
+        'South Dakota': 'SD',
+        'Tennessee': 'TN',
+        'Texas': 'TX',
+        'Utah': 'UT',
+        'Vermont': 'VT',
+        'Virginia': 'VA',
+        'Washington': 'WA',
+        'West Virginia': 'WV',
+        'Wisconsin': 'WI',
+        'Wyoming': 'WY',
+        'Puerto Rico': 'PR'
+    }
+    
+    df['StateAbbreviation'] = df['Name'].replace(state_abbr)
     
     return df
     
