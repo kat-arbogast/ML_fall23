@@ -175,7 +175,7 @@ ColumnNames=MyCountV.get_feature_names_out()
 MyDTM_DF=pd.DataFrame(MyDTM.toarray(),columns=ColumnNames)
 
 ## Convert the labels from list to df
-Labels_DF = DataFrame(LabelLIST,columns=['LABEL'])
+Labels_DF = pd.DataFrame(LabelLIST,columns=['LABEL'])
 
 ##Save original DF - without the lables
 My_Orig_DF=MyDTM_DF

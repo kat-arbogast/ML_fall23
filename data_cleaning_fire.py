@@ -1,5 +1,6 @@
 import sqlite3
 import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
 
 path_clean = './CleanData'
 fires_monthly_folder_path = './DirtyData/Wildfire_Data/By_month_fires'
@@ -63,8 +64,10 @@ def main():
     # from Kaggle
     print("\n\n#################### Oregon Wildfires and Weather Dataset ####################\n")
     or_weather_wildfires = pd.read_csv(or_fires_weather_path_dirty,dtype={'Cause_Comments' : 'str', 'DistFireNumber' : 'str'})
-    or_weather_wildfires = cleaning_or_fires_weather(or_weather_wildfires)
+    or_weather_wildfires, cause_comments, specific_cause = cleaning_or_fires_weather(or_weather_wildfires)
     save_clean_to_csv(or_weather_wildfires, path_clean, 'or_weather_wildfires_cleaned.csv')
+    save_clean_to_csv(cause_comments, path_clean, 'or_weather_wildfires_cause_comments_vectorized.csv')
+    save_clean_to_csv(specific_cause, path_clean, 'or_weather_wildfires_specific_cause_vectorized.csv')
     #------------------------------------------------------------------------------------------------------
     
     
@@ -336,9 +339,12 @@ def cleaning_or_fires_weather(df):
     '''
     df_clean = df.copy()
     
-    # Saving these to vectorize them later...
-    cause_comments = df_clean['Cause_Comments']
-    specific_cause = df_clean['SpecificCause']
+    # Saving these to vectorize them
+    cause_comments = df_clean.loc[df_clean[['Cause_Comments', 'GeneralCause']].notna().all(axis=1)]
+    specific_cause = df_clean.loc[df_clean[['SpecificCause', 'GeneralCause']].notna().all(axis=1)]
+    
+    cause_comments = vectorize_word_column(cause_comments, 'Cause_Comments')
+    specific_cause = vectorize_word_column(specific_cause, 'SpecificCause')
     
     cols_to_drop = ['Lat_DD',
                     'Long_DD',
@@ -368,7 +374,7 @@ def cleaning_or_fires_weather(df):
     print("\n--- Oregon Wildfires and Weather CLEANED HEAD ---")
     print(f"\n\n{df_clean.head()}\n")
     
-    return df_clean
+    return df_clean, cause_comments, specific_cause
 
 def cleaning_or_dtypes(df):
     cols_to_convert = ['ReportDateTime', 'Control_DateTime', 'Date', 'Ign_DateTime']
@@ -380,6 +386,63 @@ def fire_duration_hrs(df, start_time_col, end_time_col):
     df['FireDuration_hrs'] = (df[end_time_col] - df[start_time_col]).dt.total_seconds() / 3600
     
     return df
+
+def vectorize_word_column(df, column_name):
+    '''
+    This function uses the methods as shown by Dr. Gates on how to vectorize text data from a dataframe column
+    '''
+    print("--- Vectorizing Comment Columns ---")
+    df2 = df.copy()
+
+    wordLIST=[]
+    GeneralCauseLIST=[]
+    for nextWordList, nextGeneralCause in zip(df2[column_name], df2["GeneralCause"]):
+        wordLIST.append(nextWordList)
+        GeneralCauseLIST.append(nextGeneralCause)
+         
+    NewLIST=[]
+    for element in wordLIST:
+        AllWords=element.split(" ")
+        NewWordsList=[]
+        for word in AllWords:
+            word=word.lower()
+            if word in GeneralCauseLIST:
+                pass
+            else:
+                NewWordsList.append(word)
+        NewWords=" ".join(NewWordsList)
+        NewLIST.append(NewWords)
+        
+    wordLIST=NewLIST
+
+    ## Instantiate your CV
+    MyCountV=CountVectorizer(
+            input="content",  ## because we have a csv file
+            lowercase=True, 
+            stop_words = "english",
+            max_features=75
+            )
+
+    ## Use your CV 
+    MyDTM = MyCountV.fit_transform(wordLIST)  # create a sparse matrix
+    ColumnNames=MyCountV.get_feature_names_out()
+
+    ## Build the data frame
+    MyDTM_DF=pd.DataFrame(MyDTM.toarray(),columns=ColumnNames)
+
+    ## Convert the labels from list to df
+    GeneralCause_DF = pd.DataFrame(GeneralCauseLIST,columns=['GeneralCause'])
+
+    ##Save original DF - without the lables
+    My_Orig_DF=MyDTM_DF
+
+    ## Now - let's create a complete and labeled
+    ## dataframe:
+    dfs = [GeneralCause_DF, MyDTM_DF]
+
+    final_df = pd.concat(dfs,axis=1, join='inner')
+    
+    return final_df
 
 def cleaning_dm(df_total_area, df_percent_area, df_dsci):
     '''
