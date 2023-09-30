@@ -64,10 +64,12 @@ def main():
     # from Kaggle
     print("\n\n#################### Oregon Wildfires and Weather Dataset ####################\n")
     or_weather_wildfires = pd.read_csv(or_fires_weather_path_dirty,dtype={'Cause_Comments' : 'str', 'DistFireNumber' : 'str'})
-    or_weather_wildfires, cause_comments, specific_cause = cleaning_or_fires_weather(or_weather_wildfires)
+    or_weather_wildfires, cause_comments_vector, specific_cause_vector, cause_comments_basket, specific_cause_basket = cleaning_or_fires_weather(or_weather_wildfires)
     save_clean_to_csv(or_weather_wildfires, path_clean, 'or_weather_wildfires_cleaned.csv')
-    save_clean_to_csv(cause_comments, path_clean, 'or_weather_wildfires_cause_comments_vectorized.csv')
-    save_clean_to_csv(specific_cause, path_clean, 'or_weather_wildfires_specific_cause_vectorized.csv')
+    save_clean_to_csv(cause_comments_vector, path_clean, 'or_weather_wildfires_cause_comments_vectorized.csv')
+    save_clean_to_csv(specific_cause_vector, path_clean, 'or_weather_wildfires_specific_cause_vectorized.csv')
+    save_clean_to_csv(cause_comments_basket, path_clean, 'or_weather_wildfires_cause_comments_basket.csv')
+    save_clean_to_csv(specific_cause_basket, path_clean, 'or_weather_wildfires_specific_cause_basket.csv')
     #------------------------------------------------------------------------------------------------------
     
     
@@ -340,11 +342,14 @@ def cleaning_or_fires_weather(df):
     df_clean = df.copy()
     
     # Saving these to vectorize them
-    cause_comments = df_clean.loc[df_clean[['Cause_Comments', 'GeneralCause']].notna().all(axis=1)]
-    specific_cause = df_clean.loc[df_clean[['SpecificCause', 'GeneralCause']].notna().all(axis=1)]
+    cause_comments = df_clean.loc[df_clean[['GeneralCause', 'Cause_Comments']].notna().all(axis=1)]
+    specific_cause = df_clean.loc[df_clean[['GeneralCause', 'SpecificCause']].notna().all(axis=1)]
     
-    cause_comments = vectorize_word_column(cause_comments, 'Cause_Comments')
-    specific_cause = vectorize_word_column(specific_cause, 'SpecificCause')
+    cause_comments_vector = vectorize_word_column(cause_comments, 'Cause_Comments')
+    specific_cause_vector = vectorize_word_column(specific_cause, 'SpecificCause')
+    
+    cause_comments_basket = basket_word_column(cause_comments_vector)
+    specific_cause_basket = basket_word_column(specific_cause_vector)
     
     cols_to_drop = ['Lat_DD',
                     'Long_DD',
@@ -366,15 +371,28 @@ def cleaning_or_fires_weather(df):
     
     df_clean.sort_values(by=['Date'], inplace=True)
     year_list = list(df_clean['Year'].unique())              
-    print(f'\nUnique Year in Full dataframe: \n{year_list}\n')
+    # print(f'\nUnique Year in Full dataframe: \n{year_list}\n')
     
-    print("\n--- Oregon Wildfires and Weather CLEANED INFO ---\n")
-    print(f"\n\n{df_clean.info()}\n")
+    # print("\n--- Oregon Wildfires and Weather CLEANED INFO ---\n")
+    # print(f"\n\n{df_clean.info()}\n")
     
-    print("\n--- Oregon Wildfires and Weather CLEANED HEAD ---")
-    print(f"\n\n{df_clean.head()}\n")
+    # print("\n--- Oregon Wildfires and Weather CLEANED HEAD ---")
+    # print(f"\n\n{df_clean.head()}\n")
     
-    return df_clean, cause_comments, specific_cause
+
+    print("\n--- Oregon Wildfires and Weather Causes Vector HEAD ---")
+    print(f"\n\n{cause_comments_vector.head()}\n")
+    print("\n--- Oregon Wildfires and Weather Specific Vector HEAD ---")
+    print(f"\n\n{specific_cause_vector.head()}\n")
+    
+    
+    print("\n--- Oregon Wildfires and Weather Causes Basket HEAD ---")
+    print(f"\n\n{cause_comments_basket.head()}\n")
+    print("\n--- Oregon Wildfires and Weather Specific Basket HEAD ---")
+    print(f"\n\n{specific_cause_basket.head()}\n")
+    
+    return df_clean, cause_comments_vector, specific_cause_vector, cause_comments_basket, specific_cause_basket
+
 
 def cleaning_or_dtypes(df):
     cols_to_convert = ['ReportDateTime', 'Control_DateTime', 'Date', 'Ign_DateTime']
@@ -444,6 +462,24 @@ def vectorize_word_column(df, column_name):
     
     return final_df
 
+def basket_word_column(df):
+    '''
+    This is almost make a basket datset. Somewhere to start though
+    Agrs:
+        - vecotrized text dataframe
+    Returns:
+        - a dataframe where 1 is the columns name and 0 becomes an empty string
+    '''
+    print("--- Make a Column of Words into Transactional/Basket Data ---")
+    df2 = df.copy()
+    
+    print(f"BEFORE BASKET HEAD: \n {df2.head()}")
+    
+    for col in df2.columns[1:]:
+        df2[col] = df2[col].apply(lambda x: col if x == 1 else '')
+
+    return df2
+
 def cleaning_dm(df_total_area, df_percent_area, df_dsci):
     '''
     This function cleans the Drought Monitoring Data which gives the square miles of area in drought based on state
@@ -463,6 +499,7 @@ def cleaning_dm(df_total_area, df_percent_area, df_dsci):
     df_total_area = remove_na(df_total_area)
     df_total_area = cleaning_dm_dtypes(df_total_area)
     
+    
     df_percent_area = remove_na(df_percent_area)
     df_percent_area = cleaning_dm_dtypes(df_percent_area)
     
@@ -474,6 +511,9 @@ def cleaning_dm(df_total_area, df_percent_area, df_dsci):
     
     df_total_area = dropping_cols(df_total_area, ["MapDate", "StatisticFormatID", "Name"])
     df_percent_area = dropping_cols(df_percent_area, ["MapDate", "StatisticFormatID", "Name"])
+    
+    for col in ["None", "D0", "D1", "D2", "D3", "D4"]:
+        df_total_area[col] = df_total_area[col].str.replace(',', '').astype(float)
     
     print("\n--- DM Total Area INFO ---\n")
     print(f"\n\n{df_total_area.info()}\n")

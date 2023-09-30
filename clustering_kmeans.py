@@ -13,8 +13,6 @@ from mpl_toolkits.mplot3d import Axes3D
 from sklearn.cluster import KMeans
 from sklearn import datasets
 
-
-
 #------------------------------------------
 
 # Permanently changes the pandas settings
