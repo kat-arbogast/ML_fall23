@@ -13,6 +13,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score, silhouette_samples
 from sklearn import datasets
+import matplotlib.cm as cm
 
 #------------------------------------------
 # Permanently changes the pandas settings
@@ -29,6 +30,9 @@ dm_state_percent_area_path = "./CleanData/dm_state_percent_area_clean.csv"
 fires_monthly_folder_path = "./CleanData/us_fires_burn_monthly.csv"
 us_wildfires_2mil_path = "./CleanData/us_wildfires_2mil_cleaned.csv"
 or_weather_wildfires_path = "./CleanData/or_weather_wildfires_cleaned.csv"
+or_weather_wildfires_comments_vector_path = "./CleanData/or_weather_wildfires_cause_comments_vectorized.csv"
+or_weather_wildfires_specific_vector_path = "./CleanData/or_weather_wildfires_specific_cause_vectorized.csv"
+news_healines_vector_path = "./CleanData/NewsHeadlines_vectorized.csv"
 
 ## Setting the filename
 dm_state_total_area_filename = "dm_state_total_area_cleaned"
@@ -36,6 +40,9 @@ dm_state_percent_area_filename = "dm_state_percent_area_clean"
 us_fires_burn_monthly_filename = "us_fires_burn_monthly"
 us_wildfires_2mil_filename = "us_wildfires_2mil_cleaned"
 or_weather_wildfires_filename = "or_weather_wildfires_cleaned"
+or_weather_wildfires_comments_vector_filename = "or_weather_wildfires_cause_comments_vectorized"
+or_weather_wildfires_specific_vector_filename = "or_weather_wildfires_specific_cause_vectorized"
+news_healines_vector_filename = "NewsHeadlines_vectorized"
 #-------------------------------------------------------------------------
 
 
@@ -52,14 +59,21 @@ def main():
     us_fires_burn_monthly = pd.read_csv(fires_monthly_folder_path)
     us_wildfires_2mil = pd.read_csv(us_wildfires_2mil_path)
     or_weather_wildfires = pd.read_csv(or_weather_wildfires_path)
+    or_weather_wildfires_comments_vector = pd.read_csv(or_weather_wildfires_comments_vector_path)
+    or_weather_wildfires_specific_vector = pd.read_csv(or_weather_wildfires_specific_vector_path)
+    news_healines_vector = pd.read_csv(news_healines_vector_path)
     
     print("\n---------- Transforming Fire Data for Unsupervised Learning ----------\n")
-    # Transform Drought Montior Data
+    ## Transform Data to keep numeric columns
     dm_state_total_area_transformed = transform_data(dm_state_total_area_filename, dm_state_total_area, ['None', 'D0', 'D1', 'D2', 'D3', 'D4', 'DSCI'])
     dm_state_percent_area_transformed = transform_data(dm_state_percent_area_filename, dm_state_percent_area, ['None', 'D0', 'D1', 'D2', 'D3', 'D4', 'DSCI'])
     us_fires_burn_monthly_transformed = transform_data(us_fires_burn_monthly_filename, us_fires_burn_monthly, ['Acres_Burned', 'Number_of_Fires', 'Acres_Burned_per_Fire'])
     us_wildfires_2mil_transformed = transform_data(us_wildfires_2mil_filename, us_wildfires_2mil, ['FIRE_SIZE', 'FireDuration_hrs'])
     or_weather_wildfires_transformed = transform_data(or_weather_wildfires_filename, or_weather_wildfires, ['tmax', 'tmin', 'tavg', 'prcp', 'EstTotalAcres', 'FireDuration_hrs'])
+    ## Transform Data to drop the label columnss
+    or_weather_wildfires_comments_vector_transformed = or_weather_wildfires_comments_vector.drop(['GeneralCause'], axis=1)
+    or_weather_wildfires_specific_vector_transformed = or_weather_wildfires_specific_vector.drop(['GeneralCause'], axis=1)
+    news_healines_vector_transformed = news_healines_vector.drop(['LABEL'], axis=1)
     
     print("\n---------- Determining Optimal Number of Clusters ----------\n")
     #------------------------------------------------------------------------------------
@@ -70,9 +84,12 @@ def main():
     # determine_k_elbow(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed)
     # determine_k_elbow(us_wildfires_2mil_filename, us_wildfires_2mil_transformed)
     # determine_k_elbow(or_weather_wildfires_filename, or_weather_wildfires_transformed)
+    # determine_k_elbow(or_weather_wildfires_comments_vector_filename, or_weather_wildfires_comments_vector_transformed)
+    # determine_k_elbow(or_weather_wildfires_specific_vector_filename, or_weather_wildfires_specific_vector_transformed)
+    # determine_k_elbow(news_healines_vector_filename, news_healines_vector_transformed)
     #------------------------------------------------------------------------------------
     
-    #--------------------------------------------------------------------------------------------------
+    #------------------------------------------------------------------------------------------------------------------------
     ## Silhouette
     # determining_k_silhouette(dm_state_total_area_filename, dm_state_total_area_transformed)
     # determining_k_silhouette(dm_state_percent_area_filename, dm_state_percent_area_transformed)
@@ -88,24 +105,29 @@ def main():
     # or_weather_wildfires_transformed_sample = or_weather_wildfires_transformed.sample(frac=0.7)
     # or_weather_wildfires_transformed_sample.reset_index(drop=True, inplace=True)
     
-    # determining_k_silhouette(us_wildfires_2mil_filename, us_wildfires_2mil_transformed_sample)
-    # determining_k_silhouette(or_weather_wildfires_filename, or_weather_wildfires_transformed_sample)
-    #--------------------------------------------------------------------------------------------------
+    # THIS TAKES WAYYYYYYYYY TO LONG - like I was on hour 18 and it was still not done...
+    # determining_k_silhouette(us_wildfires_2mil_filename, us_wildfires_2mil_transformed)
+    # determining_k_silhouette(or_weather_wildfires_filename, or_weather_wildfires_transformed)
     
-    #--------------------------------------------------------------------------------------------------
-    ## GAP
-    determine_k_GAP(us_wildfires_2mil_filename, us_wildfires_2mil_transformed, n_bootstraps=5)
-    determine_k_GAP(or_weather_wildfires_filename, or_weather_wildfires_transformed, n_bootstraps=5)
-    
-    #--------------------------------------------------------------------------------------------------
-    
-    # print("\n---------- Performing Kmeans Clustering ----------\n")
-    # by_hand_kmeans(dm_state_total_area_filename, dm_state_total_area_transformed, k=2)
-    # by_hand_kmeans(dm_state_percent_area_filename, dm_state_percent_area_transformed, k=2)
-    # by_hand_kmeans(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed, k=2)
-    # by_hand_kmeans(us_wildfires_2mil_filename, us_wildfires_2mil_transformed, k=2)
-    # by_hand_kmeans(or_weather_wildfires_filename, or_weather_wildfires_transformed, k=2)
+    determining_k_silhouette(or_weather_wildfires_comments_vector_filename, or_weather_wildfires_comments_vector_transformed)
+    determining_k_silhouette(or_weather_wildfires_specific_vector_filename, or_weather_wildfires_specific_vector_transformed)
+    determining_k_silhouette(news_healines_vector_filename, news_healines_vector_transformed)
+    #------------------------------------------------------------------------------------------------------------------------
 
+    #-------------------------------------------------------------------------------------------------------------------
+    print("\n---------- Performing Kmeans Clustering ----------\n")
+    ## Numeric Data
+    by_hand_kmeans(dm_state_total_area_filename, dm_state_total_area_transformed, k=2)
+    by_hand_kmeans(dm_state_percent_area_filename, dm_state_percent_area_transformed, k=2)
+    by_hand_kmeans(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed, k=2)
+    by_hand_kmeans(us_wildfires_2mil_filename, us_wildfires_2mil_transformed, k=2)
+    by_hand_kmeans(or_weather_wildfires_filename, or_weather_wildfires_transformed, k=2)
+    
+    ## Vector Text Data
+    by_hand_kmeans(or_weather_wildfires_comments_vector_filename, or_weather_wildfires_comments_vector_transformed, k=2)
+    by_hand_kmeans(or_weather_wildfires_specific_vector_filename, or_weather_wildfires_specific_vector_transformed, k=2)
+    by_hand_kmeans(news_healines_vector_filename, news_healines_vector_transformed, k=2)
+    #-------------------------------------------------------------------------------------------------------------------
     
     print("\n\nMADE IT OUT ALIVE!!!!")
     print("\n############################################################################\n")
@@ -172,84 +194,75 @@ def determining_k_silhouette(filename, df):
     
     print(f"--- Determining the optimal number of clusters using the Silhouette Method for {filename} ---")
     
-    k_values = range(2, 11)  # You can adjust the range as needed
-    silhouette_scores = []
-
-    for k in k_values:
-        print(f"Trying value {k}")
-        kmeans = KMeans(n_clusters=k, random_state=42, n_init=20)
-        cluster_labels = kmeans.fit_predict(df)
-        print("Made cluster labels")
-        
-        # Calculate the silhouette score for this k
-        silhouette_avg = silhouette_score(df, cluster_labels)
-        print(f"---------- For k = {k}, the average silhouette_score is: {silhouette_avg}")
-        silhouette_scores.append(silhouette_avg)
-        
-        # Calculate the silhouette scores for each sample
-        sample_silhouette_values = silhouette_samples(df, cluster_labels)
-        print("calculated silhouette values\n")
-        
-    plt.figure(figsize=(10, 5))
-    plt.plot(k_values, silhouette_scores, marker='o', linestyle='-', color='b')
-    plt.xlabel('Number of Clusters (k)')
-    plt.ylabel('Average Silhouette Score')
-    plt.title(f'Silhouette Method for Optimal k - {filename}')
-    plt.grid(True)
-    plt.savefig(f"./CreatedVisuals/kmeans/Silhouette/{filename}_silhouette.png")
-    plt.close()
-    
-
-def determine_k_GAP(filename, df, n_bootstraps):
-    """
-    Calculate the GAP statistic to find the optimal number of clusters (k) for k-means clustering.
-    
-    Args:
-        - data: Input data for clustering (numpy array or pandas DataFrame)
-        - n_bootstraps: Number of bootstrap samples for generating reference datasets.
-    """
-    
-    print(f"--- Determining the optimal number of clusters using the GAP Statistic Method for {filename} ---")
-    
     k_values = range(2, 11)
-    gap_values = []
-    std_devs = []
+    silhouette_score_dict = {}
+
+    for n_clusters in k_values:
+        
+        fig, ax1 = plt.subplots(1, 1)
+        fig.set_size_inches(18, 7)
+
+        ax1.set_xlim([-1, 1])
+        ax1.set_ylim([0, len(df) + (n_clusters + 1) * 10])
+
+        # Initialize the clusterer with n_clusters value and a random generator
+        # seed of 10 for reproducibility.
+        clusterer = KMeans(n_clusters=n_clusters, random_state=10, n_init=20)
+        cluster_labels = clusterer.fit_predict(df)
+
+        # The silhouette_score gives the average value for all the samples.
+        # This gives a perspective into the density and separation of the formed
+        # clusters
+        silhouette_avg = silhouette_score(df, cluster_labels)
+        silhouette_score_dict[n_clusters] = silhouette_avg
+        print(f"\n--- For n_clusters = {n_clusters} \n--- The average silhouette_score is : {silhouette_avg}\n")
+
+        # Compute the silhouette scores for each sample
+        sample_silhouette_values = silhouette_samples(df, cluster_labels)
+
+        y_lower = 10
+        for i in range(n_clusters):
+            # Aggregate the silhouette scores for samples belonging to
+            # cluster i, and sort them
+            ith_cluster_silhouette_values = \
+                sample_silhouette_values[cluster_labels == i]
+
+            ith_cluster_silhouette_values.sort()
+
+            size_cluster_i = ith_cluster_silhouette_values.shape[0]
+            y_upper = y_lower + size_cluster_i
+
+            color = cm.nipy_spectral(float(i) / n_clusters)
+            ax1.fill_betweenx(np.arange(y_lower, y_upper),
+                            0, ith_cluster_silhouette_values,
+                            facecolor=color, edgecolor=color, alpha=0.7)
+
+            # Label the silhouette plots with their cluster numbers at the middle
+            ax1.text(-0.05, y_lower + 0.5 * size_cluster_i, str(i))
+
+            # Compute the new y_lower for next plot
+            y_lower = y_upper + 10  # 10 for the 0 samples
+
+        ax1.set_title(f"The silhouette plot for the various clusters - {filename}")
+        ax1.set_xlabel("The silhouette coefficient values")
+        ax1.set_ylabel("Cluster label")
+
+        # The vertical line for average silhouette score of all the values
+        ax1.axvline(x=silhouette_avg, color="red", linestyle="--")
+
+        ax1.set_yticks([])  # Clear the yaxis labels / ticks
+        ax1.set_xticks([-0.1, 0, 0.2, 0.4, 0.6, 0.8, 1])
+
+        plt.savefig(f"./CreatedVisuals/kmeans/Silhouette/{filename}_silhouette_{n_clusters}.png")
+        plt.close()
     
-    for k in k_values:
-        kmeans = KMeans(n_clusters=k, random_state=42)
-        kmeans.fit(df)
-        cluster_labels = kmeans.predict(df)
-        print("Made cluster labels")
-        
-        # Calculate the within-cluster dispersion (WCSS)
-        wcss = np.sum((df - kmeans.cluster_centers_[cluster_labels]) ** 2)
-        print(f"---------- For k = {k}, the wcss is: {wcss}")
-        
-        # Generate reference datasets for comparison
-        reference_wcss = []
-        for _ in range(n_bootstraps):
-            random_data = np.random.rand(*df.shape)
-            random_kmeans = KMeans(n_clusters=k, random_state=42)
-            random_kmeans.fit(random_data)
-            random_labels = random_kmeans.predict(random_data)
-            print("Made random labels")
-            reference_wcss.append(np.sum((random_data - random_kmeans.cluster_centers_[random_labels]) ** 2))
-        
-        # Calculate GAP statistic
-        gap = np.log(np.mean(reference_wcss)) - np.log(wcss)
-        std_dev = np.sqrt(np.mean((np.log(reference_wcss) - np.log(wcss)) ** 2))
-        print(f"---------- For k = {k}, the gap is: {gap}")
-        print(f"---------- For k = {k}, the std_dev is: {std_dev}")
-        gap_values.append(gap)
-        std_devs.append(std_dev)
-        
-    plt.figure(figsize=(10, 5))
-    plt.errorbar(range(10), gap_values, yerr=std_devs, marker='o', linestyle='-', color='b')
-    plt.xlabel('Number of Clusters (k)')
-    plt.ylabel('GAP Statistic')
-    plt.title(f'GAP Statistic for Optimal k - {filename}')
-    plt.grid(True)
-    plt.savefig(f"./CreatedVisuals/kmeans/GAP/{filename}_gap_stat.png")
+    print("\n\n--------------------------------------------------")
+    print(f"---------- {filename} ----------")
+    print(f"\n--- Value of K:       Silhouette Score: ----")
+    for k, score in silhouette_score_dict.items():
+        print(f"--- {k}             {score} ---")
+    print("--------------------------------------------------\n\n")
+    
 
 def by_hand_kmeans(filename, df, k):
     # Initial Centroids
