@@ -61,12 +61,13 @@ def main():
     us_fires_burn_monthly = pd.read_csv(fires_monthly_folder_path)
     or_weather_wildfires = pd.read_csv(or_weather_wildfires_path)
     lightining_fires = pd.read_csv(lightining_fires_path)
+    
     or_weather_wildfires_comments_vector = pd.read_csv(or_weather_wildfires_comments_vector_path)
     or_weather_wildfires_specific_vector = pd.read_csv(or_weather_wildfires_specific_vector_path)
     news_healines_vector = pd.read_csv(news_healines_vector_path)
     # us_wildfires_2mil = pd.read_csv(us_wildfires_2mil_path)
     
-    print("\n---------- Transforming Fire Data for Unsupervised Learning ----------\n")
+    print("\n---------- Transforming Data for Unsupervised Learning ----------\n")
     ## Transform Data to keep numeric columns
     dm_state_total_area_transformed = transform_data(dm_state_total_area_filename, dm_state_total_area, ['None', 'D0', 'D1', 'D2', 'D3', 'D4', 'DSCI'])
     dm_state_percent_area_transformed = transform_data(dm_state_percent_area_filename, dm_state_percent_area, ['None', 'D0', 'D1', 'D2', 'D3', 'D4', 'DSCI'])
@@ -75,69 +76,132 @@ def main():
     lightining_fires_transformed = transform_data(lightining_fires_filename, lightining_fires, ["Days_to_extinguish_fire", "FIRE_SIZE"])
     # us_wildfires_2mil_transformed = transform_data(us_wildfires_2mil_filename, us_wildfires_2mil, ['FIRE_SIZE', 'FireDuration_hrs'])
     
-    ## Transform Data to drop the label columnss
+    # ## Transform Data to drop the label columnss
     or_weather_wildfires_comments_vector_transformed = or_weather_wildfires_comments_vector.drop(['GeneralCause'], axis=1)
     or_weather_wildfires_specific_vector_transformed = or_weather_wildfires_specific_vector.drop(['GeneralCause'], axis=1)
     news_healines_vector_transformed = news_healines_vector.drop(['LABEL'], axis=1)
+    
+    
+    print("\n---------- Normalizing Data for Unsupervised Learning ----------\n")
+    dm_state_total_area_norm = normalize_df(dm_state_total_area_filename, dm_state_total_area_transformed)
+    dm_state_percent_area_norm = normalize_df(dm_state_percent_area_filename, dm_state_percent_area_transformed)
+    us_fires_burn_monthly_norm = normalize_df(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed)
+    or_weather_wildfires_norm = normalize_df(or_weather_wildfires_filename, or_weather_wildfires_transformed)
+    lightining_fires_norm = normalize_df(lightining_fires_filename, lightining_fires_transformed)
+    
+    print("\n---------- Standardizing Data for Unsupervised Learning ----------\n")
+    dm_state_total_area_stan = standardize_df(dm_state_total_area_filename, dm_state_total_area_transformed)
+    dm_state_percent_area_stan = standardize_df(dm_state_percent_area_filename, dm_state_percent_area_transformed)
+    us_fires_burn_monthly_stan = standardize_df(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed)
+    or_weather_wildfires_stan = standardize_df(or_weather_wildfires_filename, or_weather_wildfires_transformed)
+    lightining_fires_stan = standardize_df(lightining_fires_filename, lightining_fires_transformed)
+    
     
     print("\n---------- Determining Optimal Number of Clusters ----------\n")
     #------------------------------------------------------------------------------------
     ## Elbow
     ## Ran these and then looked at the graphs. The values of k are then hard coded
-    determine_k_elbow(dm_state_total_area_filename, dm_state_total_area_transformed)
-    determine_k_elbow(dm_state_percent_area_filename, dm_state_percent_area_transformed)
-    determine_k_elbow(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed)
-    determine_k_elbow(or_weather_wildfires_filename, or_weather_wildfires_transformed)
-    determine_k_elbow(lightining_fires_filename, lightining_fires_transformed)
-    determine_k_elbow(or_weather_wildfires_comments_vector_filename, or_weather_wildfires_comments_vector_transformed)
-    determine_k_elbow(or_weather_wildfires_specific_vector_filename, or_weather_wildfires_specific_vector_transformed)
-    determine_k_elbow(news_healines_vector_filename, news_healines_vector_transformed)
+    # determine_k_elbow(dm_state_total_area_filename, dm_state_total_area_transformed)
+    # determine_k_elbow(dm_state_percent_area_filename, dm_state_percent_area_transformed)
+    # determine_k_elbow(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed)
+    # determine_k_elbow(or_weather_wildfires_filename, or_weather_wildfires_transformed)
+    # determine_k_elbow(lightining_fires_filename, lightining_fires_transformed)
+    # determine_k_elbow(or_weather_wildfires_comments_vector_filename, or_weather_wildfires_comments_vector_transformed)
+    # determine_k_elbow(or_weather_wildfires_specific_vector_filename, or_weather_wildfires_specific_vector_transformed)
+    # determine_k_elbow(news_healines_vector_filename, news_healines_vector_transformed)
+    # ## determine_k_elbow(us_wildfires_2mil_filename, us_wildfires_2mil_transformed)
+    
+    ## Elbow Norm
+    # determine_k_elbow(dm_state_total_area_filename + "_norm", dm_state_total_area_norm)
+    # determine_k_elbow(dm_state_percent_area_filename + "_norm", dm_state_percent_area_norm)
+    # determine_k_elbow(us_fires_burn_monthly_filename + "_norm", us_fires_burn_monthly_norm)
+    # determine_k_elbow(or_weather_wildfires_filename + "_norm", or_weather_wildfires_norm)
+    # determine_k_elbow(lightining_fires_filename + "_norm", lightining_fires_norm)
     ## determine_k_elbow(us_wildfires_2mil_filename, us_wildfires_2mil_transformed)
     #------------------------------------------------------------------------------------
     
     #------------------------------------------------------------------------------------------------------------------------
     ## Silhouette
-    determining_k_silhouette(dm_state_total_area_filename, dm_state_total_area_transformed)
-    determining_k_silhouette(dm_state_percent_area_filename, dm_state_percent_area_transformed)
-    determining_k_silhouette(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed)
+    # determining_k_silhouette(dm_state_total_area_filename, dm_state_total_area_transformed)
+    # determining_k_silhouette(dm_state_percent_area_filename, dm_state_percent_area_transformed)
+    # determining_k_silhouette(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed)
     
-    ## Create df sample with 70% of the rows from or_weather_wildfires_transformed
-    # print(f"Sample from or_weather_wildfires_transformed")
-    # or_weather_wildfires_transformed_sample = or_weather_wildfires_transformed.sample(frac=0.7)
-    # or_weather_wildfires_transformed_sample.reset_index(drop=True, inplace=True)
+    # determining_k_silhouette(dm_state_total_area_filename + "_norm", dm_state_total_area_norm)
+    # determining_k_silhouette(dm_state_percent_area_filename + "_norm", dm_state_percent_area_norm)
+    # determining_k_silhouette(us_fires_burn_monthly_filename + "_norm", us_fires_burn_monthly_norm)
     
-    determining_k_silhouette(or_weather_wildfires_filename, or_weather_wildfires_transformed)
-    determining_k_silhouette(lightining_fires_filename, lightining_fires_transformed)
+    # ## Create df sample with 70% of the rows from or_weather_wildfires_transformed
+    # # print(f"Sample from or_weather_wildfires_transformed")
+    # # or_weather_wildfires_transformed_sample = or_weather_wildfires_transformed.sample(frac=0.7)
+    # # or_weather_wildfires_transformed_sample.reset_index(drop=True, inplace=True)
     
-    determining_k_silhouette(or_weather_wildfires_comments_vector_filename, or_weather_wildfires_comments_vector_transformed)
-    determining_k_silhouette(or_weather_wildfires_specific_vector_filename, or_weather_wildfires_specific_vector_transformed)
-    determining_k_silhouette(news_healines_vector_filename, news_healines_vector_transformed)
+    # determining_k_silhouette(or_weather_wildfires_filename, or_weather_wildfires_transformed)
+    # determining_k_silhouette(lightining_fires_filename, lightining_fires_transformed)
+    
+    # determining_k_silhouette(or_weather_wildfires_comments_vector_filename, or_weather_wildfires_comments_vector_transformed)
+    # determining_k_silhouette(or_weather_wildfires_specific_vector_filename, or_weather_wildfires_specific_vector_transformed)
+    # determining_k_silhouette(news_healines_vector_filename, news_healines_vector_transformed)
     
     # THIS TAKES WAYYYYYYYYY TO LONG - like I was on hour 18 and it was still not done...
     # determining_k_silhouette(us_wildfires_2mil_filename, us_wildfires_2mil_transformed)
     #------------------------------------------------------------------------------------------------------------------------
 
-    #-------------------------------------------------------------------------------------------------------------------
-    # print("\n---------- Performing Kmeans Clustering ----------\n")
-    # ## Numeric Data
-    by_hand_kmeans(dm_state_total_area_filename, dm_state_total_area_transformed, k=2)
-    by_hand_kmeans(dm_state_percent_area_filename, dm_state_percent_area_transformed, k=2)
-    by_hand_kmeans(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed, k=2)
-    by_hand_kmeans(or_weather_wildfires_filename, or_weather_wildfires_transformed, k=2)
-    by_hand_kmeans(lightining_fires_filename, lightining_fires_transformed, k=2)
+    #------------------------------------------------------------------------------------------------------------------------
+    print("\n---------- Performing Kmeans Clustering on Numeric Values ----------\n")
+    ## Drought Monitor State Total Area Clustering
+    kmeans_clustering(dm_state_total_area_filename, dm_state_total_area_transformed, 2)
+    kmeans_clustering(dm_state_total_area_filename + "_2", dm_state_total_area_transformed, 2)
+    kmeans_clustering(dm_state_total_area_filename + "_3", dm_state_total_area_transformed, 3)
+    kmeans_clustering(dm_state_total_area_filename + "_4", dm_state_total_area_transformed, 4)
+    kmeans_clustering(dm_state_total_area_filename + "_2_normalized", dm_state_total_area_norm, 2)
     
-    # ## Vector Text Data
-    by_hand_kmeans(or_weather_wildfires_comments_vector_filename, or_weather_wildfires_comments_vector_transformed, k=2)
-    by_hand_kmeans(or_weather_wildfires_specific_vector_filename, or_weather_wildfires_specific_vector_transformed, k=2)
-    by_hand_kmeans(news_healines_vector_filename, news_healines_vector_transformed, k=2)
+    kmeans_clustering(dm_state_percent_area_filename, dm_state_percent_area_transformed, 2)
+    kmeans_clustering(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed, 2)
+    kmeans_clustering(or_weather_wildfires_filename, or_weather_wildfires_transformed, 2)
+    kmeans_clustering(lightining_fires_filename, lightining_fires_transformed, 2)
     
-    # # by_hand_kmeans(us_wildfires_2mil_filename, us_wildfires_2mil_transformed, k=2)    # This one just doesn't make any sense
-    #-------------------------------------------------------------------------------------------------------------------
+    ## Vector Text Data
+    kmeans_clustering(or_weather_wildfires_comments_vector_filename, or_weather_wildfires_comments_vector_transformed, 2)
+    kmeans_clustering(or_weather_wildfires_specific_vector_filename, or_weather_wildfires_specific_vector_transformed, 2)
+    kmeans_clustering(news_healines_vector_filename, news_healines_vector_transformed, 2)
+    # kmeans_clustering(us_wildfires_2mil_filename, us_wildfires_2mil_transformed, 2)
+    #------------------------------------------------------------------------------------------------------------------------
 
     print("\n############################################################################\n")
         
     
 #-----------------------------------------------------------------------------------------------------------------   
+
+
+def kmeans_clustering(filename, df, n_clusters):
+    print(f"\n--- Performing KMeans on {filename} ---")
+    # Perform KMeans clustering
+    kmeans = KMeans(n_clusters=n_clusters, n_init=20)
+    df['cluster'] = kmeans.fit_predict(df)
+    centroids = kmeans.cluster_centers_
+
+    # Apply PCA to reduce dimensionality
+    pca = PCA(n_components=2)
+    pca_result = pca.fit_transform(df.iloc[:, :-1])  # Exclude the 'cluster' column
+
+    # Create a scatter plot to visualize the clusters in reduced dimension space
+    plt.figure(figsize=(8, 6))
+
+    # Scatter plot each cluster
+    for cluster in range(n_clusters):
+        cluster_data = pca_result[df['cluster'] == cluster]
+        plt.scatter(cluster_data[:, 0], cluster_data[:, 1], label=f'Cluster {cluster + 1}')
+
+    # Add labels and legend
+    plt.xlabel('Principal Component 1')
+    plt.ylabel('Principal Component 2')
+    plt.title(f'KMeans Clustering with PCA - {filename}')
+    plt.legend()
+    plt.grid(True)
+
+    # Save the plot
+    plt.savefig(f"./CreatedVisuals/kmeans/{filename}_kmeans.png")
+    plt.close()
     
 
 def transform_data(filename, df, cols_of_interest):
@@ -159,6 +223,37 @@ def transform_data(filename, df, cols_of_interest):
     print(f"{filename} head:\n{df2.head()}")
     
     return df2
+
+def normalize_df(filename, df):
+    '''
+    This function normalizes the data in a dataframe
+    Args:
+        - filename
+        - dataframe
+    Returns:
+        - dataframe (normalized)
+    '''
+    print(f"--- Performing Normalization for {filename} ---")
+    
+    df_normalized = df.copy()
+    
+    for column in df_normalized.columns:
+        min_val = df_normalized[column].min()
+        max_val = df_normalized[column].max()
+        if min_val == max_val:
+            df_normalized[column] = 0  # Handle the case where all values are the same
+        else:
+            df_normalized[column] = (df_normalized[column] - min_val) / (max_val - min_val)
+    
+    print("\n ------------------------------ ")
+    print(f"Normalized {filename}:\n{df_normalized.head()}")
+    print(" ------------------------------ \n")
+    
+    return df_normalized
+
+
+def standardize_df(filename, df):
+    return df
     
 
 def determine_k_elbow(filename, df):
@@ -267,100 +362,6 @@ def determining_k_silhouette(filename, df):
         print(f"--- {k}             {score} ---")
     print("--------------------------------------------------\n\n")
     
-
-def by_hand_kmeans(filename, df, k):
-    # Initial Centroids
-    MyCentroids = RandomCentroidInit(filename, df, k)
-    print(f"\nINITIAL CENTROIDS: \n{MyCentroids}\n")
-    
-    
-    ## Iterate
-    NumInterations = 20
-    iteration=1
-
-    while iteration < NumInterations:
-        print("\n\nIteration: ", iteration)
-        
-        # Create Labels for Clusters
-        cluster_labels = Label_Data(filename, df, MyCentroids)
-        print(f"cluster_labels value counts:\n{cluster_labels.value_counts()}\n") ## How many points are in each label/cluster right now
-        
-        # Create new Centroids based on labels
-        MyCentroids=Updated_Centroids(filename, df, cluster_labels, k)
-                
-        iteration = iteration + 1
-        
-    ClusterPlot(filename, df, cluster_labels, MyCentroids) 
-    
-    # I want to save the last photo of all the clusters
-    
-
-def RandomCentroidInit(filename, df, k):
-    '''
-    This function creates random k centroids
-    
-    Args:
-        - dataframe in the proper format
-        - k (the number of kmeans clusters)
-    Returns:
-        - dataframe where each row is the coordinate of the k centroids
-    '''
-    print(f"--- Randomly picking {k} centroids for {filename} ---")
-    
-    MyCentroids=[]
-    for i in range(k):
-        nextcentroid=df.apply(lambda x: float(x.sample()))
-        MyCentroids.append(nextcentroid)
-        
-    return pd.concat(MyCentroids, axis=1)
-
-
-def Label_Data(filename, df, MyCentroids):
-    '''
-    This function:
-        - finds distances between all points and all centroids
-        - labels each point with a centroid (starting at 0)
-    Args:
-        - dataframe
-        - centroids
-    Returns:
-        - labels
-    '''
-    print(f"--- Finding Distances and Lables for {filename} ---")
-    
-    dist = MyCentroids.apply(lambda x: np.sqrt(((df - x)**2).sum(axis=1)))
-    labels = dist.idxmin(axis=1)
-    
-    return labels
-
-def Updated_Centroids(filename, df, cluster_labels, k):
-    '''
-    This function updates teh centriods based on the cluster_labels collected from the previous iteration of labeling
-    Args:
-        - filename (this is just for clear tracking)
-        - dataframe
-        - cluster_labels (these are generated from the function Label_Data)
-        - k (the same k as defined at the beginning of the process)
-    Returns:
-        - new centroids
-    '''
-    print(f"--- Updating Centroids for {filename} ---")
-    
-    Cluster_Means=df.groupby(cluster_labels).apply(lambda x: x.mean()).T
-
-    return Cluster_Means
-
-
-def ClusterPlot(filename, df, cluster_labels, MyCentroids):
-    MyPCA=PCA(n_components=2)
-    Data2D = MyPCA.fit_transform(df)
-    Centroids2D=MyPCA.transform(MyCentroids.T)
-    clear_output(wait=True)
-    plt.title(f"Clustering {filename}")
-    plt.scatter(x=Data2D[:,0], y =Data2D[:,1],  c=cluster_labels )
-    plt.scatter(x =Centroids2D[:,0], y= Centroids2D[:,1],s=200, alpha=0.5)
-    plt.savefig(f"./CreatedVisuals/kmeans/{filename}_kmeans.png")
-    plt.close()
     
 # DO NOT REMOVE!!!
 if __name__ == "__main__":

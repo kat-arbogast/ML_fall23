@@ -1,0 +1,165 @@
+---
+title: "Hierarchical Clustering"
+author: "Katrina Arbogast"
+output: html_document
+---
+
+# Heirarchical Clustering
+
+```{r}
+library(tidyverse)
+```
+
+___
+
+#### Setting the folder path and filename to the cleaned but not formatted data
+
+```{r}
+#-------------------------------------------------------------------------
+## Setting the folder path to the cleaned but not formatted data
+dm_state_total_area_path <- "./CleanData/dm_state_total_area_cleaned.csv"
+dm_state_percent_area_path <- "./CleanData/dm_state_percent_area_clean.csv"
+or_weather_wildfires_comments_vector_path <- "./CleanData/or_weather_wildfires_cause_comments_vectorized.csv"
+or_weather_wildfires_specific_vector_path <- "./CleanData/or_weather_wildfires_specific_cause_vectorized.csv"
+news_headlines_vector_path <- "./CleanData/NewsHeadlines_vectorized.csv"
+
+## Setting the filename
+dm_state_total_area_filename <- "dm_state_total_area_cleaned"
+dm_state_percent_area_filename <- "dm_state_percent_area_clean"
+or_weather_wildfires_comments_vector_filename <- "or_weather_wildfires_cause_comments_vectorized"
+or_weather_wildfires_specific_vector_filename <- "or_weather_wildfires_specific_cause_vectorized"
+news_headlines_vector_filename <- "NewsHeadlines_vectorized"
+#-------------------------------------------------------------------------
+```
+
+___
+
+## Ingesting Cleaned Fire and Drought Data
+
+```{r}
+# Ingest Data
+dm_state_total_area <- read.csv(dm_state_total_area_path)
+dm_state_percent_area <- read.csv(dm_state_percent_area_path)
+
+or_weather_wildfires_comments_vector <- read.csv(or_weather_wildfires_comments_vector_path)
+or_weather_wildfires_specific_vector <- read.csv(or_weather_wildfires_specific_vector_path)
+news_headlines_vector <- read.csv(news_headlines_vector_path)
+```
+
+```{r}
+head(dm_state_total_area, n=2)
+head(dm_state_percent_area, n=2)
+
+head(or_weather_wildfires_comments_vector, n=2)
+head(or_weather_wildfires_specific_vector, n=2)
+head(news_headlines_vector, n=2)
+```
+
+
+
+## Transforming Data for Unsupervised Learning 
+
+```{r}
+selecting_columns <- function(filename, df, cols_of_interest){
+  df2 <- df[, cols_of_interest]
+  print(head(df2))
+  return(df2)
+}
+```
+
+```{r}
+dm_state_total_area_nums <-
+  selecting_columns(dm_state_total_area_filename,
+                    dm_state_total_area,
+                    c('None', 'D0', 'D1', 'D2', 'D3', 'D4', 'DSCI'))
+dm_state_percent_area_nums <-
+  selecting_columns(dm_state_percent_area_filename,
+                    dm_state_percent_area,
+                    c('None', 'D0', 'D1', 'D2', 'D3', 'D4', 'DSCI'))
+
+or_weather_wildfires_comments_vector_nums <- 
+  or_weather_wildfires_comments_vector %>% 
+  select(-c(GeneralCause))
+
+or_weather_wildfires_specific_vector_nums <-
+  or_weather_wildfires_specific_vector %>% 
+  select(-c(GeneralCause))
+
+news_headlines_vector_nums <- news_headlines_vector %>% 
+  select(-c(LABEL))
+
+```
+
+```{r}
+head(dm_state_total_area_nums, n=2)
+head(dm_state_percent_area_nums, n=2)
+
+head(or_weather_wildfires_comments_vector_nums, n=2)
+head(or_weather_wildfires_specific_vector_nums, n=2)
+head(news_headlines_vector_nums, n=2)
+```
+
+
+## Normalizing Data for Unsupervised Learning
+
+```{r}
+dm_state_total_area_norm <-
+  as.data.frame(lapply(dm_state_total_area_nums,
+                       function(x) (x - min(x)) / (max(x) - min(x))))
+dm_state_percent_area_norm <-
+  as.data.frame(lapply(dm_state_percent_area_nums,
+                       function(x) (x - min(x)) / (max(x) - min(x))))
+```
+
+```{r}
+head(dm_state_total_area_norm, n=2)
+head(dm_state_percent_area_norm, n=2)
+```
+
+___
+
+
+
+## Performing Cosine Similarity and Hierarchical Clustering
+
+
+
+
+```{r}
+cosine_hclust <- function(filename, df, k_val=4){
+  # Calculate cosine similarity matrix
+  cosine_similarity_matrix <- proxy::simil(as.matrix(t(df)), method = "cosine")
+  
+  # Ensure diagonals (self-similarity) are set to 0
+  diag(cosine_similarity_matrix) <- 0
+  
+  # Perform hierarchical clustering using cosine similarity
+  hc <- hclust(as.dist(1 - cosine_similarity_matrix), method = "ward.D2")
+  plot(hc, cex=.7, hang=-11, 
+       main = "Cosine Similarity Hierarchical Clustering", 
+       sub = filename,
+       xlab="",
+       ylab="Height")
+  rect.hclust(hc, k=k_val)
+}
+```
+
+```{r}
+cosine_hclust(news_headlines_vector_filename, news_headlines_vector_nums)
+cosine_hclust(dm_state_total_area_filename, dm_state_total_area_nums, k_val=2)
+cosine_hclust(dm_state_percent_area_filename, dm_state_percent_area_nums, k_val=2)
+cosine_hclust(or_weather_wildfires_comments_vector_filename, 
+              or_weather_wildfires_comments_vector_nums, k_val = 6)
+cosine_hclust(or_weather_wildfires_specific_vector_filename,
+              or_weather_wildfires_specific_vector_nums, k_val = 6)
+```
+
+
+## On Normalized Data
+
+
+
+```{r}
+cosine_hclust(paste0(dm_state_total_area_filename, "_normalized"), dm_state_total_area_norm, k_val=2)
+cosine_hclust(paste0(dm_state_percent_area_filename, "_normalized"), dm_state_percent_area_norm, k_val=2)
+```

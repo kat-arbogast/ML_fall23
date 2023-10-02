@@ -408,6 +408,11 @@ def fire_duration_hrs(df, start_time_col, end_time_col):
 def vectorize_word_column(df, column_name):
     '''
     This function uses the methods as shown by Dr. Gates on how to vectorize text data from a dataframe column
+    Args:
+        - dataframe with at least a label column and a wordy column
+        - column that contains the sentance
+    Returns:
+        - a vectorized dataframe with a column for labels and 0/1 columns for the words
     '''
     print("--- Vectorizing Comment Columns ---")
     df2 = df.copy()
