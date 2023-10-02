@@ -8,6 +8,7 @@ output: html_document
 
 ```{r}
 library(tidyverse)
+
 ```
 
 ___
@@ -133,6 +134,8 @@ cosine_hclust <- function(filename, df, k_val=4){
   # Ensure diagonals (self-similarity) are set to 0
   diag(cosine_similarity_matrix) <- 0
   
+  png(paste0("./CreatedVisuals/hclust/", filename, ".png"), width = 800, height = 600)
+  
   # Perform hierarchical clustering using cosine similarity
   hc <- hclust(as.dist(1 - cosine_similarity_matrix), method = "ward.D2")
   plot(hc, cex=.7, hang=-11, 
@@ -141,6 +144,7 @@ cosine_hclust <- function(filename, df, k_val=4){
        xlab="",
        ylab="Height")
   rect.hclust(hc, k=k_val)
+  dev.off()
 }
 ```
 
