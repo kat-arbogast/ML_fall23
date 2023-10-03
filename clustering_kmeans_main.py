@@ -12,6 +12,7 @@ from IPython.display import clear_output
 from mpl_toolkits.mplot3d import Axes3D
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score, silhouette_samples
+from sklearn.preprocessing import StandardScaler
 from sklearn import datasets
 import matplotlib.cm as cm
 
@@ -81,6 +82,16 @@ def main():
     or_weather_wildfires_specific_vector_transformed = or_weather_wildfires_specific_vector.drop(['GeneralCause'], axis=1)
     news_healines_vector_transformed = news_healines_vector.drop(['LABEL'], axis=1)
     
+    print("\n---------- Printing the Prepared Datasets for Website Use ----------\n")
+    print_df(dm_state_total_area_filename, dm_state_total_area_transformed)
+    print_df(dm_state_percent_area_filename, dm_state_percent_area_transformed)
+    print_df(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed)
+    print_df(or_weather_wildfires_filename, or_weather_wildfires_transformed)
+    print_df(lightining_fires_filename, lightining_fires_transformed)
+    print_df(or_weather_wildfires_comments_vector_filename, or_weather_wildfires_comments_vector_transformed)
+    print_df(or_weather_wildfires_specific_vector_filename, or_weather_wildfires_specific_vector_transformed)
+    print_df(news_healines_vector_filename, news_healines_vector_transformed)
+    
     
     print("\n---------- Normalizing Data for Unsupervised Learning ----------\n")
     dm_state_total_area_norm = normalize_df(dm_state_total_area_filename, dm_state_total_area_transformed)
@@ -98,7 +109,29 @@ def main():
     
     
     print("\n---------- Determining Optimal Number of Clusters ----------\n")
-    #------------------------------------------------------------------------------------
+    
+    print("\n--- creating samples for quick computation ---\n")
+    or_weather_wildfires_transformed_sample = get_df_sample(or_weather_wildfires_filename, or_weather_wildfires_transformed, 0.3)
+    or_weather_wildfires_norm_sample = get_df_sample(or_weather_wildfires_filename + "_normalized", or_weather_wildfires_norm, 0.3)
+    or_weather_wildfires_stan_sample = get_df_sample(or_weather_wildfires_filename + "_standardized", or_weather_wildfires_stan, 0.3)
+    
+    dm_state_total_area_transformed_sample = get_df_sample(dm_state_total_area_filename, dm_state_total_area_transformed, 0.7)
+    dm_state_total_area_norm_sample = get_df_sample(dm_state_total_area_filename + "_normalized", dm_state_total_area_norm, 0.7)
+    dm_state_total_area_stan_sample = get_df_sample(dm_state_total_area_filename + "_standardized", dm_state_total_area_stan, 0.7)
+    
+    dm_state_percent_area_transformed_sample = get_df_sample(dm_state_percent_area_filename, dm_state_percent_area_transformed, 0.7)
+    dm_state_percent_area_norm_sample = get_df_sample(dm_state_percent_area_filename  + "_normalized", dm_state_percent_area_norm, 0.7)
+    dm_state_percent_area_stan_sample = get_df_sample(dm_state_percent_area_filename  + "_standardized", dm_state_percent_area_stan, 0.7)
+    
+    us_fires_burn_monthly_transformed_sample = get_df_sample(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed, 0.7)
+    us_fires_burn_monthly_norm_sample = get_df_sample(us_fires_burn_monthly_filename + "_normalized", us_fires_burn_monthly_norm, 0.7)
+    us_fires_burn_monthly_stan_sample = get_df_sample(us_fires_burn_monthly_filename + "_standardized", us_fires_burn_monthly_stan, 0.7)
+    
+    lightining_fires_transformed_sample = get_df_sample(lightining_fires_filename, lightining_fires_transformed, 0.3)
+    lightining_fires_norm_sample = get_df_sample(lightining_fires_filename + "_normalized", lightining_fires_norm, 0.3)
+    lightining_fires_stan_sample = get_df_sample(lightining_fires_filename + "_standardized", lightining_fires_stan, 0.3)
+    
+    #-------------------------------------------------------------------------------------------------------------------
     ## Elbow
     ## Ran these and then looked at the graphs. The values of k are then hard coded
     # determine_k_elbow(dm_state_total_area_filename, dm_state_total_area_transformed)
@@ -118,54 +151,109 @@ def main():
     # determine_k_elbow(or_weather_wildfires_filename + "_norm", or_weather_wildfires_norm)
     # determine_k_elbow(lightining_fires_filename + "_norm", lightining_fires_norm)
     ## determine_k_elbow(us_wildfires_2mil_filename, us_wildfires_2mil_transformed)
-    #------------------------------------------------------------------------------------
+    #-------------------------------------------------------------------------------------------------------------------
     
-    #------------------------------------------------------------------------------------------------------------------------
+    #---------------------------------------------------------------------------------------------------------------------
     ## Silhouette
+    ## This first method of plotting the silhouette score results prints those finger graphs
     # determining_k_silhouette(dm_state_total_area_filename, dm_state_total_area_transformed)
     # determining_k_silhouette(dm_state_percent_area_filename, dm_state_percent_area_transformed)
     # determining_k_silhouette(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed)
-    
     # determining_k_silhouette(dm_state_total_area_filename + "_norm", dm_state_total_area_norm)
     # determining_k_silhouette(dm_state_percent_area_filename + "_norm", dm_state_percent_area_norm)
-    # determining_k_silhouette(us_fires_burn_monthly_filename + "_norm", us_fires_burn_monthly_norm)
-    
-    # ## Create df sample with 70% of the rows from or_weather_wildfires_transformed
-    # # print(f"Sample from or_weather_wildfires_transformed")
-    # # or_weather_wildfires_transformed_sample = or_weather_wildfires_transformed.sample(frac=0.7)
-    # # or_weather_wildfires_transformed_sample.reset_index(drop=True, inplace=True)
-    
-    # determining_k_silhouette(or_weather_wildfires_filename, or_weather_wildfires_transformed)
+    # determining_k_silhouette(us_fires_burn_monthly_filename + "_norm", us_fires_burn_monthly_norm)    
+    # determining_k_silhouette(or_weather_wildfires_filename, or_weather_wildfires_transformed_sample)
     # determining_k_silhouette(lightining_fires_filename, lightining_fires_transformed)
-    
     # determining_k_silhouette(or_weather_wildfires_comments_vector_filename, or_weather_wildfires_comments_vector_transformed)
     # determining_k_silhouette(or_weather_wildfires_specific_vector_filename, or_weather_wildfires_specific_vector_transformed)
     # determining_k_silhouette(news_healines_vector_filename, news_healines_vector_transformed)
     
     # THIS TAKES WAYYYYYYYYY TO LONG - like I was on hour 18 and it was still not done...
     # determining_k_silhouette(us_wildfires_2mil_filename, us_wildfires_2mil_transformed)
-    #------------------------------------------------------------------------------------------------------------------------
+    
+    ## This method of plotting the silhouette score results in a line graph - more readable
+    silhouette_line_graph(dm_state_total_area_filename, dm_state_total_area_transformed_sample)
+    silhouette_line_graph(dm_state_total_area_filename + "_normalized", dm_state_total_area_norm_sample)
+    silhouette_line_graph(dm_state_total_area_filename + "_standardized", dm_state_total_area_stan_sample)
+    
+    silhouette_line_graph(dm_state_percent_area_filename, dm_state_percent_area_transformed_sample)
+    silhouette_line_graph(dm_state_percent_area_filename + "_normalized", dm_state_percent_area_norm_sample)
+    silhouette_line_graph(dm_state_percent_area_filename + "_standardized", dm_state_percent_area_stan_sample)
+    
+    silhouette_line_graph(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed_sample)
+    silhouette_line_graph(us_fires_burn_monthly_filename + "_normalized", us_fires_burn_monthly_norm_sample)
+    silhouette_line_graph(us_fires_burn_monthly_filename + "_standardized", us_fires_burn_monthly_stan_sample)
+    
+    silhouette_line_graph(or_weather_wildfires_filename, or_weather_wildfires_transformed_sample)
+    silhouette_line_graph(or_weather_wildfires_filename + "_normalized", or_weather_wildfires_norm_sample)
+    silhouette_line_graph(or_weather_wildfires_filename + "_standardized", or_weather_wildfires_stan_sample)
+    
+    silhouette_line_graph(lightining_fires_filename, lightining_fires_transformed_sample)
+    silhouette_line_graph(lightining_fires_filename + "_normalized", lightining_fires_norm_sample)
+    silhouette_line_graph(lightining_fires_filename + "_standardized", lightining_fires_stan_sample)
+    
+    silhouette_line_graph(or_weather_wildfires_comments_vector_filename, or_weather_wildfires_comments_vector_transformed)
+    silhouette_line_graph(or_weather_wildfires_specific_vector_filename, or_weather_wildfires_specific_vector_transformed)
+    silhouette_line_graph(news_healines_vector_filename, news_healines_vector_transformed)
+    #---------------------------------------------------------------------------------------------------------------------
 
-    #------------------------------------------------------------------------------------------------------------------------
+    #--------------------------------------------------------------------------------------------------------------------
     print("\n---------- Performing Kmeans Clustering on Numeric Values ----------\n")
-    ## Drought Monitor State Total Area Clustering
-    kmeans_clustering(dm_state_total_area_filename, dm_state_total_area_transformed, 2)
+    
+    ## Playing with different values of k
     kmeans_clustering(dm_state_total_area_filename + "_2", dm_state_total_area_transformed, 2)
     kmeans_clustering(dm_state_total_area_filename + "_3", dm_state_total_area_transformed, 3)
     kmeans_clustering(dm_state_total_area_filename + "_4", dm_state_total_area_transformed, 4)
     kmeans_clustering(dm_state_total_area_filename + "_2_normalized", dm_state_total_area_norm, 2)
+    kmeans_clustering(dm_state_total_area_filename + "_3_normalized", dm_state_total_area_norm, 3)
+    kmeans_clustering(dm_state_total_area_filename + "_4_normalized", dm_state_total_area_norm, 4)
+    kmeans_clustering(dm_state_total_area_filename + "_2_standardized", dm_state_total_area_stan, 2)
+    kmeans_clustering(dm_state_total_area_filename + "_3_standardized", dm_state_total_area_stan, 3)
+    kmeans_clustering(dm_state_total_area_filename + "_4_standardized", dm_state_total_area_stan, 4)
     
+    ## Record Data
+    kmeans_clustering(dm_state_total_area_filename, dm_state_total_area_transformed, 2)
     kmeans_clustering(dm_state_percent_area_filename, dm_state_percent_area_transformed, 2)
+    
     kmeans_clustering(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed, 2)
+    kmeans_clustering(us_fires_burn_monthly_filename + "_2_normalized", us_fires_burn_monthly_norm, 2)
+    # kmeans_clustering(us_fires_burn_monthly_filename + "_3_normalized", us_fires_burn_monthly_norm, 3)
+    # kmeans_clustering(us_fires_burn_monthly_filename + "_4_normalized", us_fires_burn_monthly_norm, 4)
+    # kmeans_clustering(us_fires_burn_monthly_filename + "_5_normalized", us_fires_burn_monthly_norm, 5)
+    kmeans_clustering(us_fires_burn_monthly_filename + "_2_standardized", us_fires_burn_monthly_stan, 2)
+    # kmeans_clustering(us_fires_burn_monthly_filename + "_3_standardized", us_fires_burn_monthly_stan, 3)
+    # kmeans_clustering(us_fires_burn_monthly_filename + "_4_standardized", us_fires_burn_monthly_stan, 4)
+    # kmeans_clustering(us_fires_burn_monthly_filename + "_5_standardized", us_fires_burn_monthly_stan, 5)
+    
     kmeans_clustering(or_weather_wildfires_filename, or_weather_wildfires_transformed, 2)
+    kmeans_clustering(or_weather_wildfires_filename + "_2_normalized", or_weather_wildfires_norm, 2)
+    # kmeans_clustering(or_weather_wildfires_filename + "_3_normalized", or_weather_wildfires_norm, 3)
+    # kmeans_clustering(or_weather_wildfires_filename + "_4_normalized", or_weather_wildfires_norm, 4)
+    # kmeans_clustering(or_weather_wildfires_filename + "_5_normalized", or_weather_wildfires_norm, 5)
+    # kmeans_clustering(or_weather_wildfires_filename + "_6_normalized", or_weather_wildfires_norm, 6)
+    # kmeans_clustering(or_weather_wildfires_filename + "_7_normalized", or_weather_wildfires_norm, 7)
+    kmeans_clustering(or_weather_wildfires_filename + "_2_standardized", or_weather_wildfires_stan, 2)
+    # kmeans_clustering(or_weather_wildfires_filename + "_3_standardized", or_weather_wildfires_stan, 3)
+    # kmeans_clustering(or_weather_wildfires_filename + "_4_standardized", or_weather_wildfires_stan, 4)
+    # kmeans_clustering(or_weather_wildfires_filename + "_5_standardized", or_weather_wildfires_stan, 5)
+    # kmeans_clustering(or_weather_wildfires_filename + "_6_standardized", or_weather_wildfires_stan, 6)
+    # kmeans_clustering(or_weather_wildfires_filename + "_7_standardized", or_weather_wildfires_stan, 7)
+    
+    
     kmeans_clustering(lightining_fires_filename, lightining_fires_transformed, 2)
     
     ## Vector Text Data
     kmeans_clustering(or_weather_wildfires_comments_vector_filename, or_weather_wildfires_comments_vector_transformed, 2)
+    kmeans_clustering(or_weather_wildfires_comments_vector_filename + "_8", or_weather_wildfires_comments_vector_transformed, 8)
+    
     kmeans_clustering(or_weather_wildfires_specific_vector_filename, or_weather_wildfires_specific_vector_transformed, 2)
+    kmeans_clustering(or_weather_wildfires_specific_vector_filename + "_9", or_weather_wildfires_specific_vector_transformed, 9)
+    
     kmeans_clustering(news_healines_vector_filename, news_healines_vector_transformed, 2)
+    
+    # Ignore as the output is bad and it takes WAY too long
     # kmeans_clustering(us_wildfires_2mil_filename, us_wildfires_2mil_transformed, 2)
-    #------------------------------------------------------------------------------------------------------------------------
+    #--------------------------------------------------------------------------------------------------------------------
 
     print("\n############################################################################\n")
         
@@ -195,7 +283,7 @@ def kmeans_clustering(filename, df, n_clusters):
     # Add labels and legend
     plt.xlabel('Principal Component 1')
     plt.ylabel('Principal Component 2')
-    plt.title(f'KMeans Clustering with PCA - {filename}')
+    plt.title(f'KMeans Clustering with PCA\n{filename}')
     plt.legend()
     plt.grid(True)
 
@@ -223,6 +311,12 @@ def transform_data(filename, df, cols_of_interest):
     print(f"{filename} head:\n{df2.head()}")
     
     return df2
+
+def  print_df(filename, df):
+    print("\n ------------------------------------------------------------ ")
+    print(f"{filename}:\n{df.head()}")
+    print(" ------------------------------------------------------------ \n")
+    
 
 def normalize_df(filename, df):
     '''
@@ -253,7 +347,42 @@ def normalize_df(filename, df):
 
 
 def standardize_df(filename, df):
-    return df
+    '''
+    This function uses the sklearn library to implement a standardization to the dataframe
+    Args:
+        - filename
+        - dataframe
+    Returns:
+        - dataframe with standardized columns
+    '''
+    scaler = StandardScaler()
+    df_standardized = pd.DataFrame(scaler.fit_transform(df), columns=df.columns)
+
+    print("\n ------------------------------ ")
+    print(f"Standardized {filename}:\n{df_standardized.head()}")
+    print(" ------------------------------ \n")
+    
+    return df_standardized
+
+
+def get_df_sample(filename, df, percent=0.5):
+    '''
+    This function takes a random sample of the a certain percent from a dataframe
+    Args:
+        - filename
+        - dataframe
+        - percent to take (default 50%)
+    Returns:
+        - sampled dataframe
+    '''
+    
+    # ## Create df sample with 50% of the rows from or_weather_wildfires_transformed
+    print(f"{percent} sample of {filename}")
+    df_sample = df.sample(frac=0.5)
+    df_sample.reset_index(drop=True, inplace=True)
+    
+    return df_sample
+    
     
 
 def determine_k_elbow(filename, df):
@@ -276,7 +405,7 @@ def determine_k_elbow(filename, df):
     # Plot the WCSS values for different k values
     plt.figure(figsize=(8, 4))
     plt.plot(range(1, 11), wcss, marker='o', linestyle='--')
-    plt.title(f'Elbow Method for Optimal k - {filename}')
+    plt.title(f'Elbow Method for Optimal k\n{filename}')
     plt.xlabel('Number of Clusters (k)')
     plt.ylabel('Within-Cluster Sum of Squares (WCSS)')
     plt.grid(True)
@@ -361,7 +490,32 @@ def determining_k_silhouette(filename, df):
     for k, score in silhouette_score_dict.items():
         print(f"--- {k}             {score} ---")
     print("--------------------------------------------------\n\n")
+
+def silhouette_line_graph(filename, df):
+    '''
+    This graph gives another option for evaluating the silhouette scores of the datasets of different values of k.
+    Args:
+        - filename
+        - dataframe (clean and preped)
+    Return:
+        - none but saves a graph to the folder ./CreatedVisual/kmeans/Silhouette
+    '''
+    print(f"--- Silhouette Line Graph for {filename} ---")
+    k_values = range(2, 11)
+    silhouette_avg = []
+    for num_clusters in k_values:
+        print(f"k = {num_clusters}")
+        kmeans = KMeans(n_clusters=num_clusters, n_init=20)
+        kmeans.fit(df)
+        cluster_labels = kmeans.labels_
+        silhouette_avg.append(silhouette_score(df, cluster_labels))
     
+    plt.plot(k_values,silhouette_avg,'bx-')    
+    plt.xlabel('Values of K') 
+    plt.ylabel('Silhouette score') 
+    plt.title(f'Silhouette analysis For Optimal k\n{filename}')   
+    plt.savefig(f"./CreatedVisuals/kmeans/Silhouette/{filename}_silhouette_line.png")
+    plt.close()
     
 # DO NOT REMOVE!!!
 if __name__ == "__main__":
