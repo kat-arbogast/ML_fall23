@@ -86,6 +86,12 @@ def main():
     save_clean_to_csv(dm_state_percent_area, path_clean, 'dm_state_percent_area_clean.csv')
     #------------------------------------------------------------------------------------------------------
     
+    
+    print("\n\n#################### News API Data ####################\n")
+    news_headlines_api = pd.read_csv("./CleanData/NewsHeadlines_vectorized.csv")
+    news_headlines_api_basket = basket_word_column(news_headlines_api)
+    save_clean_to_csv(news_headlines_api_basket, path_clean, 'NewsHeadlines_basket.csv')
+    
     print("############################################################################")
 
     
@@ -481,7 +487,7 @@ def basket_word_column(df):
     print(f"BEFORE BASKET HEAD: \n {df2.head()}")
     
     for col in df2.columns[1:]:
-        df2[col] = df2[col].apply(lambda x: col if x == 1 else '')
+        df2[col] = df2[col].apply(lambda x: col if x != 0 else '')
 
     return df2
 

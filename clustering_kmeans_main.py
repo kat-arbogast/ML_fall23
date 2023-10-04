@@ -172,67 +172,67 @@ def main():
     # determining_k_silhouette(us_wildfires_2mil_filename, us_wildfires_2mil_transformed)
     
     ## This method of plotting the silhouette score results in a line graph - more readable
-    silhouette_line_graph(dm_state_total_area_filename, dm_state_total_area_transformed_sample)
-    silhouette_line_graph(dm_state_total_area_filename + "_normalized", dm_state_total_area_norm_sample)
-    silhouette_line_graph(dm_state_total_area_filename + "_standardized", dm_state_total_area_stan_sample)
+    # silhouette_line_graph(dm_state_total_area_filename, dm_state_total_area_transformed_sample)
+    # silhouette_line_graph(dm_state_total_area_filename + "_normalized", dm_state_total_area_norm_sample)
+    # silhouette_line_graph(dm_state_total_area_filename + "_standardized", dm_state_total_area_stan_sample)
     
-    silhouette_line_graph(dm_state_percent_area_filename, dm_state_percent_area_transformed_sample)
-    silhouette_line_graph(dm_state_percent_area_filename + "_normalized", dm_state_percent_area_norm_sample)
-    silhouette_line_graph(dm_state_percent_area_filename + "_standardized", dm_state_percent_area_stan_sample)
+    # silhouette_line_graph(dm_state_percent_area_filename, dm_state_percent_area_transformed_sample)
+    # silhouette_line_graph(dm_state_percent_area_filename + "_normalized", dm_state_percent_area_norm_sample)
+    # silhouette_line_graph(dm_state_percent_area_filename + "_standardized", dm_state_percent_area_stan_sample)
     
-    silhouette_line_graph(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed_sample)
-    silhouette_line_graph(us_fires_burn_monthly_filename + "_normalized", us_fires_burn_monthly_norm_sample)
-    silhouette_line_graph(us_fires_burn_monthly_filename + "_standardized", us_fires_burn_monthly_stan_sample)
+    # silhouette_line_graph(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed_sample)
+    # silhouette_line_graph(us_fires_burn_monthly_filename + "_normalized", us_fires_burn_monthly_norm_sample)
+    # silhouette_line_graph(us_fires_burn_monthly_filename + "_standardized", us_fires_burn_monthly_stan_sample)
     
-    silhouette_line_graph(or_weather_wildfires_filename, or_weather_wildfires_transformed_sample)
-    silhouette_line_graph(or_weather_wildfires_filename + "_normalized", or_weather_wildfires_norm_sample)
-    silhouette_line_graph(or_weather_wildfires_filename + "_standardized", or_weather_wildfires_stan_sample)
+    # silhouette_line_graph(or_weather_wildfires_filename, or_weather_wildfires_transformed_sample)
+    # silhouette_line_graph(or_weather_wildfires_filename + "_normalized", or_weather_wildfires_norm_sample)
+    # silhouette_line_graph(or_weather_wildfires_filename + "_standardized", or_weather_wildfires_stan_sample)
     
-    silhouette_line_graph(lightining_fires_filename, lightining_fires_transformed_sample)
-    silhouette_line_graph(lightining_fires_filename + "_normalized", lightining_fires_norm_sample)
-    silhouette_line_graph(lightining_fires_filename + "_standardized", lightining_fires_stan_sample)
+    # silhouette_line_graph(lightining_fires_filename, lightining_fires_transformed_sample)
+    # silhouette_line_graph(lightining_fires_filename + "_normalized", lightining_fires_norm_sample)
+    # silhouette_line_graph(lightining_fires_filename + "_standardized", lightining_fires_stan_sample)
     
-    silhouette_line_graph(or_weather_wildfires_comments_vector_filename, or_weather_wildfires_comments_vector_transformed)
-    silhouette_line_graph(or_weather_wildfires_specific_vector_filename, or_weather_wildfires_specific_vector_transformed)
-    silhouette_line_graph(news_healines_vector_filename, news_healines_vector_transformed)
-    #---------------------------------------------------------------------------------------------------------------------
+    # silhouette_line_graph(or_weather_wildfires_comments_vector_filename, or_weather_wildfires_comments_vector_transformed)
+    # silhouette_line_graph(or_weather_wildfires_specific_vector_filename, or_weather_wildfires_specific_vector_transformed)
+    # silhouette_line_graph(news_healines_vector_filename, news_healines_vector_transformed)
+    # #---------------------------------------------------------------------------------------------------------------------
 
     #--------------------------------------------------------------------------------------------------------------------
     print("\n---------- Performing Kmeans Clustering on Numeric Values ----------\n")
     
     ## Playing with different values of k
-    kmeans_clustering(dm_state_total_area_filename + "_2", dm_state_total_area_transformed, 2)
-    kmeans_clustering(dm_state_total_area_filename + "_3", dm_state_total_area_transformed, 3)
-    kmeans_clustering(dm_state_total_area_filename + "_4", dm_state_total_area_transformed, 4)
-    kmeans_clustering(dm_state_total_area_filename + "_2_normalized", dm_state_total_area_norm, 2)
-    kmeans_clustering(dm_state_total_area_filename + "_3_normalized", dm_state_total_area_norm, 3)
-    kmeans_clustering(dm_state_total_area_filename + "_4_normalized", dm_state_total_area_norm, 4)
-    kmeans_clustering(dm_state_total_area_filename + "_2_standardized", dm_state_total_area_stan, 2)
-    kmeans_clustering(dm_state_total_area_filename + "_3_standardized", dm_state_total_area_stan, 3)
-    kmeans_clustering(dm_state_total_area_filename + "_4_standardized", dm_state_total_area_stan, 4)
+    # kmeans_clustering(dm_state_total_area_filename + "_2", dm_state_total_area_transformed, 2)
+    # kmeans_clustering(dm_state_total_area_filename + "_3", dm_state_total_area_transformed, 3)
+    # kmeans_clustering(dm_state_total_area_filename + "_4", dm_state_total_area_transformed, 4)
+    # kmeans_clustering(dm_state_total_area_filename + "_2_normalized", dm_state_total_area_norm, 2)
+    # kmeans_clustering(dm_state_total_area_filename + "_3_normalized", dm_state_total_area_norm, 3)
+    # kmeans_clustering(dm_state_total_area_filename + "_4_normalized", dm_state_total_area_norm, 4)
+    # kmeans_clustering(dm_state_total_area_filename + "_2_standardized", dm_state_total_area_stan, 2)
+    # kmeans_clustering(dm_state_total_area_filename + "_3_standardized", dm_state_total_area_stan, 3)
+    # kmeans_clustering(dm_state_total_area_filename + "_4_standardized", dm_state_total_area_stan, 4)
     
     ## Record Data
-    kmeans_clustering(dm_state_total_area_filename, dm_state_total_area_transformed, 2)
-    kmeans_clustering(dm_state_percent_area_filename, dm_state_percent_area_transformed, 2)
+    # kmeans_clustering(dm_state_total_area_filename, dm_state_total_area_transformed, 2)
+    # kmeans_clustering(dm_state_percent_area_filename, dm_state_percent_area_transformed, 2)
     
-    kmeans_clustering(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed, 2)
-    kmeans_clustering(us_fires_burn_monthly_filename + "_2_normalized", us_fires_burn_monthly_norm, 2)
+    # kmeans_clustering(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed, 2)
+    # kmeans_clustering(us_fires_burn_monthly_filename + "_2_normalized", us_fires_burn_monthly_norm, 2)
     # kmeans_clustering(us_fires_burn_monthly_filename + "_3_normalized", us_fires_burn_monthly_norm, 3)
     # kmeans_clustering(us_fires_burn_monthly_filename + "_4_normalized", us_fires_burn_monthly_norm, 4)
     # kmeans_clustering(us_fires_burn_monthly_filename + "_5_normalized", us_fires_burn_monthly_norm, 5)
-    kmeans_clustering(us_fires_burn_monthly_filename + "_2_standardized", us_fires_burn_monthly_stan, 2)
+    # kmeans_clustering(us_fires_burn_monthly_filename + "_2_standardized", us_fires_burn_monthly_stan, 2)
     # kmeans_clustering(us_fires_burn_monthly_filename + "_3_standardized", us_fires_burn_monthly_stan, 3)
     # kmeans_clustering(us_fires_burn_monthly_filename + "_4_standardized", us_fires_burn_monthly_stan, 4)
     # kmeans_clustering(us_fires_burn_monthly_filename + "_5_standardized", us_fires_burn_monthly_stan, 5)
     
-    kmeans_clustering(or_weather_wildfires_filename, or_weather_wildfires_transformed, 2)
-    kmeans_clustering(or_weather_wildfires_filename + "_2_normalized", or_weather_wildfires_norm, 2)
+    # kmeans_clustering(or_weather_wildfires_filename, or_weather_wildfires_transformed, 2)
+    # kmeans_clustering(or_weather_wildfires_filename + "_2_normalized", or_weather_wildfires_norm, 2)
     # kmeans_clustering(or_weather_wildfires_filename + "_3_normalized", or_weather_wildfires_norm, 3)
     # kmeans_clustering(or_weather_wildfires_filename + "_4_normalized", or_weather_wildfires_norm, 4)
     # kmeans_clustering(or_weather_wildfires_filename + "_5_normalized", or_weather_wildfires_norm, 5)
     # kmeans_clustering(or_weather_wildfires_filename + "_6_normalized", or_weather_wildfires_norm, 6)
     # kmeans_clustering(or_weather_wildfires_filename + "_7_normalized", or_weather_wildfires_norm, 7)
-    kmeans_clustering(or_weather_wildfires_filename + "_2_standardized", or_weather_wildfires_stan, 2)
+    # kmeans_clustering(or_weather_wildfires_filename + "_2_standardized", or_weather_wildfires_stan, 2)
     # kmeans_clustering(or_weather_wildfires_filename + "_3_standardized", or_weather_wildfires_stan, 3)
     # kmeans_clustering(or_weather_wildfires_filename + "_4_standardized", or_weather_wildfires_stan, 4)
     # kmeans_clustering(or_weather_wildfires_filename + "_5_standardized", or_weather_wildfires_stan, 5)
@@ -240,16 +240,16 @@ def main():
     # kmeans_clustering(or_weather_wildfires_filename + "_7_standardized", or_weather_wildfires_stan, 7)
     
     
-    kmeans_clustering(lightining_fires_filename, lightining_fires_transformed, 2)
+    # kmeans_clustering(lightining_fires_filename, lightining_fires_transformed, 2)
     
     ## Vector Text Data
-    kmeans_clustering(or_weather_wildfires_comments_vector_filename, or_weather_wildfires_comments_vector_transformed, 2)
-    kmeans_clustering(or_weather_wildfires_comments_vector_filename + "_8", or_weather_wildfires_comments_vector_transformed, 8)
+    # kmeans_clustering(or_weather_wildfires_comments_vector_filename, or_weather_wildfires_comments_vector_transformed, 2)
+    kmeans_clustering(or_weather_wildfires_comments_vector_filename + "_10", or_weather_wildfires_comments_vector_transformed, 10)
     
-    kmeans_clustering(or_weather_wildfires_specific_vector_filename, or_weather_wildfires_specific_vector_transformed, 2)
-    kmeans_clustering(or_weather_wildfires_specific_vector_filename + "_9", or_weather_wildfires_specific_vector_transformed, 9)
+    # kmeans_clustering(or_weather_wildfires_specific_vector_filename, or_weather_wildfires_specific_vector_transformed, 2)
+    # kmeans_clustering(or_weather_wildfires_specific_vector_filename + "_9", or_weather_wildfires_specific_vector_transformed, 9)
     
-    kmeans_clustering(news_healines_vector_filename, news_healines_vector_transformed, 2)
+    # kmeans_clustering(news_healines_vector_filename, news_healines_vector_transformed, 2)
     
     # Ignore as the output is bad and it takes WAY too long
     # kmeans_clustering(us_wildfires_2mil_filename, us_wildfires_2mil_transformed, 2)

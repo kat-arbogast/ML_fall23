@@ -154,7 +154,7 @@ cosine_hclust <- function(filename, df, k_val=4){
 ```
 
 ```{r}
-cosine_hclust(news_headlines_vector_filename, news_headlines_vector_nums)
+cosine_hclust(news_headlines_vector_filename, news_headlines_vector_nums, k_val=5)
 cosine_hclust(dm_state_total_area_filename, dm_state_total_area_nums, k_val=2)
 cosine_hclust(dm_state_percent_area_filename, dm_state_percent_area_nums, k_val=2)
 cosine_hclust(or_weather_wildfires_comments_vector_filename, 

@@ -18,6 +18,8 @@ from wordcloud import WordCloud, STOPWORDS
 import matplotlib.pyplot as plt
 import sklearn
 
+from data_cleaning_fire import basket_word_column
+
 
 #############################################
 ##
@@ -29,7 +31,7 @@ import sklearn
 kat_api_key = "3755f6b8d041439cb65c0e078a55bca0"
 
 ## TOPICS
-topics = ['wildfire', 'fire', 'drought', 'burn', 'weather']
+topics = ['wildfire', 'fire', 'drought', 'weather']
 
 
 ## CREAT NEW CSV FOR HEADLINES
@@ -185,9 +187,11 @@ My_Orig_DF=MyDTM_DF
 dfs = [Labels_DF, MyDTM_DF]
 
 Final_News_DF_Labeled = pd.concat(dfs,axis=1, join='inner')
+Final_News_DF_basket = basket_word_column(Final_News_DF_Labeled)
 
 # Save the vecotrized data to the CleanData Folder
-Final_News_DF_Labeled.to_csv(f"./CleanData/{filename}_vectorized.csv", index=False) 
+Final_News_DF_Labeled.to_csv(f"./CleanData/{filename}_vectorized_04102023.csv", index=False)
+Final_News_DF_basket.to_csv(f"./CleanData/{filename}_basket_04102023.csv", index=False)
 
 #############################################
 ##
