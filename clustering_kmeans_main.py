@@ -1,7 +1,13 @@
 '''
 Get ready to cluster some fire data!!
 
-Code is referenced from Dr. Gates' tutorial on KMeans By Hand in Python found at https://gatesboltonanalytics.com/?page_id=924 
+IMPORTANT NOTE TO TAS: 
+    This script deals with some pretty dense datasets. Even after sampling the script takes a very long time to run.
+    For the reproducibility of the script only one of the datasets has been used to demonstrate each of the parts.
+    This way you can see that the code does perform as expected but that it doesn't waste your time 
+    - Note it still takes about 20 minutes to run this script. 
+    
+    Especially DO NOT RUN THE 2MIL DATASET!!!! I GAVE UP ON THIS ONE ENTIRELY - I WAS AT HOUR 18 AND IT WAS ONLY HALFWAY DONE!!!
 '''
 
 import pandas as pd
@@ -27,24 +33,24 @@ pd.set_option('display.max_colwidth', -1)
 #-------------------------------------------------------------------------
 ## Setting the folder path to the cleaned but not formatted data
 dm_state_total_area_path = "./CleanData/dm_state_total_area_cleaned.csv"
-dm_state_percent_area_path = "./CleanData/dm_state_percent_area_clean.csv"
-fires_monthly_folder_path = "./CleanData/us_fires_burn_monthly.csv"
-or_weather_wildfires_path = "./CleanData/or_weather_wildfires_cleaned.csv"
-lightining_fires_path = "./CleanData/lightning_wildfires_clean.csv"
-or_weather_wildfires_comments_vector_path = "./CleanData/or_weather_wildfires_cause_comments_vectorized.csv"
-or_weather_wildfires_specific_vector_path = "./CleanData/or_weather_wildfires_specific_cause_vectorized.csv"
-news_healines_vector_path = "./CleanData/NewsHeadlines_vectorized.csv"
+# dm_state_percent_area_path = "./CleanData/dm_state_percent_area_clean.csv"
+# fires_monthly_folder_path = "./CleanData/us_fires_burn_monthly.csv"
+# or_weather_wildfires_path = "./CleanData/or_weather_wildfires_cleaned.csv"
+# lightining_fires_path = "./CleanData/lightning_wildfires_clean.csv"
+# or_weather_wildfires_comments_vector_path = "./CleanData/or_weather_wildfires_cause_comments_vectorized.csv"
+# or_weather_wildfires_specific_vector_path = "./CleanData/or_weather_wildfires_specific_cause_vectorized.csv"
+# news_healines_vector_path = "./CleanData/NewsHeadlines_vectorized.csv"
 # us_wildfires_2mil_path = "./CleanData/us_wildfires_2mil_cleaned.csv"
 
 ## Setting the filename
 dm_state_total_area_filename = "dm_state_total_area_cleaned"
-dm_state_percent_area_filename = "dm_state_percent_area_clean"
-us_fires_burn_monthly_filename = "us_fires_burn_monthly"
-or_weather_wildfires_filename = "or_weather_wildfires_cleaned"
-lightining_fires_filename = "lightning_wildfires_clean"
-or_weather_wildfires_comments_vector_filename = "or_weather_wildfires_cause_comments_vectorized"
-or_weather_wildfires_specific_vector_filename = "or_weather_wildfires_specific_cause_vectorized"
-news_healines_vector_filename = "NewsHeadlines_vectorized"
+# dm_state_percent_area_filename = "dm_state_percent_area_clean"
+# us_fires_burn_monthly_filename = "us_fires_burn_monthly"
+# or_weather_wildfires_filename = "or_weather_wildfires_cleaned"
+# lightining_fires_filename = "lightning_wildfires_clean"
+# or_weather_wildfires_comments_vector_filename = "or_weather_wildfires_cause_comments_vectorized"
+# or_weather_wildfires_specific_vector_filename = "or_weather_wildfires_specific_cause_vectorized"
+# news_healines_vector_filename = "NewsHeadlines_vectorized"
 # us_wildfires_2mil_filename = "us_wildfires_2mil_cleaned"
 #-------------------------------------------------------------------------
 
@@ -58,83 +64,83 @@ def main():
     print("\n---------- Ingesting Cleaned Fire and Drought Data ----------\n")
     # Ingest Data
     dm_state_total_area = pd.read_csv(dm_state_total_area_path)
-    dm_state_percent_area = pd.read_csv(dm_state_percent_area_path)
-    us_fires_burn_monthly = pd.read_csv(fires_monthly_folder_path)
-    or_weather_wildfires = pd.read_csv(or_weather_wildfires_path)
-    lightining_fires = pd.read_csv(lightining_fires_path)
+    # dm_state_percent_area = pd.read_csv(dm_state_percent_area_path)
+    # us_fires_burn_monthly = pd.read_csv(fires_monthly_folder_path)
+    # or_weather_wildfires = pd.read_csv(or_weather_wildfires_path)
+    # lightining_fires = pd.read_csv(lightining_fires_path)
     
-    or_weather_wildfires_comments_vector = pd.read_csv(or_weather_wildfires_comments_vector_path)
-    or_weather_wildfires_specific_vector = pd.read_csv(or_weather_wildfires_specific_vector_path)
-    news_healines_vector = pd.read_csv(news_healines_vector_path)
-    # us_wildfires_2mil = pd.read_csv(us_wildfires_2mil_path)
+    # or_weather_wildfires_comments_vector = pd.read_csv(or_weather_wildfires_comments_vector_path)
+    # or_weather_wildfires_specific_vector = pd.read_csv(or_weather_wildfires_specific_vector_path)
+    # news_healines_vector = pd.read_csv(news_healines_vector_path)
+    # # us_wildfires_2mil = pd.read_csv(us_wildfires_2mil_path)
     
     print("\n---------- Transforming Data for Unsupervised Learning ----------\n")
     ## Transform Data to keep numeric columns
     dm_state_total_area_transformed = transform_data(dm_state_total_area_filename, dm_state_total_area, ['None', 'D0', 'D1', 'D2', 'D3', 'D4', 'DSCI'])
-    dm_state_percent_area_transformed = transform_data(dm_state_percent_area_filename, dm_state_percent_area, ['None', 'D0', 'D1', 'D2', 'D3', 'D4', 'DSCI'])
-    us_fires_burn_monthly_transformed = transform_data(us_fires_burn_monthly_filename, us_fires_burn_monthly, ['Acres_Burned', 'Number_of_Fires', 'Acres_Burned_per_Fire'])
-    or_weather_wildfires_transformed = transform_data(or_weather_wildfires_filename, or_weather_wildfires, ['tmax', 'tmin', 'tavg', 'prcp', 'EstTotalAcres', 'FireDuration_hrs'])
-    lightining_fires_transformed = transform_data(lightining_fires_filename, lightining_fires, ["Days_to_extinguish_fire", "FIRE_SIZE"])
-    # us_wildfires_2mil_transformed = transform_data(us_wildfires_2mil_filename, us_wildfires_2mil, ['FIRE_SIZE', 'FireDuration_hrs'])
+    # dm_state_percent_area_transformed = transform_data(dm_state_percent_area_filename, dm_state_percent_area, ['None', 'D0', 'D1', 'D2', 'D3', 'D4', 'DSCI'])
+    # us_fires_burn_monthly_transformed = transform_data(us_fires_burn_monthly_filename, us_fires_burn_monthly, ['Acres_Burned', 'Number_of_Fires', 'Acres_Burned_per_Fire'])
+    # or_weather_wildfires_transformed = transform_data(or_weather_wildfires_filename, or_weather_wildfires, ['tmax', 'tmin', 'tavg', 'prcp', 'EstTotalAcres', 'FireDuration_hrs'])
+    # lightining_fires_transformed = transform_data(lightining_fires_filename, lightining_fires, ["Days_to_extinguish_fire", "FIRE_SIZE"])
+    # # us_wildfires_2mil_transformed = transform_data(us_wildfires_2mil_filename, us_wildfires_2mil, ['FIRE_SIZE', 'FireDuration_hrs'])
     
     # ## Transform Data to drop the label columnss
-    or_weather_wildfires_comments_vector_transformed = or_weather_wildfires_comments_vector.drop(['GeneralCause'], axis=1)
-    or_weather_wildfires_specific_vector_transformed = or_weather_wildfires_specific_vector.drop(['GeneralCause'], axis=1)
-    news_healines_vector_transformed = news_healines_vector.drop(['LABEL'], axis=1)
+    # or_weather_wildfires_comments_vector_transformed = or_weather_wildfires_comments_vector.drop(['GeneralCause'], axis=1)
+    # or_weather_wildfires_specific_vector_transformed = or_weather_wildfires_specific_vector.drop(['GeneralCause'], axis=1)
+    # news_healines_vector_transformed = news_healines_vector.drop(['LABEL'], axis=1)
     
     print("\n---------- Printing the Prepared Datasets for Website Use ----------\n")
     print_df(dm_state_total_area_filename, dm_state_total_area_transformed)
-    print_df(dm_state_percent_area_filename, dm_state_percent_area_transformed)
-    print_df(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed)
-    print_df(or_weather_wildfires_filename, or_weather_wildfires_transformed)
-    print_df(lightining_fires_filename, lightining_fires_transformed)
-    print_df(or_weather_wildfires_comments_vector_filename, or_weather_wildfires_comments_vector_transformed)
-    print_df(or_weather_wildfires_specific_vector_filename, or_weather_wildfires_specific_vector_transformed)
-    print_df(news_healines_vector_filename, news_healines_vector_transformed)
+    # print_df(dm_state_percent_area_filename, dm_state_percent_area_transformed)
+    # print_df(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed)
+    # print_df(or_weather_wildfires_filename, or_weather_wildfires_transformed)
+    # print_df(lightining_fires_filename, lightining_fires_transformed)
+    # print_df(or_weather_wildfires_comments_vector_filename, or_weather_wildfires_comments_vector_transformed)
+    # print_df(or_weather_wildfires_specific_vector_filename, or_weather_wildfires_specific_vector_transformed)
+    # print_df(news_healines_vector_filename, news_healines_vector_transformed)
     
     
     print("\n---------- Normalizing Data for Unsupervised Learning ----------\n")
     dm_state_total_area_norm = normalize_df(dm_state_total_area_filename, dm_state_total_area_transformed)
-    dm_state_percent_area_norm = normalize_df(dm_state_percent_area_filename, dm_state_percent_area_transformed)
-    us_fires_burn_monthly_norm = normalize_df(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed)
-    or_weather_wildfires_norm = normalize_df(or_weather_wildfires_filename, or_weather_wildfires_transformed)
-    lightining_fires_norm = normalize_df(lightining_fires_filename, lightining_fires_transformed)
+    # dm_state_percent_area_norm = normalize_df(dm_state_percent_area_filename, dm_state_percent_area_transformed)
+    # us_fires_burn_monthly_norm = normalize_df(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed)
+    # or_weather_wildfires_norm = normalize_df(or_weather_wildfires_filename, or_weather_wildfires_transformed)
+    # lightining_fires_norm = normalize_df(lightining_fires_filename, lightining_fires_transformed)
     
     print("\n---------- Standardizing Data for Unsupervised Learning ----------\n")
     dm_state_total_area_stan = standardize_df(dm_state_total_area_filename, dm_state_total_area_transformed)
-    dm_state_percent_area_stan = standardize_df(dm_state_percent_area_filename, dm_state_percent_area_transformed)
-    us_fires_burn_monthly_stan = standardize_df(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed)
-    or_weather_wildfires_stan = standardize_df(or_weather_wildfires_filename, or_weather_wildfires_transformed)
-    lightining_fires_stan = standardize_df(lightining_fires_filename, lightining_fires_transformed)
+    # dm_state_percent_area_stan = standardize_df(dm_state_percent_area_filename, dm_state_percent_area_transformed)
+    # us_fires_burn_monthly_stan = standardize_df(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed)
+    # or_weather_wildfires_stan = standardize_df(or_weather_wildfires_filename, or_weather_wildfires_transformed)
+    # lightining_fires_stan = standardize_df(lightining_fires_filename, lightining_fires_transformed)
     
     
     print("\n---------- Determining Optimal Number of Clusters ----------\n")
     
     print("\n--- creating samples for quick computation ---\n")
-    or_weather_wildfires_transformed_sample = get_df_sample(or_weather_wildfires_filename, or_weather_wildfires_transformed, 0.3)
-    or_weather_wildfires_norm_sample = get_df_sample(or_weather_wildfires_filename + "_normalized", or_weather_wildfires_norm, 0.3)
-    or_weather_wildfires_stan_sample = get_df_sample(or_weather_wildfires_filename + "_standardized", or_weather_wildfires_stan, 0.3)
+    # or_weather_wildfires_transformed_sample = get_df_sample(or_weather_wildfires_filename, or_weather_wildfires_transformed, 0.3)
+    # or_weather_wildfires_norm_sample = get_df_sample(or_weather_wildfires_filename + "_normalized", or_weather_wildfires_norm, 0.3)
+    # or_weather_wildfires_stan_sample = get_df_sample(or_weather_wildfires_filename + "_standardized", or_weather_wildfires_stan, 0.3)
     
     dm_state_total_area_transformed_sample = get_df_sample(dm_state_total_area_filename, dm_state_total_area_transformed, 0.7)
     dm_state_total_area_norm_sample = get_df_sample(dm_state_total_area_filename + "_normalized", dm_state_total_area_norm, 0.7)
     dm_state_total_area_stan_sample = get_df_sample(dm_state_total_area_filename + "_standardized", dm_state_total_area_stan, 0.7)
     
-    dm_state_percent_area_transformed_sample = get_df_sample(dm_state_percent_area_filename, dm_state_percent_area_transformed, 0.7)
-    dm_state_percent_area_norm_sample = get_df_sample(dm_state_percent_area_filename  + "_normalized", dm_state_percent_area_norm, 0.7)
-    dm_state_percent_area_stan_sample = get_df_sample(dm_state_percent_area_filename  + "_standardized", dm_state_percent_area_stan, 0.7)
+    # dm_state_percent_area_transformed_sample = get_df_sample(dm_state_percent_area_filename, dm_state_percent_area_transformed, 0.7)
+    # dm_state_percent_area_norm_sample = get_df_sample(dm_state_percent_area_filename  + "_normalized", dm_state_percent_area_norm, 0.7)
+    # dm_state_percent_area_stan_sample = get_df_sample(dm_state_percent_area_filename  + "_standardized", dm_state_percent_area_stan, 0.7)
     
-    us_fires_burn_monthly_transformed_sample = get_df_sample(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed, 0.7)
-    us_fires_burn_monthly_norm_sample = get_df_sample(us_fires_burn_monthly_filename + "_normalized", us_fires_burn_monthly_norm, 0.7)
-    us_fires_burn_monthly_stan_sample = get_df_sample(us_fires_burn_monthly_filename + "_standardized", us_fires_burn_monthly_stan, 0.7)
+    # us_fires_burn_monthly_transformed_sample = get_df_sample(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed, 0.7)
+    # us_fires_burn_monthly_norm_sample = get_df_sample(us_fires_burn_monthly_filename + "_normalized", us_fires_burn_monthly_norm, 0.7)
+    # us_fires_burn_monthly_stan_sample = get_df_sample(us_fires_burn_monthly_filename + "_standardized", us_fires_burn_monthly_stan, 0.7)
     
-    lightining_fires_transformed_sample = get_df_sample(lightining_fires_filename, lightining_fires_transformed, 0.3)
-    lightining_fires_norm_sample = get_df_sample(lightining_fires_filename + "_normalized", lightining_fires_norm, 0.3)
-    lightining_fires_stan_sample = get_df_sample(lightining_fires_filename + "_standardized", lightining_fires_stan, 0.3)
+    # lightining_fires_transformed_sample = get_df_sample(lightining_fires_filename, lightining_fires_transformed, 0.3)
+    # lightining_fires_norm_sample = get_df_sample(lightining_fires_filename + "_normalized", lightining_fires_norm, 0.3)
+    # lightining_fires_stan_sample = get_df_sample(lightining_fires_filename + "_standardized", lightining_fires_stan, 0.3)
     
     #-------------------------------------------------------------------------------------------------------------------
     ## Elbow
     ## Ran these and then looked at the graphs. The values of k are then hard coded
-    # determine_k_elbow(dm_state_total_area_filename, dm_state_total_area_transformed)
+    determine_k_elbow(dm_state_total_area_filename, dm_state_total_area_transformed)
     # determine_k_elbow(dm_state_percent_area_filename, dm_state_percent_area_transformed)
     # determine_k_elbow(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed)
     # determine_k_elbow(or_weather_wildfires_filename, or_weather_wildfires_transformed)
@@ -142,21 +148,28 @@ def main():
     # determine_k_elbow(or_weather_wildfires_comments_vector_filename, or_weather_wildfires_comments_vector_transformed)
     # determine_k_elbow(or_weather_wildfires_specific_vector_filename, or_weather_wildfires_specific_vector_transformed)
     # determine_k_elbow(news_healines_vector_filename, news_healines_vector_transformed)
-    # ## determine_k_elbow(us_wildfires_2mil_filename, us_wildfires_2mil_transformed)
     
     ## Elbow Norm
-    # determine_k_elbow(dm_state_total_area_filename + "_norm", dm_state_total_area_norm)
+    determine_k_elbow(dm_state_total_area_filename + "_norm", dm_state_total_area_norm)
     # determine_k_elbow(dm_state_percent_area_filename + "_norm", dm_state_percent_area_norm)
     # determine_k_elbow(us_fires_burn_monthly_filename + "_norm", us_fires_burn_monthly_norm)
     # determine_k_elbow(or_weather_wildfires_filename + "_norm", or_weather_wildfires_norm)
     # determine_k_elbow(lightining_fires_filename + "_norm", lightining_fires_norm)
+    
+    ## Elbow Standardized
+    determine_k_elbow(dm_state_total_area_filename + "_standardized", dm_state_total_area_stan)
+    # determine_k_elbow(dm_state_percent_area_filename + "_standardized", dm_state_percent_area_stan)
+    # determine_k_elbow(us_fires_burn_monthly_filename + "_standardized", us_fires_burn_monthly_stan)
+    # determine_k_elbow(or_weather_wildfires_filename + "_standardized", or_weather_wildfires_stan)
+    # determine_k_elbow(lightining_fires_filename + "_standardized", lightining_fires_stan)
+    
     ## determine_k_elbow(us_wildfires_2mil_filename, us_wildfires_2mil_transformed)
     #-------------------------------------------------------------------------------------------------------------------
     
     #---------------------------------------------------------------------------------------------------------------------
     ## Silhouette
     ## This first method of plotting the silhouette score results prints those finger graphs
-    # determining_k_silhouette(dm_state_total_area_filename, dm_state_total_area_transformed)
+    determining_k_silhouette(dm_state_total_area_filename, dm_state_total_area_transformed)
     # determining_k_silhouette(dm_state_percent_area_filename, dm_state_percent_area_transformed)
     # determining_k_silhouette(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed)
     # determining_k_silhouette(dm_state_total_area_filename + "_norm", dm_state_total_area_norm)
@@ -168,13 +181,13 @@ def main():
     # determining_k_silhouette(or_weather_wildfires_specific_vector_filename, or_weather_wildfires_specific_vector_transformed)
     # determining_k_silhouette(news_healines_vector_filename, news_healines_vector_transformed)
     
-    # THIS TAKES WAYYYYYYYYY TO LONG - like I was on hour 18 and it was still not done...
+    # DO NOT RUN!!!!! THIS TAKES WAYYYYYYYYY TO LONG - like I was on hour 18 and it was still not done...
     # determining_k_silhouette(us_wildfires_2mil_filename, us_wildfires_2mil_transformed)
     
     ## This method of plotting the silhouette score results in a line graph - more readable
-    # silhouette_line_graph(dm_state_total_area_filename, dm_state_total_area_transformed_sample)
-    # silhouette_line_graph(dm_state_total_area_filename + "_normalized", dm_state_total_area_norm_sample)
-    # silhouette_line_graph(dm_state_total_area_filename + "_standardized", dm_state_total_area_stan_sample)
+    silhouette_line_graph(dm_state_total_area_filename, dm_state_total_area_transformed_sample)
+    silhouette_line_graph(dm_state_total_area_filename + "_normalized", dm_state_total_area_norm_sample)
+    silhouette_line_graph(dm_state_total_area_filename + "_standardized", dm_state_total_area_stan_sample)
     
     # silhouette_line_graph(dm_state_percent_area_filename, dm_state_percent_area_transformed_sample)
     # silhouette_line_graph(dm_state_percent_area_filename + "_normalized", dm_state_percent_area_norm_sample)
@@ -212,7 +225,7 @@ def main():
     # kmeans_clustering(dm_state_total_area_filename + "_4_standardized", dm_state_total_area_stan, 4)
     
     ## Record Data
-    # kmeans_clustering(dm_state_total_area_filename, dm_state_total_area_transformed, 2)
+    kmeans_clustering(dm_state_total_area_filename, dm_state_total_area_transformed, 2)
     # kmeans_clustering(dm_state_percent_area_filename, dm_state_percent_area_transformed, 2)
     
     # kmeans_clustering(us_fires_burn_monthly_filename, us_fires_burn_monthly_transformed, 2)
@@ -244,7 +257,7 @@ def main():
     
     ## Vector Text Data
     # kmeans_clustering(or_weather_wildfires_comments_vector_filename, or_weather_wildfires_comments_vector_transformed, 2)
-    kmeans_clustering(or_weather_wildfires_comments_vector_filename + "_10", or_weather_wildfires_comments_vector_transformed, 10)
+    # kmeans_clustering(or_weather_wildfires_comments_vector_filename + "_10", or_weather_wildfires_comments_vector_transformed, 10)
     
     # kmeans_clustering(or_weather_wildfires_specific_vector_filename, or_weather_wildfires_specific_vector_transformed, 2)
     # kmeans_clustering(or_weather_wildfires_specific_vector_filename + "_9", or_weather_wildfires_specific_vector_transformed, 9)
@@ -262,6 +275,15 @@ def main():
 
 
 def kmeans_clustering(filename, df, n_clusters):
+    '''
+    This function uses the sklearn library to perform k-means clustering on a dataset 
+    and use Principal COmponent Analysis (PCA) to make a 2 dimensional graph to look at the clusters made.
+    Saves this graph to the kmeans folder in CreatedVisauls. 
+    Args:
+        - filename
+        - dataframe
+        - n_clusters (the number of clusters)
+    '''
     print(f"\n--- Performing KMeans on {filename} ---")
     # Perform KMeans clustering
     kmeans = KMeans(n_clusters=n_clusters, n_init=20)
