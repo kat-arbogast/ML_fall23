@@ -481,13 +481,15 @@ def basket_word_column(df):
     Returns:
         - a dataframe where 1 is the columns name and 0 becomes an empty string
     '''
-    print("--- Make a Column of Words into Transactional/Basket Data ---")
+    print("\n--- Make a Column of Words into Transactional/Basket Data ---\n")
     df2 = df.copy()
     
-    print(f"BEFORE BASKET HEAD: \n {df2.head()}")
+    print(f"\n\nBEFORE BASKET HEAD: \n {df2.head()}")
     
     for col in df2.columns[1:]:
         df2[col] = df2[col].apply(lambda x: col if x != 0 else '')
+        
+    print(f"\n\nAFTER BASKET HEAD: \n {df2.head()}")
 
     return df2
 
