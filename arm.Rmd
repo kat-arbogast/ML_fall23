@@ -1,0 +1,247 @@
+---
+title: "Association Rule Mining"
+author: "Katrina Arbogast"
+output: html_document
+---
+
+
+```{r}
+library(viridis)
+library(arules)
+library(TSP)
+library(data.table)
+#library(ggplot2)
+#library(Matrix)
+library(tcltk)
+library(dplyr)
+library(devtools)
+library(purrr)
+library(tidyr)
+## DO THIS ONCE
+## FIRST - you MUST register and log into github
+## install_github("mhahsler/arulesViz")
+## RE: https://github.com/mhahsler/arulesViz
+
+##############
+## IF YOUR CODE BREAKS - TRY THIS
+##
+## Error in length(obj) : Method length not implemented for class rules 
+## DO THIS: 
+## (1) detach("package:arulesViz", unload=TRUE)
+## (2) detach("package:arules", unload=TRUE)
+## (3) library(arules)
+## (4) library(arulesViz)
+###################################################################
+
+## To see if you have tcltk run this on the console...
+# capabilities()["tcltk"]
+library(arulesViz)
+```
+
+#### Setting folder path and filnames
+
+```{r}
+#------------------------------------------------------------------------------
+# Setting the folder path to the cleaned but not formatted data
+or_weather_wildfires_comments_basket_path <- "./CleanData/or_weather_wildfires_cause_comments_basket.csv"
+or_weather_wildfires_specific_basket_path <- "./CleanData/or_weather_wildfires_specific_cause_basket.csv"
+news_headlines_basket_path <- "./CleanData/NewsHeadlines_basket.csv"
+
+# Setting the filename
+or_weather_wildfires_comments_filename <- "or_weather_wildfires_cause_comments"
+or_weather_wildfires_specific_filename <- "or_weather_wildfires_specific_cause"
+news_headlines_filename <- "NewsHeadlines"
+#------------------------------------------------------------------------------
+```
+
+## Ingesting Cleaned Fire and Drought Data
+
+```{r}
+or_cause_comments <- read.csv(or_weather_wildfires_comments_basket_path)
+or_specific_cause <- read.csv(or_weather_wildfires_specific_basket_path)
+news_headlines <- read.csv(news_headlines_basket_path)
+```
+
+
+### Basket Data
+
+```{r}
+head(or_cause_comments)
+head(or_specific_cause)
+head(news_headlines)
+```
+
+For this section of the project I have decided to leave the label columns, this is because I would like to analyze the relationship between them and the words that were found with them, as well as the associations between the words themselves. I think this could give a little insight into what kind of words are associated with fires in the news and what words are associated with the different causes of fires. 
+
+
+
+## Getting the Transaction Data
+
+
+```{r}
+or_cause_comments_transactions <-
+  read.transactions(or_weather_wildfires_comments_basket_path,
+                    rm.duplicates = FALSE, 
+                    format = "basket",  
+                    sep=",",  
+                    cols=NULL)
+
+or_specific_cause_transactions <-
+  read.transactions(or_weather_wildfires_specific_basket_path,
+                    rm.duplicates = FALSE, 
+                    format = "basket",  
+                    sep=",",  
+                    cols=NULL)
+
+news_headlines_transactions <-
+  read.transactions(news_headlines_basket_path,
+                    rm.duplicates = FALSE, 
+                    format = "basket",  
+                    sep=",",  
+                    cols=NULL)
+```
+
+
+## Apriori
+
+```{r}
+or_cause_comments_rules = arules::apriori(or_cause_comments_transactions,
+                                          parameter = list(support=.03,
+                                                           confidence=.05,
+                                                           minlen=2))
+
+inspect(or_cause_comments_rules)
+```
+
+
+```{r}
+or_specific_cause_rules = arules::apriori(or_specific_cause_transactions, 
+                                          parameter = list(support=.04, 
+                                                           confidence=.05,
+                                                           minlen=2))
+
+inspect(or_specific_cause_rules)
+```
+
+
+```{r}
+news_headlines_rules = arules::apriori(news_headlines_transactions, 
+                                       parameter = list(support=.025, 
+                                                        confidence=.05,
+                                                        minlen=2))
+
+inspect(news_headlines_rules)
+```
+
+
+## Plotting the Items Frequency
+
+```{r}
+## Plot of which items are most frequent
+itemFrequencyPlot(or_cause_comments_transactions, topN=20, type="absolute")
+```
+
+```{r}
+## Plot of which items are most frequent
+itemFrequencyPlot(or_specific_cause_transactions, topN=20, type="absolute")
+```
+
+```{r}
+## Plot of which items are most frequent
+itemFrequencyPlot(news_headlines_transactions, topN=25, type="absolute")
+```
+
+
+## Sorting
+
+
+### Oregron Causes
+
+
+#### Cause Comments
+
+
+```{r}
+## Sort rules Support
+SortedRules <- sort(or_cause_comments_rules, by="support", decreasing=TRUE)
+inspect(SortedRules[1:15])
+(summary(SortedRules))
+```
+
+```{r}
+## Sort rules Confidence
+SortedRules <- sort(or_cause_comments_rules, by="confidence", decreasing=TRUE)
+inspect(SortedRules[1:15])
+(summary(SortedRules))
+```
+
+```{r}
+## Sort rules lift
+SortedRules <- sort(or_cause_comments_rules, by="lift", decreasing=TRUE)
+inspect(SortedRules[1:15])
+(summary(SortedRules))
+```
+
+
+#### Specific Causes
+
+
+```{r}
+## Sort rules Support
+SortedRules <- sort(or_specific_cause_rules, by="support", decreasing=TRUE)
+inspect(SortedRules[1:15])
+(summary(SortedRules))
+```
+
+```{r}
+## Sort rules Confidence
+SortedRules <- sort(or_specific_cause_rules, by="confidence", decreasing=TRUE)
+inspect(SortedRules[1:15])
+(summary(SortedRules))
+```
+
+```{r}
+## Sort rules lift
+SortedRules <- sort(or_specific_cause_rules, by="lift", decreasing=TRUE)
+inspect(SortedRules[1:15])
+(summary(SortedRules))
+```
+
+
+### News Headlines
+
+
+```{r}
+## Sort rules Support
+SortedRules <- sort(news_headlines_rules, by="support", decreasing=TRUE)
+inspect(SortedRules[1:15])
+(summary(SortedRules))
+```
+
+```{r}
+## Sort rules Confidence
+SortedRules <- sort(news_headlines_rules, by="confidence", decreasing=TRUE)
+inspect(SortedRules[1:15])
+(summary(SortedRules))
+```
+
+```{r}
+## Sort rules lift
+SortedRules <- sort(news_headlines_rules, by="lift", decreasing=TRUE)
+inspect(SortedRules[1:15])
+(summary(SortedRules))
+```
+
+
+```{r}
+plot(or_cause_comments_rules, method="graph", engine="htmlwidget")
+```
+
+```{r}
+plot(or_specific_cause_rules, method="graph", engine="htmlwidget")
+```
+
+```{r}
+plot(news_headlines_rules, method="graph", engine="htmlwidget")
+```
+
