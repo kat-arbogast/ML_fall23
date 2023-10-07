@@ -490,6 +490,8 @@ def basket_word_column(df):
         df2[col] = df2[col].apply(lambda x: col if x != 0 else '')
         
     print(f"\n\nAFTER BASKET HEAD: \n {df2.head()}")
+    
+    df2 = df2.drop(df2.columns[0], axis=1)
 
     return df2
 

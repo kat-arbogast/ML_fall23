@@ -69,6 +69,10 @@ news_headlines <- read.csv(news_headlines_basket_path)
 head(or_cause_comments)
 head(or_specific_cause)
 head(news_headlines)
+
+# or_cause_comments
+# or_specific_cause
+# news_headlines
 ```
 
 For this section of the project I have decided to leave the label columns, this is because I would like to analyze the relationship between them and the words that were found with them, as well as the associations between the words themselves. I think this could give a little insight into what kind of words are associated with fires in the news and what words are associated with the different causes of fires. 
@@ -106,7 +110,7 @@ news_headlines_transactions <-
 
 ```{r}
 or_cause_comments_rules = arules::apriori(or_cause_comments_transactions,
-                                          parameter = list(support=.03,
+                                          parameter = list(support=.02,
                                                            confidence=.05,
                                                            minlen=2))
 
@@ -116,7 +120,7 @@ inspect(or_cause_comments_rules)
 
 ```{r}
 or_specific_cause_rules = arules::apriori(or_specific_cause_transactions, 
-                                          parameter = list(support=.04, 
+                                          parameter = list(support=.03, 
                                                            confidence=.05,
                                                            minlen=2))
 
@@ -138,17 +142,53 @@ inspect(news_headlines_rules)
 
 ```{r}
 ## Plot of which items are most frequent
-itemFrequencyPlot(or_cause_comments_transactions, topN=20, type="absolute")
+png(paste0("./CreatedVisuals/arm/frequency_plot_", 
+           or_weather_wildfires_comments_filename, ".png"), 
+      width     = 4,
+      height    = 3,
+      units     = "in",
+      res       = 1200,
+      pointsize = 4)
+itemFrequencyPlot(or_cause_comments_transactions, 
+                  topN=20, 
+                  type="absolute", 
+                  main=paste0("Top 20 Terms Frequency: ", 
+                              or_weather_wildfires_comments_filename))
+dev.off()
 ```
 
 ```{r}
 ## Plot of which items are most frequent
-itemFrequencyPlot(or_specific_cause_transactions, topN=20, type="absolute")
+png(paste0("./CreatedVisuals/arm/frequency_plot_", 
+           or_weather_wildfires_specific_filename, ".png"), 
+      width     = 4,
+      height    = 3,
+      units     = "in",
+      res       = 1200,
+      pointsize = 4)
+itemFrequencyPlot(or_specific_cause_transactions, 
+                  topN=20, 
+                  type="absolute", 
+                  main=paste0("Top 20 Terms Frequency: ", 
+                              or_weather_wildfires_specific_filename))
+dev.off()
 ```
 
 ```{r}
 ## Plot of which items are most frequent
-itemFrequencyPlot(news_headlines_transactions, topN=25, type="absolute")
+png(paste0("./CreatedVisuals/arm/frequency_plot_", 
+           news_headlines_filename, ".png"), 
+      width     = 4,
+      height    = 3,
+      units     = "in",
+      res       = 1200,
+      pointsize = 4)
+itemFrequencyPlot(news_headlines_transactions, 
+                  topN=20, 
+                  type="absolute", 
+                  main=paste0("Top 20 Terms Frequency: ", 
+                              news_headlines_filename))
+dev.off()
 ```
 
 
