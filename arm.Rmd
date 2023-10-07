@@ -274,14 +274,55 @@ inspect(SortedRules[1:15])
 
 
 ```{r}
-plot(or_cause_comments_rules, method="graph", engine="htmlwidget")
+png(paste0("./CreatedVisuals/arm/network_", 
+           or_weather_wildfires_comments_filename, ".png"), 
+      width     = 8,
+      height    = 4,
+      units     = "in",
+      res       = 1200,
+      pointsize = 4)
+plot(or_cause_comments_rules, method="graph")
+dev.off()
 ```
 
 ```{r}
-plot(or_specific_cause_rules, method="graph", engine="htmlwidget")
+png(paste0("./CreatedVisuals/arm/network_", 
+           or_weather_wildfires_specific_filename, ".png"), 
+      width     = 15,
+      height    = 3,
+      units     = "in",
+      res       = 1200,
+      pointsize = 4)
+plot(or_specific_cause_rules, method="graph")
+dev.off()
 ```
 
 ```{r}
-plot(news_headlines_rules, method="graph", engine="htmlwidget")
+png(paste0("./CreatedVisuals/arm/network_", 
+           news_headlines_filename, ".png"), 
+      width     = 8,
+      height    = 4,
+      units     = "in",
+      res       = 1200,
+      pointsize = 4)
+plot(news_headlines_rules, method="graph")
+dev.off()
+```
+```{r}
+plot(or_cause_comments_rules, method="graph", engine = "htmlwidget")
 ```
 
+
+```{r}
+plot(or_specific_cause_rules, method="graph", engine = "htmlwidget")
+```
+
+
+```{r}
+plot(news_headlines_rules, method="graph", engine = "htmlwidget")
+```
+
+
+___
+
+# Printing out Mathematics equations for the website
