@@ -326,3 +326,64 @@ plot(news_headlines_rules, method="graph", engine = "htmlwidget")
 ___
 
 # Printing out Mathematics equations for the website
+
+.
+.
+.
+.
+.
+
+
+$$
+\text{Given } X \rightarrow Y \text{ then,} 
+$$
+.
+.
+.
+.
+. 
+
+$$
+\text{                                                                                                                                                                                           }
+$$
+
+
+$$
+\text{Support(X,Y)} 
+$$
+
+$$
+= P(X \cap Y) = \frac{frequency(X, Y)}{N}
+$$
+
+$$
+\text{                                                                                                                                                                                           }
+$$
+
+$$
+\text{Confidence(X,Y)} 
+$$
+
+$$
+= P(Y | X) = \frac{P(X \cap Y)}{P(X)} = \frac{frequency(X,Y)}{frequency(X)}
+$$
+
+
+$$
+\text{                                                                                                                                                                                           }
+$$
+
+
+
+$$
+\text{Lift(X,Y)}
+$$
+
+$$
+= \frac{P(X \cap Y)}{P(Y)P(X)} = \frac{\text{Support}(X,Y)}{\text{Support}(Y)\text{Support}(X)}
+$$
+
+
+$$
+\text{                                                                                                                                                                                           }
+$$
