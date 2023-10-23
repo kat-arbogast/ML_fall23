@@ -14,7 +14,7 @@ import random as rd
 from sklearn.tree import DecisionTreeClassifier
 from sklearn import tree
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_score
 import graphviz 
 
 
@@ -180,9 +180,12 @@ def decision_tree_analysis(train_labels, train_df, test_labels, test_df, filenam
     DT_pred=MyDT.predict(test_df)
     print(DT_pred)
     
+    score = accuracy_score(test_labels, DT_pred)
+    print(f"\nThe accurary is for {filename} is : {score}\n")
+    
     ## Show the confusion matrix
     cm = confusion_matrix(test_labels, DT_pred)
-    print("\nThe confusion matrix is:")
+    print(f"\nThe confusion matrix for {filename} is:")
     print(cm)
     
 
