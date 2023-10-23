@@ -54,21 +54,32 @@ def main():
     
     news_headlines_df_selected = news_headlines_df[news_headlines_df['LABEL'].isin(["wildfire", "weather"])]
     news_headlines_df_selected2 = news_headlines_df[news_headlines_df['LABEL'].isin(["burn", "weather"])]
+    news_headlines_df2 = set_new_generic_label(news_headlines_df, "LABEL")
+
     
     print("\n\n ---------- Selecting Train and Test Data ---------- \n")
     fires_monthly_train_labels, fires_monthly_train_df, fires_monthly_test_labels, fires_monthly_test_df = setup_train_test_data(fires_monthly_df, label_col="Month", cols_of_interst_plus_label=["Month","Acres_Burned", "Number_of_Fires", "Acres_Burned_per_Fire"], seed_val=1992)
     fires_season_train_labels, fires_season_train_df, fires_season_test_labels, fires_season_test_df = setup_train_test_data(fires_monthly_df, label_col="Season", cols_of_interst_plus_label=["Season","Acres_Burned", "Number_of_Fires", "Acres_Burned_per_Fire"], seed_val=123)
+    
     news_train_labels, news_train_df, news_test_labels, news_test_df = setup_train_test_data(news_headlines_df, "LABEL", seed_val=2005)
+    news2_train_labels, news2_train_df, news2_test_labels, news2_test_df = setup_train_test_data(news_headlines_df2, "GenericLabel")
     news_select_train_labels, news_select_train_df, news_select_test_labels, news_select_test_df = setup_train_test_data(news_headlines_df_selected, "LABEL", seed_val=1234)
     news_select2_train_labels, news_select2_train_df, news_select2_test_labels, news_select2_test_df = setup_train_test_data(news_headlines_df_selected2, "LABEL")
     
+    or_cause_train_labels, or_cause_train_df, or_cause_test_labels, or_cause_test_df = setup_train_test_data(or_weather_wildfires_comments_vector_df, "GeneralCause")
+    or_specific_train_labels, or_specific_train_df, or_specific_test_labels, or_specific_test_df = setup_train_test_data(or_weather_wildfires_specific_vector_df, "GeneralCause")
     
     print("\n\n ---------- Decision Tree ---------- \n")
-    fires_monthly_cm = decision_tree_analysis(fires_monthly_train_labels, fires_monthly_train_df, fires_monthly_test_labels, fires_monthly_test_df, us_fires_burn_monthly_filename)
-    fires_season_cm = decision_tree_analysis(fires_season_train_labels, fires_season_train_df, fires_season_test_labels, fires_season_test_df, f"{us_fires_burn_monthly_filename}_season")
-    news_cm = decision_tree_analysis(news_train_labels, news_train_df, news_test_labels, news_test_df, news_headlines_vector_filename)
-    news_select_cm = decision_tree_analysis(news_select_train_labels, news_select_train_df, news_select_test_labels, news_select_test_df, f"{news_headlines_vector_filename}_wildfires_weather")
-    news_select2_cm = decision_tree_analysis(news_select2_train_labels, news_select2_train_df, news_select2_test_labels, news_select2_test_df, f"{news_headlines_vector_filename}_burn_weather")
+    decision_tree_analysis(fires_monthly_train_labels, fires_monthly_train_df, fires_monthly_test_labels, fires_monthly_test_df, us_fires_burn_monthly_filename, max_depth=20)
+    decision_tree_analysis(fires_season_train_labels, fires_season_train_df, fires_season_test_labels, fires_season_test_df, f"{us_fires_burn_monthly_filename}_season")
+    
+    decision_tree_analysis(news_train_labels, news_train_df, news_test_labels, news_test_df, news_headlines_vector_filename)
+    decision_tree_analysis(news2_train_labels, news2_train_df, news2_test_labels, news2_test_df, f"{news_headlines_vector_filename}_2")
+    decision_tree_analysis(news_select_train_labels, news_select_train_df, news_select_test_labels, news_select_test_df, f"{news_headlines_vector_filename}_wildfires_weather")
+    decision_tree_analysis(news_select2_train_labels, news_select2_train_df, news_select2_test_labels, news_select2_test_df, f"{news_headlines_vector_filename}_burn_weather")
+    
+    decision_tree_analysis(or_cause_train_labels, or_cause_train_df, or_cause_test_labels, or_cause_test_df, or_weather_wildfires_comments_vector_filename, max_depth=25)
+    decision_tree_analysis(or_specific_train_labels, or_specific_train_df, or_specific_test_labels, or_specific_test_df, or_weather_wildfires_specific_vector_filename, max_depth=25)
     
 def set_fire_months(df, month_col):
     '''
@@ -82,7 +93,16 @@ def set_fire_months(df, month_col):
     df['Season'] = df[month_col].apply(lambda x: 'Fire_Season' if x in ['August', 'July', 'June', 'September'] else 'Normal')
     return df
 
-
+def set_new_generic_label(df, label_col):
+    
+    df2 = df.copy()
+    
+    df2['GenericLabel'] = df2[label_col].apply(lambda x: 'Fire' if x in ['wildfire', 'burn', 'fire'] else 'Weather')
+    
+    df2 = df2.drop(label_col, axis=1)
+    
+    return df2
+    
 
 def setup_train_test_data(df, label_col, cols_of_interst_plus_label=None, test_size=0.2, seed_val=1):
     '''
@@ -108,6 +128,10 @@ def setup_train_test_data(df, label_col, cols_of_interst_plus_label=None, test_s
     
     rd.seed(seed_val)
     train_df, test_df = train_test_split(df2, test_size=test_size)
+    
+    print(f"\n\n Training Dataset before labels removed \n {train_df.head()} \n\n")
+    
+    print(f"\n\n Testing Dataset before labels removed \n {test_df.head()} \n\n")
     
     # Test
     test_labels = test_df[label_col]
@@ -163,13 +187,13 @@ def decision_tree_analysis(train_labels, train_df, test_labels, test_df, filenam
     
 
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=MyDT.classes_)
-    plt.figure(figsize=(20,8))
+    plt.figure(figsize=(18, 15))
     disp.plot(cmap='magma')
+    plt.xticks(rotation=45, ha='right')
     plt.title(f"Confusion Matrix\n - {filename} -") 
+    plt.tight_layout()
     plt.savefig(f"./CreatedVisuals/DecisionTree/{filename}_cm.png")
     plt.close()
-    
-    return cm
     
 
 
