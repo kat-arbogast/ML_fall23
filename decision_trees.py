@@ -25,7 +25,6 @@ or_weather_wildfires_path = "./CleanData/or_weather_wildfires_cleaned.csv"
 or_weather_wildfires_comments_vector_path = "./CleanData/or_weather_wildfires_cause_comments_vectorized.csv"
 or_weather_wildfires_specific_vector_path = "./CleanData/or_weather_wildfires_specific_cause_vectorized.csv"
 news_headlines_vector_path = "./CleanData/NewsHeadlines_vectorized.csv"
-# us_wildfires_2mil_path = "./CleanData/us_wildfires_2mil_cleaned.csv"
 
 ## Setting the filename
 
@@ -34,7 +33,6 @@ or_weather_wildfires_filename = "or_weather_wildfires_cleaned"
 or_weather_wildfires_comments_vector_filename = "or_weather_wildfires_cause_comments_vectorized"
 or_weather_wildfires_specific_vector_filename = "or_weather_wildfires_specific_cause_vectorized"
 news_headlines_vector_filename = "NewsHeadlines_vectorized"
-us_wildfires_2mil_filename = "us_wildfires_2mil_cleaned"
 #-------------------------------------------------------------------------
 
 def main():
