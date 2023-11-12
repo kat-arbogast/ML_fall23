@@ -289,7 +289,7 @@ def label_counts(data_dict, filename, order=None):
     plt.close()
 
 
-def run_svm(sample_dict, filename):
+def run_svm(sample_dict, filename, visual_folder="./CreatedVisuals/svm"):
     
     
     
@@ -300,45 +300,84 @@ def run_svm(sample_dict, filename):
     test_df = sample_dict['test_df']
     
 
-    SVM_Model1=LinearSVC(C=50)
+    SVM_Model1=LinearSVC(C=50, dual="auto")
     SVM_Model1.fit(train_df, train_labels)
 
     print("SVM 1 prediction:\n", SVM_Model1.predict(test_df))
     print("Actual:")
     print(test_labels)
+    
+    score = accuracy_score(test_labels, SVM_Model1.predict(test_df))
+    print(f"\nThe accurary is for Linear SVM {filename} is : {score}\n")
 
     SVM_matrix = confusion_matrix(test_labels, SVM_Model1.predict(test_df))
     print("\nThe confusion matrix for Linear SVM is:")
     print(SVM_matrix)
     print("\n\n")
     
+    disp = ConfusionMatrixDisplay(confusion_matrix=SVM_matrix, display_labels=SVM_Model1.classes_)
+    plt.figure(figsize=(18, 15))
+    disp.plot(cmap='magma')
+    plt.xticks(rotation=45, ha='right')
+    plt.title(f"Confusion Matrix Linear SVM\n- {filename} Linear SVM -") 
+    plt.tight_layout()
+    plt.savefig(f"{visual_folder}/{filename}_linear_svm_cm.png")
+    plt.close()
+    
     
     #--------------other kernels
     ## RBF
-    SVM_Model2=sklearn.svm.SVC(C=1.0, kernel='rbf', degree=3, gamma="auto")
+    print("--- Starting RBF ---")
+    SVM_Model2=sklearn.svm.SVC(C=1.0, kernel='rbf', gamma="auto")
     SVM_Model2.fit(train_df, train_labels)
 
     print("SVM prediction:\n", SVM_Model2.predict(test_df))
     print("Actual:")
     print(test_labels)
+    
+    score = accuracy_score(test_labels, SVM_Model2.predict(test_df))
+    print(f"\nThe accurary is for rbf SVM {filename} is : {score}\n")
 
     SVM_matrix = confusion_matrix(test_labels, SVM_Model2.predict(test_df))
     print("\nThe confusion matrix for rbf SVM is:")
     print(SVM_matrix)
     print("\n\n")
+    
+    
+    disp = ConfusionMatrixDisplay(confusion_matrix=SVM_matrix, display_labels=SVM_Model1.classes_)
+    plt.figure(figsize=(18, 15))
+    disp.plot(cmap='magma')
+    plt.xticks(rotation=45, ha='right')
+    plt.title(f"Confusion Matrix RBF SVM\n- {filename} -") 
+    plt.tight_layout()
+    plt.savefig(f"{visual_folder}/{filename}_rbf_svm_cm.png")
+    plt.close()
 
-    ## POLY
-    SVM_Model3=sklearn.svm.SVC(C=1.0, kernel='poly', degree=3, gamma="auto")
-    SVM_Model3.fit(train_df, train_labels)
+    # ## POLY
+    # print("--- Starting Poly ---")
+    # SVM_Model3=sklearn.svm.SVC(C=1.0, kernel='poly', degree=3, gamma="auto")
+    # SVM_Model3.fit(train_df, train_labels)
 
-    print("SVM prediction:\n", SVM_Model3.predict(test_df))
-    print("Actual:")
-    print(test_labels)
+    # print("SVM prediction:\n", SVM_Model3.predict(test_df))
+    # print("Actual:")
+    # print(test_labels)
+    
+    # score = accuracy_score(test_labels, SVM_Model3.predict(test_df))
+    # print(f"\nThe accurary is for poly SVM {filename} is : {score}\n")
 
-    SVM_matrix = confusion_matrix(test_labels, SVM_Model3.predict(test_df))
-    print("\nThe confusion matrix for poly p = 3 SVM is:")
-    print(SVM_matrix)
-    print("\n\n")
+    # SVM_matrix = confusion_matrix(test_labels, SVM_Model3.predict(test_df))
+    # print("\nThe confusion matrix for poly p = 3 SVM is:")
+    # print(SVM_matrix)
+    # print("\n\n")
+    
+    # disp = ConfusionMatrixDisplay(confusion_matrix=SVM_matrix, display_labels=SVM_Model1.classes_)
+    # plt.figure(figsize=(18, 15))
+    # disp.plot(cmap='magma')
+    # plt.xticks(rotation=45, ha='right')
+    # plt.title(f"Confusion Matrix\n - {filename} Linear SVM -") 
+    # plt.tight_layout()
+    # plt.savefig(f"{visual_folder}/{filename}_poly_svm_cm.png")
+    # plt.close()
 
 
 # DO NOT REMOVE!!!
