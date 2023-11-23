@@ -120,7 +120,7 @@ def set_new_generic_label(df, label_col):
     return df2
     
 
-def setup_train_test_data(df, label_col, cols_of_interst_plus_label=None, test_size=0.2, seed_val=1):
+def setup_train_test_data(df, label_col, cols_of_interst_plus_label=None, test_size=0.1, seed_val=1):
 
     if cols_of_interst_plus_label is None:
         df2 = df.copy()
@@ -353,31 +353,31 @@ def run_svm(sample_dict, filename, visual_folder="./CreatedVisuals/svm"):
     plt.savefig(f"{visual_folder}/{filename}_rbf_svm_cm.png")
     plt.close()
 
-    # ## POLY
-    # print("--- Starting Poly ---")
-    # SVM_Model3=sklearn.svm.SVC(C=1.0, kernel='poly', degree=3, gamma="auto")
-    # SVM_Model3.fit(train_df, train_labels)
+    ## POLY
+    print("--- Starting Poly ---")
+    SVM_Model3=sklearn.svm.SVC(C=1.0, kernel='poly', degree=3, gamma="scale")
+    SVM_Model3.fit(train_df, train_labels)
 
-    # print("SVM prediction:\n", SVM_Model3.predict(test_df))
-    # print("Actual:")
-    # print(test_labels)
+    print("SVM prediction:\n", SVM_Model3.predict(test_df))
+    print("Actual:")
+    print(test_labels)
     
-    # score = accuracy_score(test_labels, SVM_Model3.predict(test_df))
-    # print(f"\nThe accurary is for poly SVM {filename} is : {score}\n")
+    score = accuracy_score(test_labels, SVM_Model3.predict(test_df))
+    print(f"\nThe accurary is for poly SVM {filename} is : {score}\n")
 
-    # SVM_matrix = confusion_matrix(test_labels, SVM_Model3.predict(test_df))
-    # print("\nThe confusion matrix for poly p = 3 SVM is:")
-    # print(SVM_matrix)
-    # print("\n\n")
+    SVM_matrix = confusion_matrix(test_labels, SVM_Model3.predict(test_df))
+    print("\nThe confusion matrix for poly p = 3 SVM is:")
+    print(SVM_matrix)
+    print("\n\n")
     
-    # disp = ConfusionMatrixDisplay(confusion_matrix=SVM_matrix, display_labels=SVM_Model1.classes_)
-    # plt.figure(figsize=(18, 15))
-    # disp.plot(cmap='magma')
-    # plt.xticks(rotation=45, ha='right')
-    # plt.title(f"Confusion Matrix\n - {filename} Linear SVM -") 
-    # plt.tight_layout()
-    # plt.savefig(f"{visual_folder}/{filename}_poly_svm_cm.png")
-    # plt.close()
+    disp = ConfusionMatrixDisplay(confusion_matrix=SVM_matrix, display_labels=SVM_Model1.classes_)
+    plt.figure(figsize=(18, 15))
+    disp.plot(cmap='magma')
+    plt.xticks(rotation=45, ha='right')
+    plt.title(f"Confusion Matrix\n - {filename} Linear SVM -") 
+    plt.tight_layout()
+    plt.savefig(f"{visual_folder}/{filename}_poly_svm_cm.png")
+    plt.close()
 
 
 # DO NOT REMOVE!!!
