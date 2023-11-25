@@ -52,8 +52,8 @@ def main():
     news_headlines_df_selected2 = news_headlines_df[news_headlines_df['LABEL'].isin(["burn", "weather"])]
     news_headlines_df2 = set_new_generic_label(news_headlines_df, "LABEL")
     
-    or_weather_wildfires_df["FireDuration_hrs"] = or_weather_wildfires_df["FireDuration_hrs"].apply(lambda x: 0 if x <= 0 else x)
-    or_weather_wildfires_df[["tmax", "tmin", "tavg", "prcp"]] = or_weather_wildfires_df[["tmax", "tmin", "tavg", "prcp"]].apply(lambda x: (x-x.min())/ (x.max() - x.min()))  
+    # or_weather_wildfires_df["FireDuration_hrs"] = or_weather_wildfires_df["FireDuration_hrs"].apply(lambda x: 0 if x <= 0 else x)
+    # or_weather_wildfires_df[["tmax", "tmin", "tavg", "prcp"]] = or_weather_wildfires_df[["tmax", "tmin", "tavg", "prcp"]].apply(lambda x: (x-x.min())/ (x.max() - x.min()))  
 
     
     print("\n\n ---------- Selecting Train and Test Data ---------- \n")
@@ -67,8 +67,7 @@ def main():
     
     or_cause_sample_dict = setup_train_test_data(or_weather_wildfires_comments_vector_df, "GeneralCause")
     or_specific_sample_dict = setup_train_test_data(or_weather_wildfires_specific_vector_df, "GeneralCause")
-    or_sample_dict = setup_train_test_data(or_weather_wildfires_df, label_col="Size_class", cols_of_interst_plus_label=["Size_class","tmax", "tmin", "tavg", "prcp"])
-    or_sample_balanced_dict = train_test_OR_weather(or_weather_wildfires_df, label_col="Size_class", cols_of_interst_plus_label=["Size_class","tmax", "tmin", "tavg", "prcp"])
+    # or_sample_dict = setup_train_test_data(or_weather_wildfires_df, label_col="Size_class", cols_of_interst_plus_label=["Size_class","tmax", "tmin", "tavg", "prcp"])
     
     
     print("\n\n ---------- Selecting Train and Test Data ---------- \n")
@@ -82,8 +81,8 @@ def main():
     
     run_svm(or_cause_sample_dict, or_weather_wildfires_comments_vector_filename)
     run_svm(or_specific_sample_dict, or_weather_wildfires_specific_vector_filename)
-    run_svm(or_sample_dict, or_weather_wildfires_filename)
-    run_svm(or_sample_balanced_dict, f"{or_weather_wildfires_filename}_balanced")
+    # run_svm(or_sample_dict, or_weather_wildfires_filename)
+
     
 
      
@@ -120,7 +119,7 @@ def set_new_generic_label(df, label_col):
     return df2
     
 
-def setup_train_test_data(df, label_col, cols_of_interst_plus_label=None, test_size=0.1, seed_val=1):
+def setup_train_test_data(df, label_col, cols_of_interst_plus_label=None, test_size=0.2, seed_val=1):
 
     if cols_of_interst_plus_label is None:
         df2 = df.copy()
@@ -130,9 +129,9 @@ def setup_train_test_data(df, label_col, cols_of_interst_plus_label=None, test_s
     rd.seed(seed_val)
     train_df, test_df, train_labels, test_labels = train_test_split(df2.drop(label_col, axis=1), df2[label_col], test_size=test_size, stratify=df2[label_col])
     
-    print(f"\n\n Training Dataset with labels removed \n {train_df.head()} \n\n")
+    # print(f"\n\n Training Dataset with labels removed \n {train_df.head()} \n\n")
     
-    print(f"\n\n Testing Dataset with labels removed \n {test_df.head()} \n\n")
+    # print(f"\n\n Testing Dataset with labels removed \n {test_df.head()} \n\n")
     
     sample_dict = {
         "train_labels" : train_labels,
@@ -256,21 +255,21 @@ def label_counts(data_dict, filename, order=None):
     merged_df = merged_df.fillna(0)
     
     if order is not None:
-        print(order)
+        # print(order)
         merged_df['Label'] = pd.Categorical(merged_df['Label'], categories=order, ordered=True)
         merged_df = merged_df.sort_values(by='Label')
-        print(merged_df)
+        # print(merged_df)
     
     plt.figure(figsize=(28, 10))
     ax = merged_df.plot(x="Label", y=["Test", "Predicted"], kind="bar", rot=0, color=["#364659", "#6C90D9"])
     plt.xticks(rotation=90, ha='right')
     plt.xlabel('\nLabel')
     plt.ylabel('Portion of Data with that Label\n')
-    plt.title(f'Comparison of Naive Bayes Predictions and Actual Label Proportions\n{filename}')
+    plt.title(f'Comparison of SVM Predictions and Actual Label Proportions\n{filename}')
     plt.legend(loc='upper left', bbox_to_anchor=(1, 1)) 
     
     plt.tight_layout()   
-    plt.savefig(f"./CreatedVisuals/NaiveBayes/label_counts/{filename}_test_v_pred.png")
+    plt.savefig(f"./CreatedVisuals/svm/label_counts/{filename}_test_v_pred.png", dpi=300)
     plt.close()
     
     
@@ -285,13 +284,11 @@ def label_counts(data_dict, filename, order=None):
     plt.title(f'Proportion of Labels in the Training Set\n{filename}')
     
     plt.tight_layout()    
-    plt.savefig(f"./CreatedVisuals/NaiveBayes/label_counts/{filename}_train.png")
+    plt.savefig(f"./CreatedVisuals/svm/label_counts/{filename}_train.png", dpi=300)
     plt.close()
 
 
 def run_svm(sample_dict, filename, visual_folder="./CreatedVisuals/svm"):
-    
-    
     
     ## Data
     train_labels = sample_dict["train_labels"]
@@ -303,25 +300,26 @@ def run_svm(sample_dict, filename, visual_folder="./CreatedVisuals/svm"):
     SVM_Model1=LinearSVC(C=50, dual="auto")
     SVM_Model1.fit(train_df, train_labels)
 
-    print("SVM 1 prediction:\n", SVM_Model1.predict(test_df))
-    print("Actual:")
-    print(test_labels)
+    # print("SVM 1 prediction:\n", SVM_Model1.predict(test_df))
+    # print("Actual:")
+    # print(test_labels)
     
     score = accuracy_score(test_labels, SVM_Model1.predict(test_df))
     print(f"\nThe accurary is for Linear SVM {filename} is : {score}\n")
 
     SVM_matrix = confusion_matrix(test_labels, SVM_Model1.predict(test_df))
-    print("\nThe confusion matrix for Linear SVM is:")
-    print(SVM_matrix)
-    print("\n\n")
+    # print("\nThe confusion matrix for Linear SVM is:")
+    # print(SVM_matrix)
+    # print("\n\n")
     
+    print(f"Making linear visual for {filename}")
     disp = ConfusionMatrixDisplay(confusion_matrix=SVM_matrix, display_labels=SVM_Model1.classes_)
     plt.figure(figsize=(18, 15))
     disp.plot(cmap='magma')
     plt.xticks(rotation=45, ha='right')
-    plt.title(f"Confusion Matrix Linear SVM\n- {filename} Linear SVM -") 
+    plt.title(f"Confusion Matrix Linear SVM\n- {filename} -\nAccuracy = {score}") 
     plt.tight_layout()
-    plt.savefig(f"{visual_folder}/{filename}_linear_svm_cm.png")
+    plt.savefig(f"{visual_folder}/{filename}_linear_svm_cm.png", dpi=300)
     plt.close()
     
     
@@ -331,53 +329,57 @@ def run_svm(sample_dict, filename, visual_folder="./CreatedVisuals/svm"):
     SVM_Model2=sklearn.svm.SVC(C=1.0, kernel='rbf', gamma="auto")
     SVM_Model2.fit(train_df, train_labels)
 
-    print("SVM prediction:\n", SVM_Model2.predict(test_df))
-    print("Actual:")
-    print(test_labels)
+    # print("SVM prediction:\n", SVM_Model2.predict(test_df))
+    # print("Actual:")
+    # print(test_labels)
     
     score = accuracy_score(test_labels, SVM_Model2.predict(test_df))
     print(f"\nThe accurary is for rbf SVM {filename} is : {score}\n")
 
+    
     SVM_matrix = confusion_matrix(test_labels, SVM_Model2.predict(test_df))
-    print("\nThe confusion matrix for rbf SVM is:")
-    print(SVM_matrix)
-    print("\n\n")
+    # print("\nThe confusion matrix for rbf SVM is:")
+    # print(SVM_matrix)
+    # print("\n\n")
     
-    
+    print(f"Making rbf visual for {filename}")
     disp = ConfusionMatrixDisplay(confusion_matrix=SVM_matrix, display_labels=SVM_Model1.classes_)
     plt.figure(figsize=(18, 15))
     disp.plot(cmap='magma')
     plt.xticks(rotation=45, ha='right')
-    plt.title(f"Confusion Matrix RBF SVM\n- {filename} -") 
+    plt.title(f"Confusion Matrix RBF SVM\n- {filename} \nAccuracy = {score}-") 
     plt.tight_layout()
-    plt.savefig(f"{visual_folder}/{filename}_rbf_svm_cm.png")
+    plt.savefig(f"{visual_folder}/{filename}_rbf_svm_cm.png", dpi=300)
     plt.close()
 
-    ## POLY
-    print("--- Starting Poly ---")
-    SVM_Model3=sklearn.svm.SVC(C=1.0, kernel='poly', degree=3, gamma="scale")
-    SVM_Model3.fit(train_df, train_labels)
 
-    print("SVM prediction:\n", SVM_Model3.predict(test_df))
-    print("Actual:")
-    print(test_labels)
-    
-    score = accuracy_score(test_labels, SVM_Model3.predict(test_df))
-    print(f"\nThe accurary is for poly SVM {filename} is : {score}\n")
+    for d in range(1, 5): # [1, 5, 10, 20, 50]:
+        ## POLY
+        print("--- Starting Poly ---")
+        SVM_Model3=sklearn.svm.SVC(C=1, kernel='poly', degree=d, gamma="scale")
+        SVM_Model3.fit(train_df, train_labels)
 
-    SVM_matrix = confusion_matrix(test_labels, SVM_Model3.predict(test_df))
-    print("\nThe confusion matrix for poly p = 3 SVM is:")
-    print(SVM_matrix)
-    print("\n\n")
-    
-    disp = ConfusionMatrixDisplay(confusion_matrix=SVM_matrix, display_labels=SVM_Model1.classes_)
-    plt.figure(figsize=(18, 15))
-    disp.plot(cmap='magma')
-    plt.xticks(rotation=45, ha='right')
-    plt.title(f"Confusion Matrix\n - {filename} Linear SVM -") 
-    plt.tight_layout()
-    plt.savefig(f"{visual_folder}/{filename}_poly_svm_cm.png")
-    plt.close()
+        # print("SVM prediction:\n", SVM_Model3.predict(test_df))
+        # print("Actual:")
+        # print(test_labels)
+        
+        score = accuracy_score(test_labels, SVM_Model3.predict(test_df))
+        print(f"\nThe accurary is for poly {d} SVM {filename} is : {score}\n")
+
+        SVM_matrix = confusion_matrix(test_labels, SVM_Model3.predict(test_df))
+        # print(f"\nThe confusion matrix for poly d = {d} and C = 1 SVM is:")
+        # print(SVM_matrix)
+        # print("\n\n")
+        
+        print(f"Making poly visual for {filename} - {d}")
+        disp = ConfusionMatrixDisplay(confusion_matrix=SVM_matrix, display_labels=SVM_Model1.classes_)
+        plt.figure(figsize=(18, 15))
+        disp.plot(cmap='magma')
+        plt.xticks(rotation=45, ha='right')
+        plt.title(f"Confusion Matrix Poly SVM - {d}\n - {filename} -\nAccuracy = {score}") 
+        plt.tight_layout()
+        plt.savefig(f"{visual_folder}/{filename}_poly_svm_cm_{d}.png", dpi=300)
+        plt.close()
 
 
 # DO NOT REMOVE!!!
