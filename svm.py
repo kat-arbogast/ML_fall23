@@ -70,7 +70,7 @@ def main():
     # or_sample_dict = setup_train_test_data(or_weather_wildfires_df, label_col="Size_class", cols_of_interst_plus_label=["Size_class","tmax", "tmin", "tavg", "prcp"])
     
     
-    print("\n\n ---------- Selecting Train and Test Data ---------- \n")
+    print("\n\n ---------- SVM  ---------- \n")
     run_svm(fires_monthly_sample_dict, us_fires_burn_monthly_filename)
     run_svm(fires_season_sample_dict, f"{us_fires_burn_monthly_filename}_season")
     
