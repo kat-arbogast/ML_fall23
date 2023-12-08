@@ -1,0 +1,8 @@
+---
+title: "Final Exam Question 3 Part 2"
+author: "Katrina Arbogast"
+output: html_document
+---
+
+# Assoication Rule Mining of Customer Products
+

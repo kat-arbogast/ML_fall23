@@ -1,0 +1,50 @@
+---
+title: "SVM Math for Final Exam"
+author: "Katrina Arbogast"
+output: html_document
+---
+
+Here is all of the math that written out in latex for Question 2 (Part 1 and Part 2) of the Final Exam in Machine Learning Fall 2023.
+
+# Part 1
+
+* Choose any three datapoints that are 2D. (Example, the point (2,3) is a 2D datapoint)  [do not use the same values that I use on the slides in class]
+* Create a plot (you can use “draw” for this) that shows the cartesian coordinate system, the three points, and their labels as +1 or -1. You can choose the labels as long as you represent both labels.
+* Your next goal is to solve for the SVM model – which you will need w and b for. 
+* Show all of your work and steps to do this. When you are done, draw your calculated separator line (your SVM model) onto the cartesian coordinate system so illustrate that it does in fact separate your points correctly. 
+
+$$
+
+
+$$
+
+
+
+
+# Part 2
+
+A general polynomial kernel can be written as K=(aTb + r)^d where a and b are any two points (vectors) in your dataset. Suppose you have a polynomial kernel K specifically with r=0 and d=3. What is your K?
+Your K (with r=0 and d=3) = ?
+
+$$
+
+$$
+
+
+
+Write your K as a dot product between two vectors. Show all the work.
+
+$$
+
+$$
+
+
+
+Choose any 2D point. [For example, (2,3) is a 2D point]. Use your K and show what your 2D point would be in that new kernel space. Show all the steps and work. 
+
+$$
+
+$$
+
+
+

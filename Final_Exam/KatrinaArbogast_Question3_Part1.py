@@ -31,10 +31,53 @@ from sklearn.svm import LinearSVC
 from sklearn.naive_bayes import MultinomialNB
 
 
+products = [
+    "Laptop", "Coffee Maker", "Running Shoes", "Wireless Earbuds", "Smartwatch",
+    "Blender", "Portable Speaker", "Backpack", "Fitness Tracker", "Instant Pot",
+    "Kindle eReader", "Gaming Mouse", "Yoga Mat", "Drone", "Digital Camera",
+    "Air Fryer", "Noise-Canceling Headphones", "Smart Thermostat", "External Hard Drive",
+    "Robot Vacuum", "Wireless Router", "Electric Toothbrush", "Fitness Resistance Bands",
+    "Home Security Camera", "Outdoor Grill", "Espresso Machine", "Bluetooth Keyboard",
+    "Streaming Device (e.g., Roku)", "Wireless Charging Pad", "Indoor Plants", "Cast Iron Skillet",
+    "Travel Luggage", "Desktop Monitor", "Electric Scooter", "Projector",
+    "Water Bottle with Infuser", "Smart Light Bulbs", "Weighted Blanket",
+    "White Noise Machine", "Power Bank", "Hiking Boots", "Digital Drawing Tablet",
+    "Electric Shaver", "Portable Monitor", "Electric Kettle", "LED Desk Lamp",
+    "Car Phone Mount", "Instant Camera", "Air Purifier", "Virtual Reality Headset"
+]
+
+
 amazon_user_df = pd.DataFrame({
     "Credit_Score": [600, 810, 820, 830, 840, 850, 610, 805, 815, 825, 835, 700, 600, 610, 620, 630, 640, 650, 610, 605, 615, 625, 635, 645, 655],
     "Income_Level": [90000, 95000, 100000, 15000, 110000, 115000, 95000, 92000, 98000, 102000, 108000, 91000, 30000, 35000, 40000, 45000, 59000, 55000, 35000, 80000, 38000, 42000, 48000, 90000, 56000],
     "Length_of_Credit_History": [8, 9, 10, 1, 12, 13, 9, 8, 10, 11, 2, 13, 2, 3, 4, 5, 6, 7, 3, 2, 14, 5, 6, 17, 8],
+    'Products': [
+        ['Laptop', 'Smartwatch', 'Backpack'],
+        ['Coffee Maker', 'Wireless Earbuds', 'Fitness Tracker', 'Tea', 'Coffee'],
+        ['Running Shoes', 'Yoga Mat', 'Fitness Resistance Bands', 'Water Bottle'],
+        ['Drone', 'Digital Camera', 'Air Fryer', 'Coffee'],
+        ['Noise-Canceling Headphones', 'Smart Thermostat', 'External Hard Drive'],
+        ['Robot Vacuum', 'Wireless Router', 'Smartwatch'],
+        ['Electric Toothbrush', 'Fitness Tracker', 'Home Security Camera'],
+        ['Outdoor Grill', 'Espresso Machine', 'Bluetooth Keyboard'],
+        ['Indoor Plants', 'Cast Iron Skillet', 'Travel Luggage', 'Wallet'],
+        ['Desktop Monitor', 'Electric Scooter', 'Projector'],
+        ['Water Bottle with Infuser', 'Smart Light Bulbs', 'Weighted Blanket'],
+        ['White Noise Machine', 'Power Bank', 'Hiking Boots'],
+        ['Digital Drawing Tablet', 'Electric Shaver', 'Portable Monitor'],
+        ['Electric Kettle', 'LED Desk Lamp', 'Car Phone Mount'],
+        ['Instant Camera', 'Air Purifier', 'Virtual Reality Headset'],
+        ['Laptop', 'Coffee Maker', 'Running Shoes', 'Wireless Earbuds', 'Smartwatch', 'Wallet'],
+        ['Blender', 'Portable Speaker', 'Backpack', 'Fitness Tracker', 'Instant Pot'],
+        ['Kindle eReader', 'Gaming Mouse', 'Yoga Mat', 'Drone', 'Digital Camera', 'Water Bottle'],
+        ['Air Fryer', 'Noise-Canceling Headphones', 'Smart Thermostat', 'External Hard Drive'],
+        ['Robot Vacuum', 'Wireless Router', 'Electric Toothbrush', 'Fitness Resistance Bands', 'Home Security Camera'],
+        ['Outdoor Grill', 'Espresso Machine', 'Bluetooth Keyboard', 'Television', 'Wireless Charging Pad'],
+        ['Indoor Plants', 'Cast Iron Skillet', 'Travel Luggage', 'Desktop Monitor', 'Electric Scooter'],
+        ['Projector', 'Water Bottle with Infuser', 'Smart Light Bulbs', 'Weighted Blanket', 'White Noise Machine'],
+        ['Power Bank', 'Hiking Boots', 'Digital Drawing Tablet', 'Electric Shaver', 'Portable Monitor', 'Water Bottle'],
+        ['Electric Kettle', 'LED Desk Lamp', 'Car Phone Mount', 'Instant Camera', 'Air Purifier', 'Tea']
+    ],
     "give_card": ["yes"] * 12 + ["no"] * 13
 })
 
@@ -42,9 +85,11 @@ filename = "amazon_credit_card"
 
 
 def main():
+    
+    print(f"\n --- Amazon User Data --- \n{amazon_user_df}")
 
     print("\n\n ---------- Selecting Train and Test Data ---------- \n")
-    amazon_user_dict = setup_train_test_data(amazon_user_df, label_col="give_card")
+    amazon_user_dict = setup_train_test_data(amazon_user_df[["Credit_Score", "Income_Level", "Length_of_Credit_History", "give_card"]], label_col="give_card")
     
     print("\n\n ---------- Decision Tree ---------- \n")
     decision_tree_analysis(amazon_user_dict, filename) #, max_depth=20)
@@ -270,9 +315,6 @@ def run_svm(sample_dict, filename, visual_folder="./Final_Exam/Part3_Visuals"):
         plt.tight_layout()
         plt.savefig(f"{visual_folder}/{filename}_poly_svm_cm_{d}.png", dpi=300)
         plt.close()
-        
-        
-# hello
 
 
 # DO NOT REMOVE!!!
