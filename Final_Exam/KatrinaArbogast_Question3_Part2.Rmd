@@ -6,3 +6,115 @@ output: html_document
 
 # Assoication Rule Mining of Customer Products
 
+```{r}
+library(viridis)
+library(arules)
+library(TSP)
+library(data.table)
+#library(ggplot2)
+#library(Matrix)
+library(tcltk)
+library(dplyr)
+library(devtools)
+library(purrr)
+library(tidyr)
+## DO THIS ONCE
+## FIRST - you MUST register and log into github
+## install_github("mhahsler/arulesViz")
+## RE: https://github.com/mhahsler/arulesViz
+
+##############
+## IF YOUR CODE BREAKS - TRY THIS
+##
+## Error in length(obj) : Method length not implemented for class rules 
+## DO THIS: 
+## (1) detach("package:arulesViz", unload=TRUE)
+## (2) detach("package:arules", unload=TRUE)
+## (3) library(arules)
+## (4) library(arulesViz)
+###################################################################
+
+## To see if you have tcltk run this on the console...
+# capabilities()["tcltk"]
+library(arulesViz)
+```
+
+
+#### filnames
+
+```{r}
+#------------------------------------------------------------------------------
+filename <- "amazon_products"
+product_basket_path <- "./products_basket.csv"
+#------------------------------------------------------------------------------
+```
+
+## Creating Dataframe
+
+```{r}
+library(tidyverse)
+amazon_user_df <- read_csv(product_basket_path)
+
+
+amazon_user_df
+```
+
+
+## Getting the Transaction Data
+
+```{r}
+amazon_user_transactions <-
+  read.transactions(product_basket_path,
+                    rm.duplicates = FALSE, 
+                    format = "basket",  
+                    sep=",",  
+                    cols=NULL)
+
+```
+
+```{r}
+amazon_user_rules = arules::apriori(amazon_user_transactions,
+                                    parameter = list(support=.119,
+                                                     confidence=.4,
+                                                     minlen=2))
+
+inspect(amazon_user_rules)
+```
+
+
+```{r}
+## Sort rules Support
+SortedRules <- sort(amazon_user_rules, by="support", decreasing=TRUE)
+inspect(SortedRules[1:10])
+(summary(SortedRules))
+```
+
+```{r}
+## Sort rules Support
+SortedRules <- sort(amazon_user_rules, by="confidence", decreasing=TRUE)
+inspect(SortedRules[1:10])
+(summary(SortedRules))
+```
+
+
+```{r}
+## Sort rules Support
+SortedRules <- sort(amazon_user_rules, by="lift", decreasing=TRUE)
+inspect(SortedRules[1:10])
+(summary(SortedRules))
+```
+
+
+```{r}
+png(paste0("./Part3_Visuals/network_", 
+           filename, ".png"), 
+      width     = 16,
+      height    = 4,
+      units     = "in",
+      res       = 1200,
+      pointsize = 4)
+plot(amazon_user_rules, method="graph")
+dev.off()
+```
+
+

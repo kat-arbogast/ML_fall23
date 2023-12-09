@@ -1,0 +1,26 @@
+Credit_Score,Income_Level,Length_of_Credit_History,Products,give_card
+600,90000,8,"['Wireless Router', 'Fitness Resistance Bands', 'Camera', 'Yoga Mat', 'Water Bottle', 'Fitness Tracker']",yes
+810,95000,9,"['Gaming Mouse', 'Espresso Machine', 'Bluetooth Keyboard', 'Coffee', 'Coffee Maker', 'Noise-Canceling Headphones']",yes
+820,100000,10,"['Camera', 'Travel Luggage', 'Electric Scooter']",yes
+830,15000,1,"['Projector', 'Smart Light Bulbs', 'Weighted Blanket', 'White Noise Machine', 'Noise-Canceling Headphones']",yes
+840,110000,12,"['Hiking Boots', 'Water Bottle', 'Backpack']",yes
+850,115000,13,"['Electric Kettle', 'LED Desk Lamp', 'Car Phone Mount', 'Camera', 'Tea']",yes
+610,95000,9,"['White Noise Machine', 'Hiking Boots', 'Backpack', 'Noise-Canceling Headphones']",yes
+805,92000,8,"['Laptop', 'Smartwatch', 'Backpack', 'Noise-Canceling Headphones']",yes
+815,98000,10,"['Coffee Maker', 'Wireless Earbuds', 'Fitness Tracker', 'Tea', 'Coffee', 'Espresso Machine']",yes
+825,102000,11,"['Running Shoes', 'Yoga Mat', 'Fitness Resistance Bands', 'Water Bottle', 'Fitness Tracker']",yes
+835,108000,2,"['Drone', 'Camera', 'External Hard Drive', 'Gaming Mouse', 'Laptop']",yes
+700,91000,13,"['Noise-Canceling Headphones', 'Smart Thermostat', 'External Hard Drive', 'Laptop']",yes
+600,30000,2,"['Wireless Router', 'Smartwatch']",no
+610,35000,3,"['Fitness Tracker', 'Camera', 'Travel Luggage', 'Yoga Mat', 'Water Bottle']",no
+620,40000,4,"['Espresso Machine', 'Bluetooth Keyboard', 'Backpack', 'Coffee', 'Tea']",no
+630,45000,5,"['Camera', 'Travel Luggage']",no
+640,59000,6,"['Coffee', 'Projector', 'Weighted Blanket', 'Coffee Maker']",no
+650,55000,7,"['Smart Light Bulbs', 'Weighted Blanket']",no
+610,35000,3,['Tea'],no
+605,80000,2,"['Electric Kettle', 'Tea', 'Coffee']",no
+615,38000,14,"['Gaming Mouse', 'Virtual Reality Headset', 'Noise-Canceling Headphones']",no
+625,42000,5,"['Laptop', 'Running Shoes', 'Wireless Earbuds', 'Smartwatch', 'Yoga Mat', 'Fitness Tracker']",no
+635,48000,6,"['Blender', 'Portable Speaker', 'Backpack', 'Fitness Tracker', 'Coffee', 'Tea', 'Espresso Machine']",no
+645,90000,17,"['Gaming Mouse', 'Drone', 'Camera', 'Noise-Canceling Headphones']",no
+655,56000,8,"['Noise-Canceling Headphones', 'Smart Thermostat', 'External Hard Drive', 'Gaming Mouse', 'Laptop']",no

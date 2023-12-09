@@ -31,52 +31,37 @@ from sklearn.svm import LinearSVC
 from sklearn.naive_bayes import MultinomialNB
 
 
-products = [
-    "Laptop", "Coffee Maker", "Running Shoes", "Wireless Earbuds", "Smartwatch",
-    "Blender", "Portable Speaker", "Backpack", "Fitness Tracker", "Instant Pot",
-    "Kindle eReader", "Gaming Mouse", "Yoga Mat", "Drone", "Digital Camera",
-    "Air Fryer", "Noise-Canceling Headphones", "Smart Thermostat", "External Hard Drive",
-    "Robot Vacuum", "Wireless Router", "Electric Toothbrush", "Fitness Resistance Bands",
-    "Home Security Camera", "Outdoor Grill", "Espresso Machine", "Bluetooth Keyboard",
-    "Streaming Device (e.g., Roku)", "Wireless Charging Pad", "Indoor Plants", "Cast Iron Skillet",
-    "Travel Luggage", "Desktop Monitor", "Electric Scooter", "Projector",
-    "Water Bottle with Infuser", "Smart Light Bulbs", "Weighted Blanket",
-    "White Noise Machine", "Power Bank", "Hiking Boots", "Digital Drawing Tablet",
-    "Electric Shaver", "Portable Monitor", "Electric Kettle", "LED Desk Lamp",
-    "Car Phone Mount", "Instant Camera", "Air Purifier", "Virtual Reality Headset"
-]
-
-
 amazon_user_df = pd.DataFrame({
     "Credit_Score": [600, 810, 820, 830, 840, 850, 610, 805, 815, 825, 835, 700, 600, 610, 620, 630, 640, 650, 610, 605, 615, 625, 635, 645, 655],
     "Income_Level": [90000, 95000, 100000, 15000, 110000, 115000, 95000, 92000, 98000, 102000, 108000, 91000, 30000, 35000, 40000, 45000, 59000, 55000, 35000, 80000, 38000, 42000, 48000, 90000, 56000],
     "Length_of_Credit_History": [8, 9, 10, 1, 12, 13, 9, 8, 10, 11, 2, 13, 2, 3, 4, 5, 6, 7, 3, 2, 14, 5, 6, 17, 8],
     'Products': [
-        ['Laptop', 'Smartwatch', 'Backpack'],
-        ['Coffee Maker', 'Wireless Earbuds', 'Fitness Tracker', 'Tea', 'Coffee'],
-        ['Running Shoes', 'Yoga Mat', 'Fitness Resistance Bands', 'Water Bottle'],
-        ['Drone', 'Digital Camera', 'Air Fryer', 'Coffee'],
-        ['Noise-Canceling Headphones', 'Smart Thermostat', 'External Hard Drive'],
-        ['Robot Vacuum', 'Wireless Router', 'Smartwatch'],
-        ['Electric Toothbrush', 'Fitness Tracker', 'Home Security Camera'],
-        ['Outdoor Grill', 'Espresso Machine', 'Bluetooth Keyboard'],
-        ['Indoor Plants', 'Cast Iron Skillet', 'Travel Luggage', 'Wallet'],
-        ['Desktop Monitor', 'Electric Scooter', 'Projector'],
-        ['Water Bottle with Infuser', 'Smart Light Bulbs', 'Weighted Blanket'],
-        ['White Noise Machine', 'Power Bank', 'Hiking Boots'],
-        ['Digital Drawing Tablet', 'Electric Shaver', 'Portable Monitor'],
-        ['Electric Kettle', 'LED Desk Lamp', 'Car Phone Mount'],
-        ['Instant Camera', 'Air Purifier', 'Virtual Reality Headset'],
-        ['Laptop', 'Coffee Maker', 'Running Shoes', 'Wireless Earbuds', 'Smartwatch', 'Wallet'],
-        ['Blender', 'Portable Speaker', 'Backpack', 'Fitness Tracker', 'Instant Pot'],
-        ['Kindle eReader', 'Gaming Mouse', 'Yoga Mat', 'Drone', 'Digital Camera', 'Water Bottle'],
-        ['Air Fryer', 'Noise-Canceling Headphones', 'Smart Thermostat', 'External Hard Drive'],
-        ['Robot Vacuum', 'Wireless Router', 'Electric Toothbrush', 'Fitness Resistance Bands', 'Home Security Camera'],
-        ['Outdoor Grill', 'Espresso Machine', 'Bluetooth Keyboard', 'Television', 'Wireless Charging Pad'],
-        ['Indoor Plants', 'Cast Iron Skillet', 'Travel Luggage', 'Desktop Monitor', 'Electric Scooter'],
-        ['Projector', 'Water Bottle with Infuser', 'Smart Light Bulbs', 'Weighted Blanket', 'White Noise Machine'],
-        ['Power Bank', 'Hiking Boots', 'Digital Drawing Tablet', 'Electric Shaver', 'Portable Monitor', 'Water Bottle'],
-        ['Electric Kettle', 'LED Desk Lamp', 'Car Phone Mount', 'Instant Camera', 'Air Purifier', 'Tea']
+        ['Wireless Router', 'Fitness Resistance Bands', 'Camera', 'Yoga Mat', 'Water Bottle', 'Fitness Tracker'],
+        ['Gaming Mouse', 'Espresso Machine', 'Bluetooth Keyboard', 'Coffee', 'Coffee Maker', 'Noise-Canceling Headphones'],
+        ['Camera', 'Travel Luggage', 'Electric Scooter'],
+        ['Projector', 'Smart Light Bulbs', 'Weighted Blanket', 'White Noise Machine', 'Noise-Canceling Headphones'],
+        ['Hiking Boots', 'Water Bottle', 'Backpack'],
+        ['Electric Kettle', 'LED Desk Lamp', 'Car Phone Mount', 'Camera', 'Tea'],
+        ['White Noise Machine', 'Hiking Boots', 'Backpack', 'Noise-Canceling Headphones'],
+        ['Laptop', 'Smartwatch', 'Backpack', 'Noise-Canceling Headphones'],
+        ['Coffee Maker', 'Wireless Earbuds', 'Fitness Tracker', 'Tea', 'Coffee', 'Espresso Machine'],
+        ['Running Shoes', 'Yoga Mat', 'Fitness Resistance Bands', 'Water Bottle', 'Fitness Tracker'],
+        ['Drone', 'Camera', 'External Hard Drive', 'Gaming Mouse', 'Laptop'],
+        ['Noise-Canceling Headphones', 'Smart Thermostat', 'External Hard Drive', 'Laptop'],
+        ['Wireless Router', 'Smartwatch'],
+        ['Fitness Tracker', 'Camera', 'Travel Luggage', 'Yoga Mat', 'Water Bottle'],
+        ['Espresso Machine', 'Bluetooth Keyboard', 'Backpack', 'Coffee', 'Tea'],
+        ['Camera', 'Travel Luggage'],
+        ['Coffee', 'Projector', 'Weighted Blanket', 'Coffee Maker'],
+        ['Smart Light Bulbs', 'Weighted Blanket'],
+        ['Tea'],
+        ['Electric Kettle', 'Tea', 'Coffee'],
+        ['Gaming Mouse', 'Virtual Reality Headset', 'Noise-Canceling Headphones'],
+        ['Laptop', 'Running Shoes', 'Wireless Earbuds', 'Smartwatch', 'Yoga Mat', 'Fitness Tracker'],
+        ['Blender', 'Portable Speaker', 'Backpack', 'Fitness Tracker', 'Coffee', 'Tea', 'Espresso Machine'],
+        ['Gaming Mouse', 'Drone', 'Camera', 'Noise-Canceling Headphones'],
+        ['Noise-Canceling Headphones', 'Smart Thermostat', 'External Hard Drive', 'Gaming Mouse', 'Laptop']
+        
     ],
     "give_card": ["yes"] * 12 + ["no"] * 13
 })
@@ -87,6 +72,10 @@ filename = "amazon_credit_card"
 def main():
     
     print(f"\n --- Amazon User Data --- \n{amazon_user_df}")
+    amazon_user_df.to_csv(f'./Final_Exam/{filename}.csv', index=False)
+    
+    print("\n\n --- Making basket Data --- \n\n")
+    basket_product(amazon_user_df, "Products")
 
     print("\n\n ---------- Selecting Train and Test Data ---------- \n")
     amazon_user_dict = setup_train_test_data(amazon_user_df[["Credit_Score", "Income_Level", "Length_of_Credit_History", "give_card"]], label_col="give_card")
@@ -127,6 +116,29 @@ def setup_train_test_data(df, label_col, cols_of_interst_plus_label=None, test_s
     
     return sample_dict
 
+def basket_product(df, column_of_interest):
+    
+    nested_dict = {}
+    df2 = pd.DataFrame()
+
+    for index, products_list in enumerate(df[column_of_interest]):
+        nested_dict[index] = products_list
+
+    unique_products = amazon_user_df['Products'].explode().unique().tolist()
+
+    for index, products_list in nested_dict.items():
+        for col in unique_products:
+            col = col.replace(" ", "_")
+            df2.loc[index, col] = ""
+            for product in products_list:
+                product = product.replace(" ", "_")
+                if product == col:
+                    df2.loc[index, col] = col
+                    break
+                else:
+                    pass
+    
+    df2.to_csv(f'./Final_Exam/products_basket.csv', index=False)
     
     
 def decision_tree_analysis(sample_dict, filename, criterion='gini', min_samples_split=2, min_samples_leaf=1, max_depth=None):
