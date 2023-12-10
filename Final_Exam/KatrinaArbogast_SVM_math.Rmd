@@ -13,38 +13,377 @@ Here is all of the math that written out in latex for Question 2 (Part 1 and Par
 * Your next goal is to solve for the SVM model – which you will need w and b for. 
 * Show all of your work and steps to do this. When you are done, draw your calculated separator line (your SVM model) onto the cartesian coordinate system so illustrate that it does in fact separate your points correctly. 
 
-$$
+\begin{align}
+\quad \\
+\quad \\
+\quad \\
+\end{align}
+
+Let's say that we have three vectors $\mathbf{x_1}$, $\mathbf{x_2}$, and $\mathbf{x_3}$ such that
+
+\begin{align}
+\mathbf{x_1} = \begin{bmatrix} 2 \\ 2 \end{bmatrix} \quad
+
+\mathbf{x_2} = \begin{bmatrix} 0 \\ 4 \end{bmatrix} \quad
+
+\mathbf{x_3} = \begin{bmatrix} 4 \\ 4 \end{bmatrix}\quad
+\end{align}
+
+where these three vectors are given labels of values either $-1$ or $+1$ such that we have
 
 
-$$
+\begin{align}
+\begin{array}{@{}l@{\quad}r@{}}
+\mathbf{x_1} \text{ with label } y_1 \text{ as } & -1 \\
+\mathbf{x_2} \text{ with label } y_2 \text{ as } & -1 \\
+\mathbf{x_3} \text{ with label } y_3 \text{ as } & 1
+\end{array}
+\end{align}
+
+then we have the following graphical representation of these vectors in a 2-dimensional plane. 
+
+```{r, echo=FALSE}
+# Define the coordinates of the points
+x <- c(2, 0, 4)
+y <- c(2, 4, 4)
+
+# Define colors for each point
+point_colors <- c("red", "red", "blue")
+
+# Plot the points with grid lines, axis limits, specified colors, and without outer borders
+plot(x, y, pch = 16, col = point_colors, main = "2D Points", xlab = "x1", ylab = "x2", xlim = c(-1, 6), ylim = c(-1, 6), axes = FALSE, bty = "n")
+
+# Add labels to the points
+text(x, y, labels = c("(2,2)", "(0,4)", "(4,4)"), pos = 3)
+
+# Add grid lines
+grid()
+
+# Add x = 0 and y = 0 lines in grey
+abline(h = 0, col = "grey", lty = 2)  # Horizontal line y = 0
+abline(v = 0, col = "grey", lty = 2)  # Vertical line x = 0
+
+
+```
 
 
 
+To maximize the distance between the labeled point, use the primal such that
+
+\begin{align}
+\min{\Big\{\frac{1}{2}\|w\|^2 \colon w \in \mathbb{R}^n, 1-y_ix_i^Tw \quad  \forall i \Big\}}
+\end{align}
+
+To solve with inequality constraints, we can use the method of Langrange multipliers. The Lagrange function is therfore
+
+\begin{align}
+\mathcal{L}(w, b, \lambda) = \frac{1}{2}\|w\|^2 + \sum_{i=1}^{n}\lambda_{i}((w^T x_i + b) - 1)
+\end{align}
+
+where $\mathbf{\lambda}$ is the Lagrange multipliers. To solve the above we set the following partial derivatives.
+
+\begin{align}
+\frac{\delta \mathcal{L}}{\delta w} = 0 \quad
+\frac{\delta \mathcal{L}}{\delta b} = 0 \quad
+\frac{\delta \mathcal{L}}{\delta \lambda} = 0 \quad
+\end{align}
+
+where
+
+\begin{align}
+\begin{array}{@{}l@{\quad}r@{}}
+\frac{\delta \mathcal{L}}{\delta w} = w - \sum_{i=1}^{n} \lambda_iy_ix_i & \\ \\
+\frac{\delta \mathcal{L}}{\delta b} = -\sum_{i=1}^{n} \lambda_iy_i & \\ \\
+\frac{\delta \mathcal{L}}{\delta \lambda} =  \sum_{i=1}^{n} y_i(w^Tx_i + b) - 1 &\\ \\
+\end{array}
+\end{align}
+
+settings these to zero we have
+
+\begin{align}
+\begin{array}{@{}l@{\quad}r@{}}
+w = \sum_{i=1}^{n} \lambda_iy_ix_i & \quad \quad \quad \text{(1)}\\ \\
+0 = \sum_{i=1}^{n} \lambda_iy_i & \quad \quad \quad \text{(2)}\\ \\
+0 = \sum_{i=1}^{n} y_i(w^Tx_i + b) - 1 & \quad \quad \quad \text{(3)}\\ \\
+\end{array}
+\end{align}
+
+Now using equation $\text{(2)}$ and the $\mathbf{y}$ labels we can calculate the following
+
+\begin{alignat}{2}
+    0 &= \sum_{i=1}^{n}\lambda_iy_i \\
+    &= \lambda_1y_1 + \lambda_2y_2 + \lambda_3y_3 \\
+    &= (-1)\lambda_1 + (-1)\lambda_2 + (1)\lambda_3 &&
+\end{alignat}
+
+Thus, $\lambda_1 + \lambda_2 = \lambda_3$
+
+\quad
+
+Plugging in $w$ and $b$ to get the dual form in terms of $\lambda$ we have
+
+\begin{align}
+\mathcal{L}= \sum_{i=1}^{n}\lambda_i - \frac{1}{2}\sum_{i=1}^{n}\sum_{j=1}^{n}\lambda_i\lambda_jy_iy_jx_i^Tx_j
+\end{align}
+
+Note that
+\begin{alignat}{2}
+x_1^Tx_1 &= \begin{bmatrix} 2 & 2 \end{bmatrix}\begin{bmatrix} 2 \\ 2 \end{bmatrix} = (2)(2) + (2)(2) = 4 + 4 = 8 \\
+x_1^Tx_2 &= \begin{bmatrix} 2 & 2 \end{bmatrix}\begin{bmatrix} 0 \\ 4 \end{bmatrix} = (2)(0) + (2)(4) = 0 + 8 = 8 \\
+x_1^Tx_3 &= \begin{bmatrix} 2 & 2 \end{bmatrix}\begin{bmatrix} 4 \\ 4 \end{bmatrix} = (2)(4) + (2)(4) = 8 + 8 = 16 \\
+x_2^Tx_2 &= \begin{bmatrix} 0 & 4 \end{bmatrix}\begin{bmatrix} 0 \\ 4 \end{bmatrix} = (0)(0) + (4)(4) = 0 + 16 = 16 \\
+x_2^Tx_3 &= \begin{bmatrix} 0 & 4 \end{bmatrix}\begin{bmatrix} 4 \\ 4 \end{bmatrix} = (0)(4) + (4)(4) = 0 + 16 = 16 \\
+x_3^Tx_3 &= \begin{bmatrix} 4 & 4 \end{bmatrix}\begin{bmatrix} 4 \\ 4 \end{bmatrix} = (4)(4) + (4)(4) = 16 + 16 = 32 \\
+\end{alignat}
+
+Hence,
+
+\begin{align}
+    \mathcal{L} &= (\lambda_1 + \lambda_2 + \lambda_3) + \notag \\
+                &\quad \frac{-1}{2}\Big[\lambda_1\lambda_1y_1y_1x_1^Tx_1 + \notag \\
+                &\quad \quad \quad \lambda_1\lambda_2y_1y_2x_1^Tx_2 + \notag \\
+                &\quad \quad \quad \lambda_1\lambda_3y_1y_3x_1^Tx_3 + \notag \\
+                &\quad \quad \quad \lambda_2\lambda_1y_2y_1x_2^Tx_1 + \notag \\
+                &\quad \quad \quad \lambda_2\lambda_2y_2y_2x_2^Tx_2 + \notag \\
+                &\quad \quad \quad \lambda_2\lambda_3y_2y_3x_2^Tx_3 + \notag \\
+                &\quad \quad \quad \lambda_3\lambda_1y_3y_1x_3^Tx_1 + \notag \\
+                &\quad \quad \quad \lambda_3\lambda_2y_3y_2x_3^Tx_2 + \notag \\
+                &\quad \quad \quad \lambda_3\lambda_3y_3y_3x_3^Tx_3 \Big] 
+\end{align}
+
+Then, subsitiuting in the known values we have,
+
+\begin{align}
+    \mathcal{L} &= (\lambda_1 + \lambda_2 + \lambda_3) + \notag \\
+                &\quad \frac{-1}{2}\Big[\lambda_1\lambda_1(1)(8) + \notag \\
+                &\quad \quad \quad \lambda_1\lambda_2(1)(8) + \notag \\
+                &\quad \quad \quad \lambda_1\lambda_3(-1)(16) + \notag \\
+                &\quad \quad \quad \lambda_2\lambda_1(1)(8) + \notag \\
+                &\quad \quad \quad \lambda_2\lambda_2(1)(16) + \notag \\
+                &\quad \quad \quad \lambda_2\lambda_3(-1)(16) + \notag \\
+                &\quad \quad \quad \lambda_3\lambda_1(-1)(16) + \notag \\
+                &\quad \quad \quad \lambda_3\lambda_2(-1)(16) + \notag \\
+                &\quad \quad \quad \lambda_3\lambda_3(1)(32) \Big] \\
+                &= (\lambda_1 + \lambda_2 + \lambda_3) + \frac{-1}{2}\Big[8\lambda_1^2 + 16\lambda_2^2 + 32\lambda_3^2 + 16\lambda_1\lambda_2 - 32\lambda_1\lambda_3 - 32\lambda_2\lambda_3 \Big] \\
+                &= \lambda_1 + \lambda_2 + \lambda_3 - [4\lambda_1^2 + 8\lambda_2^2 + 16\lambda_3^2 + 8\lambda_1\lambda_2 - 16\lambda_1\lambda_3 - 16\lambda_2\lambda_3 \Big] \\
+                &= \lambda_1 + \lambda_2 + \lambda_3 - 4\lambda_1^2 - 8\lambda_2^2 - 16\lambda_3^2 - 8\lambda_1\lambda_2 + 16\lambda_1\lambda_3 + 16\lambda_2\lambda_3 \\
+\end{align}
+
+Since $\lambda_1 + \lambda_2 = \lambda_3$, then we can substitute $\lambda_1 + \lambda_2$ for $\lambda_3$. Thus we have,
+
+\begin{align}
+    \mathcal{L} &= \lambda_1 + \lambda_2 + (\lambda_1 + \lambda_2) - 4\lambda_1^2 - 8\lambda_2^2  - 8\lambda_1\lambda_2 - 16(\lambda_1 + \lambda_2)^2 + 16\lambda_1(\lambda_1 + \lambda_2) + 16\lambda_2(\lambda_1 + \lambda_2) \\
+                &= 2\lambda_1 + 2\lambda_2 - 4\lambda_1^2 - 8\lambda_2^2  - 8\lambda_1\lambda_2 - 16(\lambda_1^2 + 2\lambda_1\lambda_2 + \lambda_2^2) + 16\lambda_1^2 + 16\lambda_1\lambda_2 + 16\lambda_2^2 + 16\lambda_1\lambda_2\\
+                &= 2\lambda_1 + 2\lambda_2 - 4\lambda_1^2 - 8\lambda_2^2  - 8\lambda_1\lambda_2 - 16\lambda_1^2 - 32\lambda_1\lambda_2 - 16\lambda_2^2 + 16\lambda_1^2 + 16\lambda_1\lambda_2 + 16\lambda_2^2 + 16\lambda_1\lambda_2 \\
+                &= 2\lambda_1 + 2\lambda_2 - 4\lambda_1^2 - 8\lambda_2^2  - 8\lambda_1\lambda_2 \\
+\end{align}
+
+Now to optimize $\mathcal{L}$, let's take the derivative and set it equal to zero.
+
+\begin{align}
+\begin{array}{@{}l@{\quad}r@{}}
+\frac{\delta \mathcal{L}}{\delta \lambda_1} = -8\lambda_1 - 8\lambda_2 + 2 = 0 & \\ \\
+\frac{\delta \mathcal{L}}{\delta \lambda_2} = -16\lambda_2 - 8\lambda_1 + 2 = 0 & \\ \\
+\end{array}
+\end{align}
+
+Solving for $\lambda_1$ and $\lambda_2$ we have
+
+
+\begin{align}
+
+\begin{array}{@{}l@{\quad}r@{}}
+\begin{cases}
+-1(-8\lambda_1 - 8\lambda_2 + 2 = 0) & \\
+-8\lambda_1 - 16\lambda_2 + 2 = 0 & \\ 
+\end{cases}
+\end{array}
+\end{align}
+
+\begin{align}
+\begin{array}{@{}l@{\quad}r@{}}
+\Rightarrow -8\lambda_2 = 0 & \\ 
+\Rightarrow \lambda_2 = 0
+\end{array}
+\end{align}
+
+Then, solving for the value of $\lambda_1$ we have
+
+
+\begin{align}
+\begin{array}{@{}l@{\quad}r@{}}
+-8\lambda_1 - 8(0) + 2 = 0 & \\ 
+\Rightarrow -8\lambda_1 + 2 = 0 & \\ 
+\Rightarrow \lambda_1 = \frac{1}{4}
+\end{array}
+\end{align}
+
+and since $\lambda_1 + \lambda_2 = \lambda_3$, then
+
+\begin{align}
+\begin{array}{@{}l@{\quad}r@{}}
+\frac{1}{4} + 0= \lambda_3 \\
+\Rightarrow \lambda_3 = \frac{1}{4}
+\end{array}
+\end{align}
+
+\begin{align}
+\quad \\
+\quad \\
+\quad \\
+\end{align}
+
+Recall that $w = \sum_{i=1}^n\lambda_iy_ix_i$, thus
+
+\begin{align}
+      w &= \frac{1}{4}(-1)\begin{bmatrix} 2 \\ 2 \end{bmatrix} + (0)(-1)\begin{bmatrix} 0 \\ 4 \end{bmatrix} + \frac{1}{4}(1)\begin{bmatrix} 4 \\ 4 \end{bmatrix} \\
+        &= \begin{bmatrix} \frac{-1}{2} \\ \frac{-1}{2} \end{bmatrix} + \begin{bmatrix} 0 \\ 0 \end{bmatrix} + \begin{bmatrix} 1 \\ 1 \end{bmatrix} \\
+        &= \begin{bmatrix} \frac{1}{2} \\ \frac{1}{2} \end{bmatrix}
+\end{align}
+        
+Finally using that $\sum_{i+1}^ny_i(w^Tx_i + b) - 1 = 0$, then
+
+\begin{align}
+      0 &= (-1)\Big(\begin{bmatrix} \frac{1}{2} & \frac{1}{2} \end{bmatrix}\begin{bmatrix} 2 \\ 2 \end{bmatrix} + b\Big) - 1  + \notag \\
+        & \quad (-1)\Big(\begin{bmatrix} \frac{1}{2} & \frac{1}{2} \end{bmatrix}\begin{bmatrix} 0 \\ 4 \end{bmatrix} + b\Big) - 1  + \notag \\
+        & \quad (1)\Big(\begin{bmatrix} \frac{1}{2} & \frac{1}{2} \end{bmatrix}\begin{bmatrix} 4 \\ 4 \end{bmatrix} + b\Big) - 1 \\
+        &= -2 - b - 1 - 2 - b - 1 + 4 + b - 1\\
+        &= -b - 3 \\ \\
+      \Rightarrow -3 &= b
+\end{align}
+
+Thus our model's separating line is
+
+\begin{align}
+\begin{array}{@{}l@{\quad}r@{}}
+w^T\mathbf{x} + b = 0 & \\
+\Rightarrow \begin{bmatrix} \frac{1}{2} & \frac{1}{2} \end{bmatrix}\begin{bmatrix} x_1 \\ x_2 \end{bmatrix} - 3 = 0 & \\
+\Rightarrow \frac{1}{2}x_1 +  \frac{1}{2}x_2 - 3 = 0 & \\
+\end{array}
+\end{align}
+
+Thus our vectors and the separating line can be graphically represented as below. 
+
+
+```{r, echo=FALSE}
+
+# Define the coordinates of the points
+x <- c(2, 0, 4)
+y <- c(2, 4, 4)
+
+# Define colors for each point
+point_colors <- c("red", "red", "blue")
+
+# Plot the points with grid lines, axis limits, specified colors, and without outer borders
+plot(x, y, pch = 16, col = point_colors, main = "2D Points", xlab = "x1", ylab = "x2", xlim = c(-1, 6), ylim = c(-1, 6), axes = FALSE, bty = "n")
+
+# Add labels to the points
+text(x, y, labels = c("(2,2)", "(0,4)", "(4,4)"), pos = 3)
+
+# Add grid lines
+grid()
+
+# Add x = 0 and y = 0 lines in grey
+abline(h = 0, col = "grey", lty = 2)  # Horizontal line y = 0
+abline(v = 0, col = "grey", lty = 2)  # Vertical line x = 0
+
+
+# Add the line for (1/2)x + (1/2)y - 3 = 0
+abline(a = 6, b = -1, col = "green", lty = 1, lwd = 2)  # Coefficients: a = intercept, b = slope
+
+```
+
+
+
+
+
+
+\begin{align}
+\quad \\
+\quad \\
+\quad \\
+\end{align}
 
 # Part 2
 
 A general polynomial kernel can be written as K=(aTb + r)^d where a and b are any two points (vectors) in your dataset. Suppose you have a polynomial kernel K specifically with r=0 and d=3. What is your K?
 Your K (with r=0 and d=3) = ?
 
-$$
+\begin{align}
+\quad \\
+\quad \\
+\quad \\
+\end{align}
 
-$$
 
+\begin{align}
+K=(a^Tb + r)^d = (a^Tb + 0)^3 = (a^Tb)^3
+\end{align}
+
+
+\begin{align}
+\quad \\
+\quad \\
+\quad \\
+\end{align}
 
 
 Write your K as a dot product between two vectors. Show all the work.
 
-$$
 
-$$
+\begin{align}
+\quad \\
+\quad \\
+\quad \\
+\end{align}
+
+
+To demonstrate that $K$ can be written as a a dot product, we must show that we can rewrite $K=(a^Tb)^3$ as the dot product of some two vectors. Let us consider the situation that $\mathbf{a}, \mathbf{b} \in \mathbb{R}^2$ such that $\mathbf{a}^T = \begin{bmatrix} a_1 & a_2 \end{bmatrix}$ and $\mathbf{b}^T = \begin{bmatrix} b_1 & b_2 \end{bmatrix}$. Then note the following
+
+\begin{align}
+        K &= (a^Tb)^3 \\
+          &= \Big(\begin{bmatrix} a_1 & a_2 \end{bmatrix} \begin{bmatrix} b_1 \\ b_2 \end{bmatrix}\Big)^3 \\
+          &= \Big(a_1b_1 + a_2b_2\Big)^3 \\
+          &= (a_1b_1)^3 + 3(a_1b_1)^2(a_2b_2) + 3(a_1b_1)(a_2b_2)^2 + (a_2b_2)^3 \\
+          &= a_1^3b_1^3 + 3a_1^2b_1^2a_2b_2 + 3a_1b_1a_2^2b_2^2 + a_2^3b_2^3 \\
+          &= \begin{bmatrix} a_1^3 &  \sqrt{3}a_1^2a_2 & \sqrt{3}a_1a_2^2 & a_2^3 \end{bmatrix} \begin{bmatrix} b_1^3 \\  \sqrt{3}b_1^2b_2 \\ \sqrt{3}b_1b_2^2 \\ b_2^3 \end{bmatrix} \\
+          &= \mathbf{c} \cdot \mathbf{d}
+\end{align}
+
+such that 
+
+\begin{align}
+\mathbf{c} = \begin{bmatrix} a_1^3 \\ \sqrt{3}a_1^2a_2 \\ \sqrt{3}a_1a_2^2 \\ a_2^3 \end{bmatrix} \quad 
+\mathbf{d} = \begin{bmatrix} b_1^3 \\  \sqrt{3}b_1^2b_2 \\ \sqrt{3}b_1b_2^2 \\ b_2^3 \end{bmatrix} 
+\end{align}
+
+Thus, $K$ can be expressed as a dot product of two vectors. 
+
+\begin{align}
+\quad \\
+\quad \\
+\quad \\
+\end{align}
+
+
 
 
 
 Choose any 2D point. [For example, (2,3) is a 2D point]. Use your K and show what your 2D point would be in that new kernel space. Show all the steps and work. 
 
-$$
 
-$$
+\begin{align}
+\quad \\
+\quad \\
+\quad \\
+\end{align}
 
+
+Let us define a vector $\mathbf{x}$ such that $\mathbf{x} \in \mathbb{R}^2$, and $\mathbf{x}^T = \begin{bmatrix} 3 & 6 \end{bmatrix}$. Then for $K=(a^Tb)^3$, we can rewrite our vector $\mathbf{x}$ in the new kernel space as the following:
+
+\begin{align}
+\mathbf{x} = \begin{bmatrix} (3)^3 \\ (3)^2(6)\sqrt{3} \\ (3)(6)^2\sqrt{3} \\ (6)^3 \end{bmatrix} = \begin{bmatrix} 27 \\ 54\sqrt{3} \\ 108\sqrt{3} \\ 216 \end{bmatrix}
+        
+\end{align}
 
 
