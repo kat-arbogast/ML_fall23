@@ -362,8 +362,8 @@ fires_training.samples <- fires_monthly_df$Season_binary %>%
 fires_train.data  <- fires_monthly_df[fires_training.samples, ]
 fires_test.data <- fires_monthly_df[-fires_training.samples, ]
 
-fires_train.data
-fires_test.data
+fires_train.data[, c("Acres_Burned", "Number_of_Fires", "Acres_Burned_per_Fire", "Season", "Season_binary")]
+fires_test.data[, c("Acres_Burned", "Number_of_Fires", "Acres_Burned_per_Fire", "Season", "Season_binary")]
 ```
 
 ```{r}
@@ -374,65 +374,124 @@ or_training.samples <- or_weather_wildfires_df$HumanOrLightning_binary %>%
 or_train.data  <- or_weather_wildfires_df[or_training.samples, ]
 or_test.data <- or_weather_wildfires_df[-or_training.samples, ]
 
-or_train.data
-or_test.data
+or_train.data[, c("tmax", "tmin", "tavg",  "prcp", "EstTotalAcres", "Protected_Acres", "FireDuration_hrs", "HumanOrLightning", "HumanOrLightning_binary")]
+or_test.data[, c("tmax", "tmin", "tavg",  "prcp", "EstTotalAcres", "Protected_Acres", "FireDuration_hrs", "HumanOrLightning", "HumanOrLightning_binary")]
 ```
 
 ```{r}
 # Fit the model
-model_fires <- glm(Season_binary ~., data = fires_train.data, family = binomial)
+model_fires <- glm(Season_binary ~ Acres_Burned + Number_of_Fires + Acres_Burned_per_Fire, data = fires_train.data, family = binomial)
 
 # Summarize the model
 summary(model_fires)
 
 # Make predictions
 probabilities_fires <- model_fires %>% predict(fires_test.data, type = "response")
-fires_predicted.classes <- ifelse(probabilities_fires > 0.5, "pos", "neg")
+fires_predicted.classes <- ifelse(probabilities_fires > 0.5, "1", "0")
 
 # Model accuracy
 mean(fires_predicted.classes == fires_test.data$Season_binary)
 ```
 
+
+
+
 ```{r}
 # Fit the model
-model_or <- glm(HumanOrLightning_binary ~., data = or_train.data, family = binomial)
+model_or <- glm(HumanOrLightning_binary ~ tmax + tmin + tavg + prcp + EstTotalAcres + Protected_Acres + FireDuration_hrs, data = or_train.data, family = binomial)
 
 # Summarize the model
 summary(model_or)
 
 # Make predictions
 probabilities_or <- model_or %>% predict(or_test.data, type = "response")
-or_predicted.classes <- ifelse(probabilities_or > 0.5, "pos", "neg")
+or_predicted.classes <- ifelse(probabilities_or > 0.5, "1", "0")
 
 # Model accuracy
 mean(or_predicted.classes == or_test.data$HumanOrLightning_binary)
 ```
 
 ```{r}
+png(paste0("./CreatedVisuals/regression/logistic_season.png"), 
+      width     = 6,
+      height    = 3,
+      units     = "in",
+      res       = 1200,
+      pointsize = 4)
+
 fires_train.data %>%
-  mutate(prob = ifelse(Season_binary == "pos", 1, 0)) %>%
+  mutate(prob = ifelse(Season_binary == 1, 1, 0)) %>%
   ggplot(aes(Acres_Burned, prob)) +
   geom_point(alpha = 0.2) +
   geom_smooth(method = "glm", method.args = list(family = "binomial")) +
   labs(
-    title = "Logistic Regression Model", 
-    x = "Acres_Burned ",
-    y = "Probability of being diabete-pos"
-    )
+    title = "Logistic Regression Model for Fire Season", 
+    x = "Acres Burned",
+    y = "Probability of being Fire Season"
+    )+
+  theme(
+    plot.title = element_text(size = 10, face = "bold", hjust = 0.5),
+    axis.title.x = element_text(size = 6),
+    axis.title.y = element_text(size = 6),
+    axis.text = element_text(size = 6)
+  )
+
+dev.off()
 ```
 
 ```{r}
-train.data %>%
-  mutate(prob = ifelse(diabetes == "pos", 1, 0)) %>%
-  ggplot(aes(glucose, prob)) +
+png(paste0("./CreatedVisuals/regression/logistic_oregon1.png"), 
+      width     = 6,
+      height    = 3,
+      units     = "in",
+      res       = 1200,
+      pointsize = 4)
+
+or_train.data %>%
+  mutate(prob = ifelse(HumanOrLightning_binary == 1, 1, 0)) %>%
+  ggplot(aes(prcp, prob)) +
   geom_point(alpha = 0.2) +
   geom_smooth(method = "glm", method.args = list(family = "binomial")) +
   labs(
-    title = "Logistic Regression Model", 
-    x = "Plasma Glucose Concentration",
-    y = "Probability of being diabete-pos"
-    )
-```
+    title = "Logistic Regression Model for Human or Lightning Fire Cause", 
+    x = "Precipitation",
+    y = "Probability of being Lightning as the Cause"
+    )+
+  theme(
+    plot.title = element_text(size = 10, face = "bold", hjust = 0.5),
+    axis.title.x = element_text(size = 6),
+    axis.title.y = element_text(size = 6),
+    axis.text = element_text(size = 6)
+  )
 
+dev.off()
+```
+```{r}
+png(paste0("./CreatedVisuals/regression/logistic_oregon2.png"), 
+      width     = 6,
+      height    = 3,
+      units     = "in",
+      res       = 1200,
+      pointsize = 4)
+
+or_train.data %>%
+  mutate(prob = ifelse(HumanOrLightning_binary == 1, 1, 0)) %>%
+  ggplot(aes(EstTotalAcres, prob)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(method = "glm", method.args = list(family = "binomial")) +
+  labs(
+    title = "Logistic Regression Model for Human or Lightning Fire Cause", 
+    x = "Estimated Total Acres",
+    y = "Probability of being Lightning as the Cause"
+    ) +
+  theme(
+    plot.title = element_text(size = 10, face = "bold", hjust = 0.5),
+    axis.title.x = element_text(size = 6),
+    axis.title.y = element_text(size = 6),
+    axis.text = element_text(size = 6)
+  )
+
+dev.off()
+```
 
 
