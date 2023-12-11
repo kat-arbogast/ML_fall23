@@ -20,14 +20,10 @@ library(sjmisc)
 ```{r}
 #-------------------------------------------------------------------------
 ## Setting the folder path to the cleaned but not formatted data
-dm_state_total_area_path <- "./CleanData/dm_state_total_area_cleaned.csv"
-dm_state_percent_area_path <- "./CleanData/dm_state_percent_area_clean.csv"
 fires_monthly_path <- "./CleanData/us_fires_burn_monthly.csv"
 or_weather_wildfires_path <- "./CleanData/or_weather_wildfires_cleaned.csv"
 
 ## Setting the filename
-dm_state_total_area_filename <- "dm_state_total_area_cleaned"
-dm_state_percent_area_filename <- "dm_state_percent_area_clean"
 us_fires_burn_monthly_filename <- "us_fires_burn_monthly"
 or_weather_wildfires_filename <- "or_weather_wildfires_cleaned"
 #-------------------------------------------------------------------------
@@ -37,10 +33,9 @@ or_weather_wildfires_filename <- "or_weather_wildfires_cleaned"
 
 
 ```{r, message=FALSE}
-dm_state_total_area_df <- read_csv(dm_state_total_area_path)
-dm_state_percent_area_df <- read_csv(dm_state_percent_area_path)
 fires_monthly_df <- read_csv(fires_monthly_path)
 or_weather_wildfires_df <- read_csv(or_weather_wildfires_path)
+fires_monthly_df
 or_weather_wildfires_df
 ```
 
@@ -63,36 +58,21 @@ Selecting only the numerical columns for the correlation plots
 ```{r}
 fires_monthly_df_nums <- subset(fires_monthly_df, select = c(Acres_Burned, Number_of_Fires, Acres_Burned_per_Fire, Season_binary))
 
-dm_state_total_area_df_nums <- subset(dm_state_total_area_df, select = c(DSCI, None, D0, D1, D2, D3, D4))
-
-dm_state_percent_area_df_nums <- subset(dm_state_percent_area_df, select = c(DSCI, None, D0, D1, D2, D3, D4))
-
 or_weather_wildfires_df_nums <- subset(or_weather_wildfires_df, select = c(tmax, tmin, tavg, prcp, Year, EstTotalAcres, Protected_Acres, FireDuration_hrs, HumanOrLightning_binary))
 
 ```
-
-
 
 ```{r}
 library(corrplot)
 
 colors4 = colorRampPalette(c("black", "darkgrey", "grey","#CFB87C"))
 corrplot(cor(fires_monthly_df_nums), method = "ellipse", col = colors4(100),  addCoef.col = "black", tl.col = "black")
-
-corrplot(cor(dm_state_total_area_df_nums), method = "ellipse", col = colors4(100),  addCoef.col = "black", tl.col = "black")
-
-corrplot(cor(dm_state_percent_area_df_nums), method = "ellipse", col = colors4(100),  addCoef.col = "black", tl.col = "black")
-
 corrplot(cor(or_weather_wildfires_df_nums), method = "ellipse", col = colors4(100),  addCoef.col = "black", tl.col = "black")
 ```
-
-
 
 ```{r, message=FALSE, warning=FALSE}
 library(GGally)
 ggpairs(fires_monthly_df_nums)
-ggpairs(dm_state_total_area_df_nums)
-ggpairs(dm_state_percent_area_df_nums)
 ggpairs(or_weather_wildfires_df_nums)
 ```
 
@@ -102,11 +82,12 @@ ggpairs(or_weather_wildfires_df_nums)
 #### Oregon Weather and Wildfires
 ```{r}
 #making the linear models
-or_weather_wildfires_lm <- lm(FireDuration_hrs ~ tmax + tmin + tavg + prcp + EstTotalAcres + Protected_Acres + HumanOrLightning_binary, data = or_weather_wildfires_df)
-summary(or_weather_wildfires_lm)
+#1
+or_weather_wildfires_lm_fireduration <- lm(FireDuration_hrs ~ tmax + tmin + tavg + prcp + EstTotalAcres + Protected_Acres + HumanOrLightning_binary, data = or_weather_wildfires_df)
+summary(or_weather_wildfires_lm_fireduration)
 
-or_weather_wildfires_hrs.diagnostics = data.frame(yhat = fitted(or_weather_wildfires_lm), 
-                            r = resid(or_weather_wildfires_lm), 
+or_weather_wildfires_fireduration.diagnostics = data.frame(yhat = fitted(or_weather_wildfires_lm_fireduration), 
+                            r = resid(or_weather_wildfires_lm_fireduration), 
                             y = or_weather_wildfires_df$FireDuration_hrs, 
                             tmax = or_weather_wildfires_df$tmax, 
                             tmin = or_weather_wildfires_df$tmin, 
@@ -118,16 +99,18 @@ or_weather_wildfires_hrs.diagnostics = data.frame(yhat = fitted(or_weather_wildf
 ```
 
 ```{r}
-#making the linear models
-or_weather_wildfires_glm <- glm(HumanOrLightning_binary ~ tmax + tmin + tavg + prcp + EstTotalAcres + Protected_Acres + FireDuration_hrs, data = or_weather_wildfires_df, family=binomial)
-summary(or_weather_wildfires_glm)
+#making the general logistic models
+#2
+or_weather_wildfires_glm_cause <- glm(HumanOrLightning_binary ~ tmax + tmin + tavg + prcp + EstTotalAcres + Protected_Acres + FireDuration_hrs, data = or_weather_wildfires_df, family=binomial)
+summary(or_weather_wildfires_glm_cause)
 
-or_weather_wildfires_bin.diagnostics = data.frame(yhat = fitted(or_weather_wildfires_glm), 
-                            r = resid(or_weather_wildfires_glm), 
+or_weather_wildfires_cause.diagnostics = data.frame(yhat = fitted(or_weather_wildfires_glm_cause), 
+                            r = resid(or_weather_wildfires_glm_cause), 
                             y = or_weather_wildfires_df$HumanOrLightning_binary, 
                             tmax = or_weather_wildfires_df$tmax, 
                             tmin = or_weather_wildfires_df$tmin, 
                             tavg = or_weather_wildfires_df$tavg, 
+                            prcp = or_weather_wildfires_df$prcp,
                             EstTotalAcres = or_weather_wildfires_df$EstTotalAcres,
                             Protected_Acres = or_weather_wildfires_df$Protected_Acres,
                             FireDuration_hrs = or_weather_wildfires_df$FireDuration_hrs
@@ -136,91 +119,113 @@ or_weather_wildfires_bin.diagnostics = data.frame(yhat = fitted(or_weather_wildf
 
 
 ```{r}
-dm_state_total_area_lm <- lm(DSCI ~ None + D0 + D1 + D2 + D3 + D4, 
-                             data = dm_state_total_area_df)
-summary(dm_state_total_area_lm)
+#making the general logistic models
+#3
+or_weather_wildfires_lm_prcp <- lm(prcp ~ tmax + tmin + tavg + EstTotalAcres + Protected_Acres + FireDuration_hrs + HumanOrLightning_binary, data = or_weather_wildfires_df)
+summary(or_weather_wildfires_lm_prcp)
 
-dm_state_total_area_df.diagnostics = data.frame(yhat = fitted(dm_state_total_area_lm), 
-                            r = resid(dm_state_total_area_lm), 
-                            y = dm_state_total_area_df$DSCI, 
-                            None = dm_state_total_area_df$None, 
-                            D0 = dm_state_total_area_df$D0, 
-                            D2 = dm_state_total_area_df$D2, 
-                            D3 = dm_state_total_area_df$D3,
-                            D4 = dm_state_total_area_df$D4
+or_weather_wildfires_prcp.diagnostics = data.frame(yhat = fitted(or_weather_wildfires_lm_prcp), 
+                            r = resid(or_weather_wildfires_lm_prcp), 
+                            y = or_weather_wildfires_df$prcp, 
+                            tmax = or_weather_wildfires_df$tmax, 
+                            tmin = or_weather_wildfires_df$tmin, 
+                            tavg = or_weather_wildfires_df$tavg, 
+                            EstTotalAcres = or_weather_wildfires_df$EstTotalAcres,
+                            Protected_Acres = or_weather_wildfires_df$Protected_Acres,
+                            FireDuration_hrs = or_weather_wildfires_df$FireDuration_hrs,
+                            HumanOrLightning_binary = or_weather_wildfires_df$HumanOrLightning_binary
                             )
 ```
 
-```{r}
-dm_state_percent_area_lm <- lm(DSCI ~ None + D0 + D1 + D2 + D3 + D4, 
-                             data = dm_state_percent_area_df)
-summary(dm_state_percent_area_lm)
-
-dm_state_percent_area_df.diagnostics = data.frame(yhat = fitted(dm_state_percent_area_lm), 
-                            r = resid(dm_state_percent_area_lm), 
-                            y = dm_state_percent_area_df$DSCI, 
-                            None = dm_state_percent_area_df$None, 
-                            D0 = dm_state_percent_area_df$D0, 
-                            D2 = dm_state_percent_area_df$D2, 
-                            D3 = dm_state_percent_area_df$D3,
-                            D4 = dm_state_percent_area_df$D4
-                            )
-```
 
 ```{r}
-fires_monthly_glm <- glm(Season_binary ~ Acres_Burned + Number_of_Fires + Acres_Burned_per_Fire,
+#4
+fires_monthly_glm_season <- glm(Season_binary ~ Acres_Burned + Number_of_Fires + Acres_Burned_per_Fire,
                          data=fires_monthly_df, 
                          family = binomial)
-summary(fires_monthly_glm)
-```
-```{r}
-fires_monthly_lm <- lm(Number_of_Fires ~ Acres_Burned  + Season_binary,
-                       data=fires_monthly_df)
-summary(fires_monthly_lm)
+summary(fires_monthly_glm_season)
 
-fires_monthly_df_lm.diagnostics = data.frame(yhat = fitted(fires_monthly_lm), 
-                            r = resid(fires_monthly_lm), 
+
+fires_monthly_season.diagnostics = data.frame(yhat = fitted(fires_monthly_glm_season), 
+                            r = resid(fires_monthly_glm_season), 
+                            y = fires_monthly_df$Season_binary, 
+                            Acres_Burned = fires_monthly_df$Acres_Burned, 
+                            Number_of_Fires = fires_monthly_df$Number_of_Fires, 
+                            Acres_Burned_per_Fire = fires_monthly_df$Acres_Burned_per_Fire
+                            )
+```
+
+```{r}
+#5
+fires_monthly_lm_num <- lm(Number_of_Fires ~ Acres_Burned  + Season_binary,
+                       data=fires_monthly_df)
+summary(fires_monthly_lm_num)
+
+fires_monthly_df_lm_num.diagnostics = data.frame(yhat = fitted(fires_monthly_lm_num), 
+                            r = resid(fires_monthly_lm_num), 
                             y = fires_monthly_df$Number_of_Fires, 
                             Acres_Burned = fires_monthly_df$Acres_Burned, 
                             Season_binary = fires_monthly_df$Season_binary
                             )
 ```
 
+```{r}
+#6
+fires_monthly_lm_acres <- lm(Acres_Burned ~ Number_of_Fires + Season_binary,
+                       data=fires_monthly_df)
+summary(fires_monthly_lm_acres)
+
+fires_monthly_df_lm_acres.diagnostics = data.frame(yhat = fitted(fires_monthly_lm_acres), 
+                            r = resid(fires_monthly_lm_acres), 
+                            y = fires_monthly_df$Acres_Burned, 
+                            Number_of_Fires = fires_monthly_df$Number_of_Fires, 
+                            Season_binary = fires_monthly_df$Season_binary
+                            )
+```
+
+
 # Diagnostic Plotting Contiuned
 
 ```{r}
+#1
 options(repr.plot.width = 9, repr.plot.height = 9)
 par(mfrow = c(2,2))
-plot(or_weather_wildfires_lm)
+plot(or_weather_wildfires_lm_fireduration)
 ```
 
 ```{r}
+#2
 options(repr.plot.width = 9, repr.plot.height = 9)
 par(mfrow = c(2,2))
-plot(or_weather_wildfires_glm)
+plot(or_weather_wildfires_glm_cause)
 ```
 
 ```{r}
+#3
 options(repr.plot.width = 9, repr.plot.height = 9)
 par(mfrow = c(2,2))
-plot(dm_state_total_area_lm)
+plot(or_weather_wildfires_lm_prcp)
 ```
 
 ```{r}
+#4
 options(repr.plot.width = 9, repr.plot.height = 9)
 par(mfrow = c(2,2))
-plot(dm_state_percent_area_lm)
+plot(fires_monthly_glm_season)
 ```
 
 ```{r}
+#5
 options(repr.plot.width = 9, repr.plot.height = 9)
 par(mfrow = c(2,2))
-plot(fires_monthly_glm)
+plot(fires_monthly_lm_num)
 ```
+
 ```{r}
+#6
 options(repr.plot.width = 9, repr.plot.height = 9)
 par(mfrow = c(2,2))
-plot(fires_monthly_lm)
+plot(fires_monthly_lm_acres)
 ```
 
 
@@ -230,21 +235,10 @@ plot(fires_monthly_lm)
 
 
 ```{r}
+#1
 options(repr.plot.width=6, repr.plot.width = 6)
 
-ggplot(or_weather_wildfires_hrs.diagnostics, aes(x=y, y=yhat)) + 
-  geom_point(alpha = 0.5)+
-  geom_smooth(se=FALSE, col = '#CFB87C')+
-  geom_abline(intercept=0, slope=1)+
-  labs(x="Observed Values", y="Fitted/Predicted Values")+
-  theme_bw()
-```
-
-
-```{r}
-options(repr.plot.width=6, repr.plot.width = 6)
-
-ggplot(dm_state_total_area_df.diagnostics, aes(x=y, y=yhat)) + 
+ggplot(or_weather_wildfires_fireduration.diagnostics, aes(x=y, y=yhat)) + 
   geom_point(alpha = 0.5)+
   geom_smooth(se=FALSE, col = '#CFB87C')+
   geom_abline(intercept=0, slope=1)+
@@ -253,9 +247,58 @@ ggplot(dm_state_total_area_df.diagnostics, aes(x=y, y=yhat)) +
 ```
 
 ```{r}
+#2
 options(repr.plot.width=6, repr.plot.width = 6)
 
-ggplot(dm_state_percent_area_df.diagnostics, aes(x=y, y=yhat)) + 
+ggplot(or_weather_wildfires_cause.diagnostics, aes(x=y, y=yhat)) + 
+  geom_point(alpha = 0.5)+
+  geom_smooth(se=FALSE, col = '#CFB87C')+
+  geom_abline(intercept=0, slope=1)+
+  labs(x="Observed Values", y="Fitted/Predicted Values")+
+  theme_bw()
+```
+
+```{r}
+#3
+options(repr.plot.width=6, repr.plot.width = 6)
+
+ggplot(or_weather_wildfires_prcp.diagnostics, aes(x=y, y=yhat)) + 
+  geom_point(alpha = 0.5)+
+  geom_smooth(se=FALSE, col = '#CFB87C')+
+  geom_abline(intercept=0, slope=1)+
+  labs(x="Observed Values", y="Fitted/Predicted Values")+
+  theme_bw()
+```
+
+```{r}
+#4
+options(repr.plot.width=6, repr.plot.width = 6)
+
+ggplot(fires_monthly_season.diagnostics, aes(x=y, y=yhat)) + 
+  geom_point(alpha = 0.5)+
+  geom_smooth(se=FALSE, col = '#CFB87C')+
+  geom_abline(intercept=0, slope=1)+
+  labs(x="Observed Values", y="Fitted/Predicted Values")+
+  theme_bw()
+```
+
+```{r}
+#5
+options(repr.plot.width=6, repr.plot.width = 6)
+
+ggplot(fires_monthly_df_lm_num.diagnostics, aes(x=y, y=yhat)) + 
+  geom_point(alpha = 0.5)+
+  geom_smooth(se=FALSE, col = '#CFB87C')+
+  geom_abline(intercept=0, slope=1)+
+  labs(x="Observed Values", y="Fitted/Predicted Values")+
+  theme_bw()
+```
+
+```{r}
+#6
+options(repr.plot.width=6, repr.plot.width = 6)
+
+ggplot(fires_monthly_df_lm_acres.diagnostics, aes(x=y, y=yhat)) + 
   geom_point(alpha = 0.5)+
   geom_smooth(se=FALSE, col = '#CFB87C')+
   geom_abline(intercept=0, slope=1)+
@@ -264,36 +307,132 @@ ggplot(dm_state_percent_area_df.diagnostics, aes(x=y, y=yhat)) +
 ```
 
 
-```{r}
-options(repr.plot.width=6, repr.plot.width = 6)
 
-ggplot(fires_monthly_df_lm.diagnostics, aes(x=y, y=yhat)) + 
-  geom_point(alpha = 0.5)+
-  geom_smooth(se=FALSE, col = '#CFB87C')+
-  geom_abline(intercept=0, slope=1)+
-  labs(x="Observed Values", y="Fitted/Predicted Values")+
-  theme_bw()
+
+## Logistic Regresssion Analysis
+
+
+reference code: http://www.sthda.com/english/articles/36-classification-methods-essentials/151-logistic-regression-essentials-in-r/#:~:text=Logistic%20regression%20is%20used%20to,%2C%20diseased%20or%20non%2Ddiseased.
+
+```{r}
+#-------------------------------------------------------------------------
+## Setting the folder path to the cleaned but not formatted data
+fires_monthly_path <- "./CleanData/us_fires_burn_monthly.csv"
+or_weather_wildfires_path <- "./CleanData/or_weather_wildfires_cleaned.csv"
+
+## Setting the filename
+us_fires_burn_monthly_filename <- "us_fires_burn_monthly"
+or_weather_wildfires_filename <- "or_weather_wildfires_cleaned"
+#-------------------------------------------------------------------------
 ```
 
-
-
-
-
-
-
-
-```{r}
-plot_model(or_weather_wildfires_glm, vline.color = "red", sort.est = TRUE, show.values = TRUE, 
-           title = "Forest Plot on Human or Lightning Caused Fires")
-```
-
-```{r}
-plot_model(fires_monthly_glm, vline.color = "red", sort.est = TRUE, show.values = TRUE, 
-           title = "Forest Plot on Fire Season or Normal Months")
+```{r, message=FALSE}
+fires_monthly_df <- read_csv(fires_monthly_path)
+or_weather_wildfires_df <- read_csv(or_weather_wildfires_path)
+fires_monthly_df
+or_weather_wildfires_df
 ```
 
 ```{r}
-plot_model(fires_monthly_lm, vline.color = "red", sort.est = TRUE, show.values = TRUE, 
-           title = "Forest Plot on Fire Season or Normal Months")
+fires_monthly_df <- fires_monthly_df %>%
+  mutate(Season = ifelse(Month %in% c('August', 'July', 'June', 'September'), 'Fire_Season', 'Normal'))%>%
+  mutate(Season_binary = ifelse(Month %in% c('August', 'July', 'June', 'September'), 1, 0))
+
+or_weather_wildfires_df <- or_weather_wildfires_df %>%
+  mutate(HumanOrLightning_binary = ifelse(HumanOrLightning %in% c('Lightning'), 1, 0))
 ```
+
+```{r}
+library(tidyverse)
+library(caret)
+theme_set(theme_bw())
+```
+
+```{r}
+# remove ns
+fires_monthly_df <- na.omit(fires_monthly_df)
+or_weather_wildfires_df <- na.omit(or_weather_wildfires_df)
+```
+
+```{r}
+# Split the data into training and test set
+set.seed(123)
+fires_training.samples <- fires_monthly_df$Season_binary %>% 
+  createDataPartition(p = 0.8, list = FALSE)
+fires_train.data  <- fires_monthly_df[fires_training.samples, ]
+fires_test.data <- fires_monthly_df[-fires_training.samples, ]
+
+fires_train.data
+fires_test.data
+```
+
+```{r}
+# Split the data into training and test set
+set.seed(123)
+or_training.samples <- or_weather_wildfires_df$HumanOrLightning_binary %>% 
+  createDataPartition(p = 0.8, list = FALSE)
+or_train.data  <- or_weather_wildfires_df[or_training.samples, ]
+or_test.data <- or_weather_wildfires_df[-or_training.samples, ]
+
+or_train.data
+or_test.data
+```
+
+```{r}
+# Fit the model
+model_fires <- glm(Season_binary ~., data = fires_train.data, family = binomial)
+
+# Summarize the model
+summary(model_fires)
+
+# Make predictions
+probabilities_fires <- model_fires %>% predict(fires_test.data, type = "response")
+fires_predicted.classes <- ifelse(probabilities_fires > 0.5, "pos", "neg")
+
+# Model accuracy
+mean(fires_predicted.classes == fires_test.data$Season_binary)
+```
+
+```{r}
+# Fit the model
+model_or <- glm(HumanOrLightning_binary ~., data = or_train.data, family = binomial)
+
+# Summarize the model
+summary(model_or)
+
+# Make predictions
+probabilities_or <- model_or %>% predict(or_test.data, type = "response")
+or_predicted.classes <- ifelse(probabilities_or > 0.5, "pos", "neg")
+
+# Model accuracy
+mean(or_predicted.classes == or_test.data$HumanOrLightning_binary)
+```
+
+```{r}
+fires_train.data %>%
+  mutate(prob = ifelse(Season_binary == "pos", 1, 0)) %>%
+  ggplot(aes(Acres_Burned, prob)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(method = "glm", method.args = list(family = "binomial")) +
+  labs(
+    title = "Logistic Regression Model", 
+    x = "Acres_Burned ",
+    y = "Probability of being diabete-pos"
+    )
+```
+
+```{r}
+train.data %>%
+  mutate(prob = ifelse(diabetes == "pos", 1, 0)) %>%
+  ggplot(aes(glucose, prob)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(method = "glm", method.args = list(family = "binomial")) +
+  labs(
+    title = "Logistic Regression Model", 
+    x = "Plasma Glucose Concentration",
+    y = "Probability of being diabete-pos"
+    )
+```
+
+
 
